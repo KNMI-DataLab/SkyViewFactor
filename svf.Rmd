@@ -1,0 +1,37 @@
+---
+title: "Calculating the Sky View Factor using the horizon package"
+author: "Marieke"
+date: "November 21, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message=FALSE)
+```
+
+## Loading Library
+```{r library}
+library(horizon)
+```
+
+## Loading the data
+```{r loading}
+r <- getData('alt', country='Austria')
+plot(r,main="Altitude map of Austria")
+print(r)
+
+```
+
+## Calculating the SVF
+
+```{r calculations}
+s <- svf(r, nAngles=16, maxDist=500, ll=TRUE)
+
+print(s)
+```
+
+## Plotting routine
+
+```{r plotting}
+plot(s,main="SVF for Austria")
+```
