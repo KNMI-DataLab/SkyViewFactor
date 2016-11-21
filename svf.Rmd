@@ -11,14 +11,26 @@ knitr::opts_chunk$set(echo = TRUE,message=FALSE)
 
 ## Loading Library
 ```{r library}
+library(raster)
 library(horizon)
 ```
 
 ## Loading the data
-```{r loading}
-r <- getData('alt', country='Austria')
+The altitude data has a resolution of 90 meters. 
+```{r loading austria}
+#r <- getData('alt', country='Austria') #used for downloading the data
+r <- raster("data/AUT_msk_alt.grd")
 plot(r,main="Altitude map of Austria")
 print(r)
+
+```
+
+## Loading the data
+```{r loading netherlands}
+#r.NED <- getData('alt', country='NL')# used for downloading the data
+r.NED <- raster("data/NLD_msk_alt.grd")
+plot(r.NED,main="Altitude map of Netherlands")
+print(r.NED)
 
 ```
 
@@ -26,12 +38,14 @@ print(r)
 
 ```{r calculations}
 s <- svf(r, nAngles=16, maxDist=500, ll=TRUE)
-
+s.NED <- svf(r.NED, nAngles=16, maxDist=500, ll=TRUE)
 print(s)
+print(s.NED)
 ```
 
 ## Plotting routine
 
 ```{r plotting}
 plot(s,main="SVF for Austria")
+plot(s.NED,main="SVF for Netherlands")
 ```
