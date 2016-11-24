@@ -13,6 +13,9 @@ knitr::opts_chunk$set(echo = TRUE,message=FALSE)
 ```{r library}
 library(raster)
 library(horizon)
+library(rgdal)
+pro=CRS("+init=epsg:28992")
+WGS84<-CRS("+init=epsg:4326")
 ```
 
 ## Loading the data
@@ -48,4 +51,67 @@ print(s.NED)
 ```{r plotting}
 plot(s,main="SVF for Austria")
 plot(s.NED,main="SVF for Netherlands")
+```
+
+## A higher resolution example: AHN
+The raw data from the AHN is available with this [link](http://geodata.nationaalgeoregister.nl/ahn2/atom/ahn2_05m_ruw.xml). As an example I included the map number r50fn2.
+
+Besides this product from PDOK and nationaal Georegister also a 3D map of the Netherlands is [available](https://www.pdok.nl/nl/producten/pdok-downloads/basisregistratie-topografie/3d-kaart-nl)
+
+```{r}
+xml.link.raw<-"http://geodata.nationaalgeoregister.nl/ahn2/atom/ahn2_05m_ruw.xml" 
+r.NED<-raster("AHN/r09dn1.tif") #runnning the 0.5m tif takes approximately 2 hours
+plot(r.NED,main="Altitude map of Netherlands")
+print(r.NED)
+```
+
+### Regridding the data
+The runtime for a 0.5m resolution grid is long. Therefore I regrid the raster to a 5m grid. Calculating the SVF will now take approximately 1 minute.
+```{r}
+r.NED<-aggregate(r.NED,fact=10) #regridding to a 5m grid, this takes just a minute to run
+res(r.NED)
+plot(r.NED)
+system.time(
+s.NED <- svf(r.NED, nAngles=16, maxDist=100, ll=F)
+)
+plot(s.NED,main="SVF for Netherlands")
+```
+
+### Other area's
+[see](http://www.ahn.nl/pagina/open-data.html) for the ahn_units. 
+```{r}
+
+
+ahn.units<-readOGR(dsn="AHN_kaartbladen",layer="ahn_units")
+proj4string(ahn.units)<-pro
+plot(ahn.units)
+coords.knmi<-readRDS("data/coordsKNMI.rda")
+coords.knmi<-na.omit(coords.knmi)
+coords.knmi<-data.frame(coords.knmi)
+coordinates(coords.knmi)<-~DS_LON+DS_LAT
+proj4string(coords.knmi)<-WGS84
+coords.knmi<-spTransform(coords.knmi,pro)
+
+
+ov<-over(coords.knmi,ahn.units)
+combined<-cbind(ov,as.data.frame(coords.knmi))
+print(combined[which(combined$DS_CODE=="260_H"),])
+```
+
+### For station the bilt
+```{r}
+r.Bilt<-raster("AHN/r32cn1.tif") #runnning the 0.5m tif takes approximately 2 hours
+plot(r.Bilt,main="Altitude map of De Bilt")
+points(coords.knmi,col="red",lwd=3)
+print(r.Bilt)
+r.Bilt<-aggregate(r.Bilt,fact=10) #regridding to a 5m grid, this takes just a minute to run
+res(r.Bilt)
+plot(r.Bilt)
+points(coords.knmi,col="red",lwd=3)
+system.time(
+s.Bilt <- svf(r.Bilt, nAngles=16, maxDist=100, ll=F)
+)
+
+plot(s.Bilt,main="SVF for De Bilt")
+points(coords.knmi,col="red",lwd=1)
 ```
