@@ -115,3 +115,22 @@ s.Bilt <- svf(r.Bilt, nAngles=16, maxDist=100, ll=F)
 plot(s.Bilt,main="SVF for De Bilt")
 points(coords.knmi,col="red",lwd=1)
 ```
+
+### 3D map of the Netherlands: A combined product, top10NL and AHN2
+A high resolution map of the Netherlands is [available](http://www.arcgis.com/apps/Viewer/index.html?appid=2e4c2b5b127a447e94997bbffd41b93e) and with 97% almost complete. More background information can be found in the [technical description](http://www.kadaster.nl/documents/20838/88032/3D+kaart+NL+technische+beschrijving/841392d9-12e2-41f8-b20d-32d73fbfbbf9 ) of the product. The link to a code at the end of the document provides more information on reading the data using the comand prompt. The [code](http://data.nlextract.nl/top10nl3d/README.txt) takes approximately 1.5hour per unit to run. An example for Valkenburg is [included](https://3d.bk.tudelft.nl/hledoux/blog/tinkering-3dtop10nl/). 
+
+The structure of the data is not so trivial that you can simply read it in R. You first need to know the structure of the database and the layer names before using the readOGR command. An online example can be found [here](http://gis.stackexchange.com/questions/151613/how-to-read-feature-class-in-file-geodatabase-using-r). 
+
+```{r top10NL De Bilt}
+file.gbd<-"AHN/top10NL/32cn1.gdb"
+subset(ogrDrivers(), grepl("GDB", name))
+fc_list = ogrListLayers(file.gbd)
+print(fc_list)
+
+buildings<-readOGR(dsn=file.gbd,layer="gebouwVlak")
+terrein<-readOGR(dsn=file.gbd,layer="terreinVlak")
+water<-readOGR(dsn=file.gbd,layer="waterdeelVlak")
+
+plot(terrein)
+plot(water,col="yellow",add=TRUE)
+```
