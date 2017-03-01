@@ -1,74 +1,15 @@
----
-title: "AHN2"
-author: "Marieke"
-date: "January 3, 2017"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,message=FALSE)
-```
-
-
-## Loading Library
-```{r library}
 library(raster)
 library(horizon)
 library(rgdal)
 library(rLiDAR)
 library(foreach)
 library(doParallel)
+
 pro=CRS("+init=epsg:28992")
 WGS84<-CRS("+init=epsg:4326")
 
-AHN2clean_lazdir<-"/run/media/dirksen/knmi/ahn2_clean/tileslaz/"
-
-GRD<-"/nobackup/users/pagani/test/GRD/"
-LAS<-"/nobackup/users/pagani/test/LAS/"
-CSV<-"/nobackup/users/pagani/test/CSV/"
-
-temp_dir <- "/nobackup/users/dirksen/laszip/"
-
 registerDoParallel(2)
-```
 
-# Clean data organization
-In contract to the folder with ahn2 the clean in orginized in a different way. The ahn2 file with terrain and objects follows the manual of ahn, while the filtered data is stored in tiles. The laz files for each tile have a unique combination of x and y RD-coordinates. 
-
-The filling of water bodies in the clean dataset therefore becomes difficult. For the calculation of the SVF we need the edges of the next tile. An algorithm to paste the edges of each tile together needs to be writen specifically for this dataset. First of all, we need to be sure of the order of the laz files. 
-```{r files}
-all.files<-list.files(path=AHN2clean_lazdir)
-tile<-"tile_0_3/"
-print(all.files)
-
-
-
-```
-# Parallel computations
-Before going into the details discussed above, lets calculate the SVF for a couple of tiles, without looking at edges of water bodies. The scripted foreach loop uses 2 cores (I have 8, but will run into memory problems) and a combination of R code and bash (parts with system (".some.code.here.")). At the end of the loop information will be stored in different ways, a CSV file, raster file, also the information about the number of cells is appended to a text file. 
-```{r foreach}
-#system("export PATH=/usr/people/dirksen/packages/LAStools/bin:$PATH")
-#system("export PATH=/usr/people/dirksen/packages/LAStools/bin:$PATH")
-
-
-AHN1<-"/run/media/dirksen/knmi/ahn2_clean/tileslaz/tile_0_3/ahn_013000_369000.laz"
-AHN2<-"/run/media/dirksen/knmi/ahn2_clean/tileslaz/tile_0_3/ahn_013000_370000.laz"
-AHN3<-"/run/media/dirksen/knmi/ahn2_clean/tileslaz/tile_0_3/ahn_014000_369000.laz"
-
-AHN2_tile_all<-list(AHN1,AHN2,AHN3)
-AHN2_tile_all_short<-list("ahn_013000_369000","ahn_013000_370000","ahn_014000_369000")
-# AHN2_tile_all_short<-gsub(".laz","",AHN2_tile_all_short)
-
-file_las_all<-list.files(temp_dir,pattern="*.las",full.names = TRUE)
-
-# foreach(i=1:length(AHN2_tile_all),
-#         .packages=c("raster","rLiDAR","horizon","rgdal")) %dopar% {
-
-Sys.setenv("AHN"=AHN2_tile_all[3]) # set variable also for bash
-Sys.setenv("AHNname"=AHN2_tile_all_short[3]) # set variable also for bash
-
-
-#input: a point in rijksdriehoek
 
 pointX<- 140874
 pointY<-457916
@@ -86,7 +27,7 @@ filesToLoad<-c(tileNeighborsLeft,tileNeighborsRight,tileNeighborsUpDown,fileToLo
 
 paths<-list()
 for(file in filesToLoad){
-
+  
   print(file)
   fileLoc<-list.files(path = "/run/media/pagani/knmi/ahn2_clean/tileslaz", pattern = file,recursive = T, full.names = T)    
   paths<-c(paths,fileLoc)
@@ -155,7 +96,3 @@ cells<-ncell(r.svf)
 write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
 writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
 write.table(r.df,file="testSVF.txt"),sep=",",row.names = FALSE)
-
-}
-#```
-
