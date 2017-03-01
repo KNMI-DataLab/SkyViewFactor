@@ -68,6 +68,8 @@ centralTileInfo<-extent(centralTile)
 out.matrix<-lapply(file_las, readLAS)
 out<-do.call(rbind.data.frame, out.matrix)
 #out<-data.frame(out.matrix)
+
+rm(out.matrix)
 coordinates(out)<-~X+Y
 proj4string(out)<-pro
 
@@ -78,13 +80,22 @@ r_test<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
 extent(r_test)<-extent( centralTile)+2*maxView #changed to the extent of the central tile plus the radius # same extent as the las file
 res(r_test)<-c(xres,yres) # set the resolution
 
+out<-crop(out,extent(r_test))
+
 r<-rasterize(out,r_test,field="Z") #rasterizing the spatial points to a 1x1 grid
+
+rm(out)
 
 ###
 r.AHN3<-r
 
 ###
 r.svf<-svf(r, nAngles=16, maxDist= maxView, ll=F)
+
+##reducing the grid to just the central part after computing the svf with the extra bound
+extent(r.svf)<-extent(centralTile)
+extent(r)<-extent(centralTile)
+
 # plot(r.svf)
 r.b<-brick(r,r.svf)
 names(r.b)<-c("Z","SVF")
@@ -95,4 +106,4 @@ r.df2<-r.df[complete.cases(r.df),]
 cells<-ncell(r.svf)
 write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
 writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
-write.table(r.df,file="testSVF.txt"),sep=",",row.names = FALSE)
+write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE)
