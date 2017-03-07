@@ -4,7 +4,7 @@ library(horizon)
 library(rgdal)
 library(rLiDAR)
 
-function(input,output,session){
+function(input,output){
 ############################################
 ############################################
 ############################################
@@ -21,6 +21,14 @@ xres    <- input$xres    # x-resolution in meters for the SVF
 yres    <- input$yres    # y-resolution in meters for the SVF
 maxView <- input$maxView # search radius for the SVF
 angles  <- input$angles  # number of angles for the SVF
+
+# pointX  <- 140874 # x-coordinates of a point
+# pointY  <- 457916  # y-cooridnates of a point
+# xres    <- 5   # x-resolution in meters for the SVF
+# yres    <- 5   # y-resolution in meters for the SVF
+# #maxView <- 100 # search radius for the SVF
+# angles  <- 16  # number of angles for the SVF
+
 ############################################
 ############################################
 ############################################
