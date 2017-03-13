@@ -15,7 +15,8 @@ WGS84<-CRS("+init=epsg:4326")
 #registerDoParallel(2)
 
 
-lazFolder = "/run/media/pagani/knmi/ahn2_clean/tileslaz"
+lazFolder = c("/data1/", "/data2/", "/data3")
+lasZipLocation = "~/tools/LAStools/bin/laszip"
 
 
 pointX<- 244001
@@ -30,7 +31,12 @@ mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
 mainTile<-makeSpatialDF(mainTile,projection = pro)
 extensionMainTile<-extent(mainTile)
 
-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+
+resterizedNeighbors<-lapply(neighbors, makeRaster, xres, yres)
+mergedNeighbors<-lapply(rasterizedNeighbors, merge)
+rasterizedMainTile<-makeRaster(mainTile,xres,yres)
+
 
 fileToLoad<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord,".laz")
 tileNeighborsRight<-c(paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord-1000,".laz"),paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz"), paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz"))
@@ -58,7 +64,7 @@ print(paths)
 ## way to unzip them all
 lapply(paths,file.copy,to="data/tiles/")
 currentFiles<-list.files(path = "data/tiles/", full.names = TRUE)
-lapply(paste("/usr/people/pagani/opt/testFile/LAStools/bin/laszip", currentFiles), system)
+lapply(paste(lasZipLocation, currentFiles), system)
 #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
 system("rm data/tiles/*.laz")
 
@@ -134,7 +140,7 @@ loadTile <- function(path, coordX, coordY){
   files<-c(centralFile,multifiles)
   lapply(files,file.copy,to="data/tiles/")
   currentFiles<-list.files(path = "data/tiles/", full.names = TRUE)
-  lapply(paste("/usr/people/pagani/opt/testFile/LAStools/bin/laszip", currentFiles), system)
+  lapply(paste(lasZipLocation, currentFiles), system)
   #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
   system("rm data/tiles/*.laz")
   files_las<-list.files("data/tiles",pattern="*.las$",full.names = TRUE)
@@ -225,6 +231,16 @@ loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extension
   
   dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
 }
+
+makeRaster<-function(spatialDf, xres, yres){
+  
+  dummyRaster<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
+  extent(dummyRaster)<-extent(spatialDF)
+  res(dummyRaster)<-c(xres,yres) # set the resolution
+  r<-rasterize(spatialDF,dummyRaster,field="Z") #rasterizing the spatial points to a 1x1 grid
+  r
+}
+
 
 
 
