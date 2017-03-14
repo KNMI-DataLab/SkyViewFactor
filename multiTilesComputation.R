@@ -15,8 +15,8 @@ registerDoParallel(2)
 lazFolder <<- c("/data1/", "/data2/", "/data3")
 lasZipLocation <<- "~/tools/LAStools/bin/laszip"
 
-xres<<-5 # x-resolution in meters
-yres<<-5 # y-resolution in meters
+Xres<<-5 # x-resolution in meters
+Yres<<-5 # y-resolution in meters
 
 maxView<<-100
 
@@ -26,17 +26,18 @@ pointY<-576001
 
 c1<-c(pointX, pointY)
 
-pointX2<- 121490
-pointY2<- 487040
+pointX<- 121490
+pointY<- 487040
 
 c2<-c(pointX2, pointY2)
 
-coord <- list(c1, c2)
+coord <- list( c2)
 
 
-foreach(i = 1:length(coord)) %dopar%
+foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR"), 
+        .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster")) %dopar%
 {
-  SVF(coord[i][1], coord[i][2],maxView, pro)
+  SVF(coord[[i]][1], coord[[i]][2],maxView, pro)
 }
 
 
@@ -232,14 +233,9 @@ SVF<-function(pointX, pointY, maxView, proj){
   neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
   #neighbors<-loadNeighborTilesTest(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
   
-  
-
-  
-  
-  
-  rasterizedNeighbors<-lapply(neighbors, makeRaster, xres, yres, pro)
+  rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, rasterizedNeighbors)
-  rasterizedMainTile<-makeRaster(mainTile,xres,yres,pro)
+  rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
   
   r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
@@ -247,16 +243,16 @@ SVF<-function(pointX, pointY, maxView, proj){
   
   
   # plot(r.svf)
-  r.b<-brick(rasterizedMainTile,r.svf)
+  r.b<-brick(rasterizedMainTile,out)
   names(r.b)<-c("Z","SVF")
   r.df<-as.data.frame(r.b,xy=TRUE)
   
-  r.df2<-r.df[complete.cases(r.df),]
+  #r.df2<-r.df[complete.cases(r.df),]
   
   #cells<-ncell(r.svf)
   #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
   #writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
-  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE)
+  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
 }
 
 
