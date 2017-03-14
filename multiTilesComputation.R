@@ -4,6 +4,7 @@ library(rgdal)
 library(rLiDAR)
 library(foreach)
 library(doParallel)
+library(uuid)
 
 
 pro<<-CRS("+init=epsg:28992")
@@ -15,7 +16,7 @@ workingPath <<- getwd()
 
 
 lazFolder <<- c("/data1/", "/data2/", "/data3")
-lasZipLocation <<- "~/tools/LAStools/bin/laszip"
+lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
 
 Xres<<-5 # x-resolution in meters
 Yres<<-5 # y-resolution in meters
@@ -33,11 +34,12 @@ pointY2<- 487040
 
 c2<-c(pointX2, pointY2)
 
-coord <- list( c2)
+coord <<- list( c2)
 
 
-foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR"), 
-        .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster")) %dopar%
+foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+        .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
 {
   SVF(coord[[i]][1], coord[[i]][2],maxView, pro)
 }
@@ -45,6 +47,7 @@ foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR
 
 
 loadTile <- function(path, coordX, coordY){
+  uuid<-UUIDgenerate()
   multifileFlag<-checkIfMultiTile(path, coordX, coordY)
   multifiles <- NULL
   if(multifileFlag){
@@ -52,16 +55,16 @@ loadTile <- function(path, coordX, coordY){
   }
   centralFile<-list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
   files<-c(centralFile,multifiles)
-  lapply(files,file.copy,to=paste0(workingPath,"/data/tiles/"))
-  currentFiles<-list.files(path = paste0(workingPath,"data/tiles/"), full.names = TRUE)
+  lapply(files,file.copy,to=paste0(workingPath,"/data/tiles/",uuid,"/"))
+  currentFiles<-list.files(path = paste0(workingPath,"/data/tiles/", uuid,"/"), full.names = TRUE)
   lapply(paste(lasZipLocation, currentFiles), system)
   #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
-  system(paste0("rm ", workingPath, "/data/tiles/*.laz"))
-  files_las<-list.files(paste0(workingPath, "/data/tiles"),pattern="*.las$",full.names = TRUE)
+  system(paste0("rm ", workingPath, "/data/tiles/", uuid,"/*.laz"))
+  files_las<-list.files(paste0(workingPath, "/data/tiles/", uuid),pattern="*.las$",full.names = TRUE)
   out.matrix<-lapply(files_las, readLAS)
   outDF<-do.call(rbind.data.frame, out.matrix)
   #out<-data.frame(out.matrix)
-  system(paste0("rm ", workingPath, "/data/tiles/*.las"))
+  system(paste0("rm ", workingPath, "/data/tiles/", uuid,"/*.las"))
   rm(out.matrix)
   outDF
 }
