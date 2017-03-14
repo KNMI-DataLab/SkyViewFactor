@@ -6,61 +6,39 @@ library(foreach)
 library(doParallel)
 
 
+pro<<-CRS("+init=epsg:28992")
+WGS84<<-CRS("+init=epsg:4326")
 
-SVF<-function(){
-
-pro=CRS("+init=epsg:28992")
-WGS84<-CRS("+init=epsg:4326")
-
-#registerDoParallel(2)
+registerDoParallel(2)
 
 
-lazFolder = c("/data1/", "/data2/", "/data3")
-lasZipLocation = "~/tools/LAStools/bin/laszip"
+lazFolder <<- c("/data1/", "/data2/", "/data3")
+lasZipLocation <<- "~/tools/LAStools/bin/laszip"
+
+xres<<-5 # x-resolution in meters
+yres<<-5 # y-resolution in meters
+
+maxView<<-100
 
 
 pointX<- 244001
 pointY<-576001
 
+c1<-c(pointX, pointY)
 
-tileNumberXCoord<-floor(pointX/1000)*1000
-tileNumberYCoord<-floor(pointY/1000)*1000
+pointX2<- 121490
+pointY2<- 487040
 
-maxView<-100
-mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
-mainTile<-makeSpatialDF(mainTile,projection = pro)
-extensionMainTile<-extent(mainTile)
+c2<-c(pointX2, pointY2)
 
-neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
-#neighbors<-loadNeighborTilesTest(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+coord <- list(c1, c2)
 
 
-xres<-5 # x-resolution in meters
-yres<-5 # y-resolution in meters
-
-
-
-rasterizedNeighbors<-lapply(neighbors, makeRaster, xres, yres, pro)
-mergedNeighbors<-do.call(merge, rasterizedNeighbors)
-rasterizedMainTile<-makeRaster(mainTile,xres,yres,pro)
-fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
-
-r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
-out<-crop(r.svf,extent(rasterizedMainTile))
-
-
-# plot(r.svf)
-r.b<-brick(rasterizedMainTile,r.svf)
-names(r.b)<-c("Z","SVF")
-r.df<-as.data.frame(r.b,xy=TRUE)
-
-r.df2<-r.df[complete.cases(r.df),]
-
-cells<-ncell(r.svf)
-write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
-writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
-write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE)
+foreach(i = 1:length(coord)) %dopar%
+{
+  SVF(coord[i][1], coord[i][2],maxView, pro)
 }
+
 
 
 loadTile <- function(path, coordX, coordY){
@@ -230,19 +208,55 @@ loadNeighborTilesTest <- function(path,tileNumberXCoord, tileNumberYCoord, exten
 
 
 
-
-
-
-
-
-
-
 makeRaster<-function(spatialDF, xres, yres, pro){
   dummyRaster<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
   extent(dummyRaster)<-extent(spatialDF)
   res(dummyRaster)<-c(xres,yres) # set the resolution
   r<-rasterize(spatialDF,dummyRaster,field="Z") #rasterizing the spatial points to a 1x1 grid
   r
+}
+
+
+
+SVF<-function(pointX, pointY, maxView, proj){
+  
+  
+  tileNumberXCoord<-floor(pointX/1000)*1000
+  tileNumberYCoord<-floor(pointY/1000)*1000
+  
+  
+  mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
+  mainTile<-makeSpatialDF(mainTile,projection = pro)
+  extensionMainTile<-extent(mainTile)
+  
+  neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  #neighbors<-loadNeighborTilesTest(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  
+  
+
+  
+  
+  
+  rasterizedNeighbors<-lapply(neighbors, makeRaster, xres, yres, pro)
+  mergedNeighbors<-do.call(merge, rasterizedNeighbors)
+  rasterizedMainTile<-makeRaster(mainTile,xres,yres,pro)
+  fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
+  
+  r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
+  out<-crop(r.svf,extent(rasterizedMainTile))
+  
+  
+  # plot(r.svf)
+  r.b<-brick(rasterizedMainTile,r.svf)
+  names(r.b)<-c("Z","SVF")
+  r.df<-as.data.frame(r.b,xy=TRUE)
+  
+  r.df2<-r.df[complete.cases(r.df),]
+  
+  #cells<-ncell(r.svf)
+  #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
+  #writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
+  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE)
 }
 
 
