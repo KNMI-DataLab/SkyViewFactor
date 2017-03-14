@@ -11,6 +11,8 @@ WGS84<<-CRS("+init=epsg:4326")
 
 registerDoParallel(2)
 
+workingPath <<- getwd()
+
 
 lazFolder <<- c("/data1/", "/data2/", "/data3")
 lasZipLocation <<- "~/tools/LAStools/bin/laszip"
@@ -26,8 +28,8 @@ pointY<-576001
 
 c1<-c(pointX, pointY)
 
-pointX<- 121490
-pointY<- 487040
+pointX2<- 121490
+pointY2<- 487040
 
 c2<-c(pointX2, pointY2)
 
@@ -50,16 +52,16 @@ loadTile <- function(path, coordX, coordY){
   }
   centralFile<-list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
   files<-c(centralFile,multifiles)
-  lapply(files,file.copy,to="data/tiles/")
-  currentFiles<-list.files(path = "data/tiles/", full.names = TRUE)
+  lapply(files,file.copy,to=paste0(workingPath,"/data/tiles/"))
+  currentFiles<-list.files(path = paste0(workingPath,"data/tiles/"), full.names = TRUE)
   lapply(paste(lasZipLocation, currentFiles), system)
   #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
-  system("rm data/tiles/*.laz")
-  files_las<-list.files("data/tiles",pattern="*.las$",full.names = TRUE)
+  system(paste0("rm ", workingPath, "/data/tiles/*.laz"))
+  files_las<-list.files(paste0(workingPath, "/data/tiles"),pattern="*.las$",full.names = TRUE)
   out.matrix<-lapply(files_las, readLAS)
   outDF<-do.call(rbind.data.frame, out.matrix)
   #out<-data.frame(out.matrix)
-  system("rm data/tiles/*.las")
+  system(paste0("rm ", workingPath, "/data/tiles/*.las"))
   rm(out.matrix)
   outDF
 }
