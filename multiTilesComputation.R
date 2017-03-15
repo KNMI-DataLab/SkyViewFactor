@@ -35,10 +35,10 @@ Yres<<-5 # y-resolution in meters
 maxView<<-100
 
 
-pointX<- 244001
-pointY<-576001
+#pointX<- 244001
+#pointY<-576001
 
-c1<-c(pointX, pointY)
+#c1<-c(pointX, pointY)
 
 pointX2<- 121490
 pointY2<- 487040
@@ -49,15 +49,15 @@ coord <<- list( c2)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
-
+system.time(
 foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
   SVF(coord[[i]][1], coord[[i]][2],maxView, pro)
 }
 
-
+)
 unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 
@@ -90,6 +90,7 @@ loadTile <- function(path, coordX, coordY){
   if(multifileFlag){
     multifiles<-list.files(path = path, pattern = paste0("ahn_", coordX,"_", coordY,"_.*"), full.names = T, recursive = T)
   }
+  dir.create(paste0(workingPath,"/data/tiles/",uuid,"/"))
   centralFile<-list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
   files<-c(centralFile,multifiles)
   lapply(files,file.copy,to=paste0(workingPath,"/data/tiles/",uuid,"/"))
@@ -117,20 +118,20 @@ checkIfMultiTile <- function(path, coordX, coordY){
 }  
 
 ##when the input is  a tile and not a coord pair
-checkIfMultiTileInputTile <- function(lazfilepath){
-  multifile<-FALSE
-  pathSplit<-strsplit(lazfilepath,split = "ahn",)[[1]]
-  filename<-paste0("ahn",pathSplit[[length(filename)]])
-  folder<-strsplit(pathSplit[[1]])
-  rootFilename <- strsplit(filename, split = ".")[[1]]
-  rootFilename<-rootFilename[[1]]
-  
-  
-  file<-list.files(path = folder, pattern = paste0(rootFilename,"_1.*"), full.names = T, recursive = T)
-  if (length(file)!=0){
-    multifile<-TRUE}
-  multifile 
-}  
+# checkIfMultiTileInputTile <- function(lazfilepath){
+#   multifile<-FALSE
+#   pathSplit<-strsplit(lazfilepath,split = "ahn",)[[1]]
+#   filename<-paste0("ahn",pathSplit[[length(filename)]])
+#   folder<-strsplit(pathSplit[[1]])
+#   rootFilename <- strsplit(filename, split = ".")[[1]]
+#   rootFilename<-rootFilename[[1]]
+#   
+#   
+#   file<-list.files(path = folder, pattern = paste0(rootFilename,"_1.*"), full.names = T, recursive = T)
+#   if (length(file)!=0){
+#     multifile<-TRUE}
+#   multifile 
+# }  
 
 
 
