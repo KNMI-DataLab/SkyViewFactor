@@ -26,7 +26,7 @@ coordinates(GMS_meta)<-~loc_lon+loc_lat
 crs(GMS_meta)<-WGS84
 GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
 
-registerDoParallel(4)
+registerDoParallel(10)
 
 workingPath <<- getwd()
 
@@ -56,11 +56,11 @@ coord <<- list( c2)
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 system.time(
-foreach(i = 1:length(coordGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i = 1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
 {
-  SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
+  SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
 }
 
 )
