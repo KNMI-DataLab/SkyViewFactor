@@ -7,6 +7,17 @@ library(doParallel)
 library(uuid)
 
 
+
+
+
+
+
+
+
+
+
+
+
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
 
@@ -36,6 +47,8 @@ c2<-c(pointX2, pointY2)
 
 coord <<- list( c2)
 
+dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
+
 
 foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
@@ -43,6 +56,30 @@ foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR
 {
   SVF(coord[[i]][1], coord[[i]][2],maxView, pro)
 }
+
+
+unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
+
+
+
+
+
+
+##############################
+
+
+allTiles<-list.files(path = lazFolder, "*.laz", full.names = T, recursive = T)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -78,6 +115,25 @@ checkIfMultiTile <- function(path, coordX, coordY){
     multifile<-TRUE}
   multifile 
 }  
+
+##when the input is  a tile and not a coord pair
+checkIfMultiTileInputTile <- function(lazfilepath){
+  multifile<-FALSE
+  pathSplit<-strsplit(lazfilepath,split = "ahn",)[[1]]
+  filename<-paste0("ahn",pathSplit[[length(filename)]])
+  folder<-strsplit(pathSplit[[1]])
+  rootFilename <- strsplit(filename, split = ".")[[1]]
+  rootFilename<-rootFilename[[1]]
+  
+  
+  file<-list.files(path = folder, pattern = paste0(rootFilename,"_1.*"), full.names = T, recursive = T)
+  if (length(file)!=0){
+    multifile<-TRUE}
+  multifile 
+}  
+
+
+
 
 
 makeSpatialDF <- function(df,projection){
