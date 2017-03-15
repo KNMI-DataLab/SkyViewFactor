@@ -5,7 +5,7 @@ library(rLiDAR)
 library(foreach)
 library(doParallel)
 library(uuid)
-
+library(data.table)
 
 
 
@@ -21,7 +21,12 @@ library(uuid)
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
 
-registerDoParallel(2)
+GMS_meta<-fread("GMS stations metadata (incl. regio en coordinator) 2016_2017 v20161010.csv")
+coordinates(GMS_meta)<-~loc_lon+loc_lat
+crs(GMS_meta)<-WGS84
+GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
+
+registerDoParallel(4)
 
 workingPath <<- getwd()
 
@@ -39,7 +44,8 @@ maxView<<-100
 #pointY<-576001
 
 #c1<-c(pointX, pointY)
-
+coordsGMS<-as(GMS_meta,"SpatialPoints")
+coordsGMS<-data.frame(coordsGMS)
 pointX2<- 121490
 pointY2<- 487040
 
@@ -50,11 +56,11 @@ coord <<- list( c2)
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 system.time(
-foreach(i = 1:length(coord), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i = 1:length(coordGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
-  SVF(coord[[i]][1], coord[[i]][2],maxView, pro)
+  SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
 }
 
 )
@@ -313,8 +319,9 @@ SVF<-function(pointX, pointY, maxView, proj){
   
   #cells<-ncell(r.svf)
   #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
-  #writeRaster(r.b,filename=paste0(GRD,filename),format="raster")
+  writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVF/",tileNumberXCoord, "_",tileNumberYCoord,".grd"),format="raster")
   write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
+  
 }
 
 
