@@ -51,11 +51,13 @@ coord <<- list( c2)
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 system.time(
-foreach(i = 29:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i =  25:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
+  print(i)
   SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+  #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
 }
 
 )
@@ -269,8 +271,8 @@ makeRaster<-function(spatialDF, xres, yres, pro){
 SVF<-function(pointX, pointY, maxView, proj){
   
   
-  tileNumberXCoord<-floor(pointX/1000)*1000
-  tileNumberYCoord<-floor(pointY/1000)*1000
+  tileNumberXCoord<-str_pad(floor(pointX/1000)*1000, 6, pad ="0")
+  tileNumberYCoord<-str_pad(floor(pointY/1000)*1000, 6, pad ="0")
   
   
   mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
