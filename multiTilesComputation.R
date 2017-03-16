@@ -7,17 +7,6 @@ library(doParallel)
 library(uuid)
 library(data.table)
 
-
-
-
-
-
-
-
-
-
-
-
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
 
@@ -26,7 +15,7 @@ coordinates(GMS_meta)<-~loc_lon+loc_lat
 crs(GMS_meta)<-WGS84
 GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
 
-registerDoParallel(10)
+registerDoParallel(7)
 
 workingPath <<- getwd()
 
@@ -46,6 +35,12 @@ maxView<<-100
 #c1<-c(pointX, pointY)
 coordsGMS<-as(GMS_meta,"SpatialPoints")
 coordsGMS<-data.frame(coordsGMS)
+
+coordsGMS$tileNumberXCoord<-floor(coordsGMS$loc_lon/1000)*1000
+coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
+
+tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
+
 pointX2<- 121490
 pointY2<- 487040
 
@@ -56,7 +51,7 @@ coord <<- list( c2)
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 system.time(
-foreach(i = 1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i = 29:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
 {
@@ -64,6 +59,9 @@ foreach(i = 1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal",
 }
 
 )
+#26 rasters were computed without error, checking the 27th and 28th file
+SVF(133743.9, 445509.3,maxView, pro)
+
 unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 
@@ -75,19 +73,6 @@ unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 
 allTiles<-list.files(path = lazFolder, "*.laz", full.names = T, recursive = T)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 loadTile <- function(path, coordX, coordY){
   uuid<-UUIDgenerate()
@@ -139,17 +124,11 @@ checkIfMultiTile <- function(path, coordX, coordY){
 #   multifile 
 # }  
 
-
-
-
-
 makeSpatialDF <- function(df,projection){
   coordinates(df)<-~X+Y
   proj4string(df)<-pro
   df
 }
-
-
 
 loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
   print("hello")
@@ -319,8 +298,11 @@ SVF<-function(pointX, pointY, maxView, proj){
   
   #cells<-ncell(r.svf)
   #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
-  writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVF/",tileNumberXCoord, "_",tileNumberYCoord,".grd"),format="raster")
-  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
+  writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVF/",
+                                  tileNumberXCoord, "_",tileNumberYCoord,".grd"),
+                                  format="raster",
+                                  overwrite=TRUE)
+  #write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
   
 }
 
