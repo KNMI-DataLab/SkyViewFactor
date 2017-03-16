@@ -81,6 +81,10 @@ unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 allTiles<-list.files(path = lazFolder, "*.laz", full.names = T, recursive = T)
 
 loadTile <- function(path, coordX, coordY){
+  
+  coordX<-str_pad(coordX, 6, pad ="0")
+  coordY<-str_pad(coordY, 6, pad ="0")
+  
   uuid<-UUIDgenerate()
   multifileFlag<-checkIfMultiTile(path, coordX, coordY)
   multifiles <- NULL
@@ -276,8 +280,8 @@ makeRaster<-function(spatialDF, xres, yres, pro){
 SVF<-function(pointX, pointY, maxView, proj){
   
   
-  tileNumberXCoord<-str_pad(floor(pointX/1000)*1000, 6, pad ="0")
-  tileNumberYCoord<-str_pad(floor(pointY/1000)*1000, 6, pad ="0")
+  tileNumberXCoord<-floor(pointX/1000)*1000
+  tileNumberYCoord<-floor(pointY/1000)*1000
   
   
   mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
