@@ -53,10 +53,14 @@ dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 system.time(
 foreach(i =  25:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
 {
   print(i)
-  SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+  if(!file.exists(paste0(workingPath,"/data/gridsSVF/",str_pad(coordsGMS[i,]$loc_lon, 6, pad = "0"),"_", str_pad(coordsGMS[i,]$loc_lat,  6, pad = "0")))){
+    print(pate0(str_pad(coordsGMS[i,]$loc_lon, 6, pad = "0"),"_", str_pad(coordsGMS[i,]$loc_lat,  6, pad = "0")))
+    SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+    gc()
+  }
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
 }
 
@@ -190,6 +194,7 @@ loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extension
   df<-makeSpatialDF(df,projection)
   df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
   
+  rm(df)
   dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
 }
 
@@ -284,8 +289,12 @@ SVF<-function(pointX, pointY, maxView, proj){
   
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, rasterizedNeighbors)
+  rm(neighbors)
+  rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
+  rm(mainTile)
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
+  rm(mergedNeighbors)
   
   r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
   out<-crop(r.svf,extent(rasterizedMainTile))
@@ -304,7 +313,7 @@ SVF<-function(pointX, pointY, maxView, proj){
                                   tileNumberXCoord, "_",tileNumberYCoord,".grd"),
                                   format="raster",
                                   overwrite=TRUE)
-  #write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
+  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
   
 }
 
