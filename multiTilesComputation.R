@@ -7,18 +7,10 @@ library(doParallel)
 library(uuid)
 library(data.table)
 
+
+#global vars/ config vars
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
-
-GMS_meta<-fread("GMS stations metadata (incl. regio en coordinator) 2016_2017 v20161010.csv")
-coordinates(GMS_meta)<-~loc_lon+loc_lat
-crs(GMS_meta)<-WGS84
-GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
-
-registerDoParallel(7)
-
-workingPath <<- getwd()
-
 
 lazFolder <<- c("/data1/", "/data2/", "/data3")
 lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
@@ -28,6 +20,22 @@ Yres<<-5 # y-resolution in meters
 
 maxView<<-100
 
+
+
+
+
+GMS_meta<-fread("GMS stations metadata (incl. regio en coordinator) 2016_2017 v20161010.csv")
+coordinates(GMS_meta)<-~loc_lon+loc_lat
+crs(GMS_meta)<-WGS84
+GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
+
+registerDoParallel(8)
+
+workingPath <<- getwd()
+
+
+
+main<-function(){
 
 #pointX<- 244001
 #pointY<-576001
@@ -39,14 +47,14 @@ coordsGMS<-data.frame(coordsGMS)
 coordsGMS$tileNumberXCoord<-floor(coordsGMS$loc_lon/1000)*1000
 coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 
-tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
+#tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
 
-pointX2<- 121490
-pointY2<- 487040
-
-c2<-c(pointX2, pointY2)
-
-coord <<- list( c2)
+# pointX2<- 121490
+# pointY2<- 487040
+# 
+# c2<-c(pointX2, pointY2)
+# 
+# coord <<- list( c2)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
@@ -66,11 +74,11 @@ foreach(i =  25:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal
 
 )
 #26 rasters were computed without error, checking the 27th and 28th file
-SVF(133743.9, 445509.3,maxView, pro)
+#SVF(133743.9, 445509.3,maxView, pro)
 
 unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
-
+}
 
 
 
@@ -78,7 +86,7 @@ unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 ##############################
 
 
-allTiles<-list.files(path = lazFolder, "*.laz", full.names = T, recursive = T)
+#allTiles<-list.files(path = lazFolder, "*.laz", full.names = T, recursive = T)
 
 loadTile <- function(path, coordX, coordY){
   
