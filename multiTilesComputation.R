@@ -6,6 +6,7 @@ library(foreach)
 library(doParallel)
 library(uuid)
 library(data.table)
+library(stringr)
 
 
 #global vars/ config vars
