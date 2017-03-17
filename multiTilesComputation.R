@@ -62,7 +62,7 @@ dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 system.time(
 foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord"), .outfile="") %dopar%
 {
   print(i)
   #print(paste0(workingPath,"/data/gridsSVF/",
@@ -79,7 +79,7 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
     print(paste0(workingPath,"/data/gridsSVF/",
                  str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
                  str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-    #SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+    SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
     gc()
   }
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
