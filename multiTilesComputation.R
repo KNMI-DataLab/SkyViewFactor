@@ -65,9 +65,9 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
   print(i)
-  print(paste0(workingPath,"/data/gridsSVF/",
-               str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", 
-               str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
+  #print(paste0(workingPath,"/data/gridsSVF/",
+             # str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", 
+             #  str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
   #print(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000))
   #print(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000))
   
@@ -75,9 +75,11 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
                            str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
                            str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
       {
-      print("ABC")
-    #print(paste0(workingPath,"/data/gridsSVF/",str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
-    SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+      #print("ABC")
+    print(paste0(workingPath,"/data/gridsSVF/",
+                 str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+                 str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
+    #SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
     gc()
   }
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
@@ -101,8 +103,8 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
 
 loadTile <- function(path, coordX, coordY){
   
-  coordX<-str_pad(coordX, 6, pad ="0")
-  coordY<-str_pad(coordY, 6, pad ="0")
+  coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
+  coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
   
   uuid<-UUIDgenerate()
   multifileFlag<-checkIfMultiTile(path, coordX, coordY)
