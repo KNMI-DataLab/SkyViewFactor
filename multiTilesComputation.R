@@ -60,13 +60,23 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 system.time(
-foreach(i =  25:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
   print(i)
-  if(!file.exists(paste0(workingPath,"/data/gridsSVF/",str_pad(coordsGMS[i,]$loc_lon, 6, pad = "0"),"_", str_pad(coordsGMS[i,]$loc_lat,  6, pad = "0")))){
-    print(pate0(str_pad(coordsGMS[i,]$loc_lon, 6, pad = "0"),"_", str_pad(coordsGMS[i,]$loc_lat,  6, pad = "0")))
+  print(paste0(workingPath,"/data/gridsSVF/",
+               str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", 
+               str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
+  #print(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000))
+  #print(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000))
+  
+    if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
+                           str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+                           str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
+      {
+      print("ABC")
+    #print(paste0(workingPath,"/data/gridsSVF/",str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
     SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
     gc()
   }
@@ -77,7 +87,7 @@ foreach(i =  25:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal
 #26 rasters were computed without error, checking the 27th and 28th file
 #SVF(133743.9, 445509.3,maxView, pro)
 
-unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
+#unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 }
 
@@ -208,6 +218,7 @@ loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extension
   df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
   
   rm(df)
+  gc()
   dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
 }
 
@@ -308,6 +319,7 @@ SVF<-function(pointX, pointY, maxView, proj){
   rm(mainTile)
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
   rm(mergedNeighbors)
+  gc()
   
   r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
   out<-crop(r.svf,extent(rasterizedMainTile))
