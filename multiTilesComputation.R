@@ -38,10 +38,10 @@ workingPath <<- getwd()
 
 main<-function(){
 
-#pointX<- 244001
-#pointY<-576001
+pointX<- 278246#244001
+pointY<-570620 #576001
 
-#c1<-c(pointX, pointY)
+c1<-c(pointX, pointY)
 coordsGMS<-as(GMS_meta,"SpatialPoints")
 coordsGMS<-data.frame(coordsGMS)
 
@@ -50,19 +50,21 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 
 #tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
 
-# pointX2<- 121490
-# pointY2<- 487040
+ pointX2<- 121490
+ pointY2<- 487040
 # 
-# c2<-c(pointX2, pointY2)
+ c2<-c(pointX2, pointY2)
 # 
-# coord <<- list( c2)
+coord <<- list( c1, c2)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
+#1:length(coordsGMS[,1])
+
 system.time(
-foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i = 1:length(coord) , .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %do%
 {
   print(i)
   #print(paste0(workingPath,"/data/gridsSVF/",
@@ -70,18 +72,20 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
              #  str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
   #print(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000))
   #print(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000))
+    # 
+    # if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
+    #                        str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+    #                        str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
+    #   {
+    #   #print("ABC")
+    # print(paste0(workingPath,"/data/gridsSVF/",
+    #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+    #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
+    #SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
   
-    if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
-                           str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
-                           str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
-      {
-      #print("ABC")
-    print(paste0(workingPath,"/data/gridsSVF/",
-                 str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
-                 str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-    SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
+  tryCatch(SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); next})
     gc()
-  }
+  #}
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
 }
 
@@ -89,7 +93,7 @@ foreach(i =  1:length(coordsGMS[,1]), .packages = c("raster", "horizon", "rgdal"
 #26 rasters were computed without error, checking the 27th and 28th file
 #SVF(133743.9, 445509.3,maxView, pro)
 
-#unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
+unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 }
 
@@ -115,6 +119,7 @@ loadTile <- function(path, coordX, coordY){
   dir.create(paste0(workingPath,"/data/tiles/",uuid,"/"))
   centralFile<-list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
   files<-c(centralFile,multifiles)
+  if(length(files)!=0){
   lapply(files,file.copy,to=paste0(workingPath,"/data/tiles/",uuid,"/"))
   currentFiles<-list.files(path = paste0(workingPath,"/data/tiles/", uuid,"/"), full.names = TRUE)
   lapply(paste(lasZipLocation, currentFiles), system)
@@ -127,6 +132,7 @@ loadTile <- function(path, coordX, coordY){
   system(paste0("rm ", workingPath, "/data/tiles/", uuid,"/*.las"))
   rm(out.matrix)
   outDF
+  }
 }
 
 
@@ -306,8 +312,10 @@ SVF<-function(pointX, pointY, maxView, proj){
   tileNumberYCoord<-floor(pointY/1000)*1000
   
   
+  
   mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
-  mainTile<-makeSpatialDF(mainTile,projection = pro)
+ # mainTile<-tryCatch(
+    mainTile<-makeSpatialDF(mainTile,projection = pro)#, error=function(e){print("tile not available in dataset")#;})
   extensionMainTile<-extent(mainTile)
   
   neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
