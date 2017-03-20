@@ -55,7 +55,7 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 # 
  c2<-c(pointX2, pointY2)
 # 
-coord <<- list( c1, c2)
+coord <<- list(c1,  c2)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
@@ -73,20 +73,27 @@ foreach(i = 1:length(coord) , .packages = c("raster", "horizon", "rgdal", "rLiDA
   #print(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000))
   #print(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000))
     # 
-    # if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
-    #                        str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
-    #                        str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
-    #   {
-    #   #print("ABC")
-    # print(paste0(workingPath,"/data/gridsSVF/",
-    #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
-    #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-    #SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro)
   
-  tryCatch(SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); next})
-    gc()
+  outp<-1
+    if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
+                            str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+                            str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
+       {
+       #print("ABC")
+     print(paste0(workingPath,"/data/gridsSVF/",
+                  str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+                  str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
+      tryCatch(SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
+  
+  #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
+  if(is.null(outp))
+  {
+    next
+  }
+  gc()
   #}
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
+    }
 }
 
 )
@@ -133,6 +140,7 @@ loadTile <- function(path, coordX, coordY){
   rm(out.matrix)
   outDF
   }
+  else NULL
 }
 
 
@@ -168,7 +176,116 @@ makeSpatialDF <- function(df,projection){
 }
 
 loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
-  print("hello")
+  #print("hello")
+  #tileNeighborsLeftLower<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord-1000,".laz")
+  tileNeighborsLeftLowerX<-tileNumberXCoord-1000
+  tileNeighborsLeftLowerY<-tileNumberYCoord-1000
+  df<-loadTile(path,tileNeighborsLeftLowerX,tileNeighborsLeftLowerY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+  }
+
+  #tileNeighborLeft<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz")
+  tileNeighborsLeftX<-tileNumberXCoord-1000
+  tileNeighborsLeftY<-tileNumberYCoord
+  df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
+  }
+  
+  #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
+  tileNeighborsLeftUpperX<-tileNumberXCoord-1000
+  tileNeighborsLeftUpperY<-tileNumberYCoord+1000
+  df<-loadTile(path,tileNeighborsLeftUpperX,tileNeighborsLeftUpperY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  }
+
+  #tileNeighborsRightLower<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord-1000,".laz")
+  tileNeighborsRightLowerX<-tileNumberXCoord+1000
+  tileNeighborsRightLowerY<-tileNumberYCoord-1000
+  df<-loadTile(path,tileNeighborsRightLowerX,tileNeighborsRightLowerY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+  }
+
+  #tileNeighborRight<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord,".laz")
+  tileNeighborsRightX<-tileNumberXCoord+1000
+  tileNeighborsRightY<-tileNumberYCoord
+  df<-loadTile(path,tileNeighborsRightX,tileNeighborsRightY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
+  }
+
+  #tileNeighborRightUpper<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord+1000,".laz")
+  tileNeighborsRightUpperX<-tileNumberXCoord+1000
+  tileNeighborsRightUpperY<-tileNumberYCoord+1000
+  df<-loadTile(path,tileNeighborsRightUpperX,tileNeighborsRightUpperY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  }
+
+  #tileNeighborsCentralDown<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord-1000,".laz")
+  tileNeighborsCenterDownX<-tileNumberXCoord
+  tileNeighborsCenterDownY<-tileNumberYCoord-1000
+  df<-loadTile(path,tileNeighborsCenterDownX,tileNeighborsCenterDownY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+  }
+
+  #tileNeighborsCentralUp<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord+1000,".laz")
+  tileNeighborsCenterUpX<-tileNumberXCoord
+  tileNeighborsCenterUpY<-tileNumberYCoord+1000
+  df<-loadTile(path,tileNeighborsCenterUpX,tileNeighborsCenterUpY)
+  if(is.null(df)==FALSE){
+  df<-makeSpatialDF(df,projection)
+  df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  }
+  
+  if(exists("df1")==FALSE){
+    df1<-NULL
+  }
+  if(exists("df2")==FALSE){
+    df2<-NULL
+  }
+  if(exists("df3")==FALSE){
+    df3<-NULL
+  }
+  if(exists("df4")==FALSE){
+    df4<-NULL
+  }
+  if(exists("df5")==FALSE){
+    df5<-NULL
+  }
+  if(exists("df6")==FALSE){
+    df6<-NULL
+  }
+  if(exists("df7")==FALSE){
+    df7<-NULL
+  }
+  if(exists("df8")==FALSE){
+    df1<-NULL
+  }
+  
+  if(exists("df")==TRUE){
+    rm(df)
+  }
+  
+  gc()
+  dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
+}
+
+
+
+loadNeighborTilesTest <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
+  #print("hello")
   #tileNeighborsLeftLower<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord-1000,".laz")
   tileNeighborsLeftLowerX<-tileNumberXCoord-1000
   tileNeighborsLeftLowerY<-tileNumberYCoord-1000
@@ -177,121 +294,56 @@ loadNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extension
   df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
 
   #tileNeighborLeft<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz")
-  tileNeighborsLeftX<-tileNumberXCoord-1000
-  tileNeighborsLeftY<-tileNumberYCoord
-  df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
-  df<-makeSpatialDF(df,projection)
-  df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
+  #tileNeighborsLeftX<-tileNumberXCoord-1000
+  #tileNeighborsLeftY<-tileNumberYCoord
+  #df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
+  #df<-makeSpatialDF(df,projection)
+  #df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
 
-  #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
-  tileNeighborsLeftUpperX<-tileNumberXCoord-1000
-  tileNeighborsLeftUpperY<-tileNumberYCoord+1000
-  df<-loadTile(path,tileNeighborsLeftUpperX,tileNeighborsLeftUpperY)
-  df<-makeSpatialDF(df,projection)
-  df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-
-  #tileNeighborsRightLower<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord-1000,".laz")
-  tileNeighborsRightLowerX<-tileNumberXCoord+1000
-  tileNeighborsRightLowerY<-tileNumberYCoord-1000
-  df<-loadTile(path,tileNeighborsRightLowerX,tileNeighborsRightLowerY)
-  df<-makeSpatialDF(df,projection)
-  df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
-
-  #tileNeighborRight<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord,".laz")
-  tileNeighborsRightX<-tileNumberXCoord+1000
-  tileNeighborsRightY<-tileNumberYCoord
-  df<-loadTile(path,tileNeighborsRightX,tileNeighborsRightY)
-  df<-makeSpatialDF(df,projection)
-  df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
-
-  #tileNeighborRightUpper<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord+1000,".laz")
-  tileNeighborsRightUpperX<-tileNumberXCoord+1000
-  tileNeighborsRightUpperY<-tileNumberYCoord+1000
-  df<-loadTile(path,tileNeighborsRightUpperX,tileNeighborsRightUpperY)
-  df<-makeSpatialDF(df,projection)
-  df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-
-  #tileNeighborsCentralDown<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord-1000,".laz")
-  tileNeighborsCenterDownX<-tileNumberXCoord
-  tileNeighborsCenterDownY<-tileNumberYCoord-1000
-  df<-loadTile(path,tileNeighborsCenterDownX,tileNeighborsCenterDownY)
-  df<-makeSpatialDF(df,projection)
-  df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
-
-  #tileNeighborsCentralUp<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord+1000,".laz")
-  tileNeighborsCenterUpX<-tileNumberXCoord
-  tileNeighborsCenterUpY<-tileNumberYCoord+1000
-  df<-loadTile(path,tileNeighborsCenterUpX,tileNeighborsCenterUpY)
-  df<-makeSpatialDF(df,projection)
-  df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-  
-  rm(df)
-  gc()
-  dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
+  # #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
+  # tileNeighborsLeftUpperX<-tileNumberXCoord-1000
+  # tileNeighborsLeftUpperY<-tileNumberYCoord+1000
+  # df<-loadTile(path,tileNeighborsLeftUpperX,tileNeighborsLeftUpperY)
+  # df<-makeSpatialDF(df,projection)
+  # df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  #
+  # #tileNeighborsRightLower<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord-1000,".laz")
+  # tileNeighborsRightLowerX<-tileNumberXCoord+1000
+  # tileNeighborsRightLowerY<-tileNumberYCoord-1000
+  # df<-loadTile(path,tileNeighborsRightLowerX,tileNeighborsRightLowerY)
+  # df<-makeSpatialDF(df,projection)
+  # df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+  #
+  # #tileNeighborRight<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord,".laz")
+  # tileNeighborsRightX<-tileNumberXCoord+1000
+  # tileNeighborsRightY<-tileNumberYCoord
+  # df<-loadTile(path,tileNeighborsRightX,tileNeighborsRightY)
+  # df<-makeSpatialDF(df,projection)
+  # df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
+  #
+  # #tileNeighborRightUpper<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord+1000,".laz")
+  # tileNeighborsRightUpperX<-tileNumberXCoord+1000
+  # tileNeighborsRightUpperY<-tileNumberYCoord+1000
+  # df<-loadTile(path,tileNeighborsRightUpperX,tileNeighborsRightUpperY)
+  # df<-makeSpatialDF(df,projection)
+  # df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  #
+  # #tileNeighborsCentralDown<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord-1000,".laz")
+  # tileNeighborsCenterDownX<-tileNumberXCoord
+  # tileNeighborsCenterDownY<-tileNumberYCoord-1000
+  # df<-loadTile(path,tileNeighborsCenterDownX,tileNeighborsCenterDownY)
+  # df<-makeSpatialDF(df,projection)
+  # df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+  #
+  # #tileNeighborsCentralUp<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord+1000,".laz")
+  # tileNeighborsCenterUpX<-tileNumberXCoord
+  # tileNeighborsCenterUpY<-tileNumberYCoord+1000
+  # df<-loadTile(path,tileNeighborsCenterUpX,tileNeighborsCenterUpY)
+  # df<-makeSpatialDF(df,projection)
+  # df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+  #
+  dfs<-c(df1)#,df2)
 }
-
-
-
-# loadNeighborTilesTest <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
-#   print("hello")
-#   #tileNeighborsLeftLower<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord-1000,".laz")
-#   tileNeighborsLeftLowerX<-tileNumberXCoord-1000
-#   tileNeighborsLeftLowerY<-tileNumberYCoord-1000
-#   df<-loadTile(path,tileNeighborsLeftLowerX,tileNeighborsLeftLowerY)
-#   df<-makeSpatialDF(df,projection)
-#   df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
-#   
-#   #tileNeighborLeft<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz")
-#   tileNeighborsLeftX<-tileNumberXCoord-1000
-#   tileNeighborsLeftY<-tileNumberYCoord
-#   df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
-#   df<-makeSpatialDF(df,projection)
-#   df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
-#   
-#   # #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
-#   # tileNeighborsLeftUpperX<-tileNumberXCoord-1000
-#   # tileNeighborsLeftUpperY<-tileNumberYCoord+1000
-#   # df<-loadTile(path,tileNeighborsLeftUpperX,tileNeighborsLeftUpperY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-#   # 
-#   # #tileNeighborsRightLower<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord-1000,".laz")
-#   # tileNeighborsRightLowerX<-tileNumberXCoord+1000
-#   # tileNeighborsRightLowerY<-tileNumberYCoord-1000
-#   # df<-loadTile(path,tileNeighborsRightLowerX,tileNeighborsRightLowerY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
-#   # 
-#   # #tileNeighborRight<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord,".laz")
-#   # tileNeighborsRightX<-tileNumberXCoord+1000
-#   # tileNeighborsRightY<-tileNumberYCoord
-#   # df<-loadTile(path,tileNeighborsRightX,tileNeighborsRightY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
-#   # 
-#   # #tileNeighborRightUpper<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord+1000,".laz")
-#   # tileNeighborsRightUpperX<-tileNumberXCoord+1000
-#   # tileNeighborsRightUpperY<-tileNumberYCoord+1000
-#   # df<-loadTile(path,tileNeighborsRightUpperX,tileNeighborsRightUpperY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-#   # 
-#   # #tileNeighborsCentralDown<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord-1000,".laz")
-#   # tileNeighborsCenterDownX<-tileNumberXCoord
-#   # tileNeighborsCenterDownY<-tileNumberYCoord-1000
-#   # df<-loadTile(path,tileNeighborsCenterDownX,tileNeighborsCenterDownY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
-#   # 
-#   # #tileNeighborsCentralUp<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord+1000,".laz")
-#   # tileNeighborsCenterUpX<-tileNumberXCoord
-#   # tileNeighborsCenterUpY<-tileNumberYCoord+1000
-#   # df<-loadTile(path,tileNeighborsCenterUpX,tileNeighborsCenterUpY)
-#   # df<-makeSpatialDF(df,projection)
-#   # df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
-#   # 
-#   dfs<-c(df1,df2)
-# }
 
 
 
@@ -314,13 +366,13 @@ SVF<-function(pointX, pointY, maxView, proj){
   
   
   mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
- # mainTile<-tryCatch(
-    mainTile<-makeSpatialDF(mainTile,projection = pro)#, error=function(e){print("tile not available in dataset")#;})
+ 
+  mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
-  
+
   neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
   #neighbors<-loadNeighborTilesTest(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
-  
+
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, rasterizedNeighbors)
   rm(neighbors)
@@ -330,18 +382,18 @@ SVF<-function(pointX, pointY, maxView, proj){
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
   rm(mergedNeighbors)
   gc()
-  
+
   r.svf<-svf(fullRaster, nAngles=16, maxDist= maxView, ll=F)
   out<-crop(r.svf,extent(rasterizedMainTile))
-  
-  
+
+
   # plot(r.svf)
   r.b<-brick(rasterizedMainTile,out)
   names(r.b)<-c("Z","SVF")
   r.df<-as.data.frame(r.b,xy=TRUE)
-  
+
   #r.df2<-r.df[complete.cases(r.df),]
-  
+
   #cells<-ncell(r.svf)
   #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
   writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVF/",
@@ -349,7 +401,7 @@ SVF<-function(pointX, pointY, maxView, proj){
                                   format="raster",
                                   overwrite=TRUE)
   write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
-  
+  return("file written")
 }
 
 
