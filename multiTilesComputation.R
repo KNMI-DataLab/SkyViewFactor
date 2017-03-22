@@ -74,8 +74,17 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
  
 # 
  c2<-c(pointX2, pointY2)
+ c3<-c(pointX3, pointY3)
+ 
+ c4<-c(pointX4, pointY4)
+ c5<-c(pointX5, pointY5)
+ c6<-c(pointX6, pointY6)
+ c7<-c(pointX7, pointY7)
+ c8<-c(pointX8, pointY8)
+ 
+ 
 # 
-coord <<- list(c1,  c2)
+coord <<- list(c1,  c2,c3,c4,c5,c6,c7,c8)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
