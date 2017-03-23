@@ -5,14 +5,14 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   #########################################################
   #Load all the 8 neighboring tiles
   #########################################################
-  LeftLower	<- loadNeighborTile_v2(xadd=-1000,yadd=-1000)
-  Left		<- loadNeighborTile_v2(xadd=-1000)
-  LeftUpper	<- loadNeighborTile_v2(xadd=-1000,yadd=1000)
-  RightLower	<- loadNeighborTile_v2(xadd=1000,yadd=-1000)
-  Right		<- loadNeighborTile_v2(xadd=1000)
-  RightUpper	<- loadNeighborTile_v2(xadd=1000,yadd=-1000)
-  CenterDown	<- loadNeighborTile_v2(yadd=-1000)
-  CenterUp	<- loadNeighborTile_v2(yadd=1000) 
+  LeftLower	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=-1000,yadd=-1000)
+  Left		<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=-1000)
+  LeftUpper	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=-1000,yadd=1000)
+  RightLower	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=1000,yadd=-1000)
+  Right		<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=1000)
+  RightUpper	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,xadd=1000,yadd=1000)
+  CenterDown	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,yadd=-1000)
+  CenterUp	<- loadNeighborTile_v2(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection,yadd=1000) 
   #########################################################
   
   #########################################################  
