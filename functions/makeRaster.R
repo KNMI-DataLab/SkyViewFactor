@@ -3,5 +3,6 @@ makeRaster<-function(spatialDF, xres, yres, pro){
   extent(dummyRaster)<-extent(spatialDF)
   res(dummyRaster)<-c(xres,yres) # set the resolution
   r<-rasterize(spatialDF,dummyRaster,field="Z") #rasterizing the spatial points to a 1x1 grid
-  r
+  rm(dummyRaster)
+  return(r)
 }

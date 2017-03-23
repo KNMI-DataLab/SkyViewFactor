@@ -1,14 +1,17 @@
 SVF<-function(pointX, pointY, maxView, proj){
   
   
-  tileNumberXCoord<-floor(pointX/1000)*1000
-  tileNumberYCoord<-floor(pointY/1000)*1000
+  t#ileNumberXCoord<-str_pad(as.integer(floor(pointX/1000)*1000), 6, pad = "0")
+  #tileNumberYCoord<-str_pad(as.integer(floor(pointY/1000)*1000), 6, pad = "0")
   
-  mainTile<-loadTile(lazFolder, tileNumberXCoord, tileNumberYCoord)
+  tileNumberXCoord<-pointX
+  tileNumberYCoord<-pointY
+  
+  mainTile<-loadTile(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord))
   mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
   
-  neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, rasterizedNeighbors)
@@ -43,4 +46,5 @@ SVF<-function(pointX, pointY, maxView, proj){
   ##############################################
   ##############################################
   ##############################################
+  rm(r.svf,r.b,r.df)
 }
