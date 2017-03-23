@@ -42,77 +42,35 @@ pointX<- 237000 #244001
 pointY<- 500000#576001
 
 c1<-c(pointX, pointY)
+
 coordsGMS<-as(GMS_meta,"SpatialPoints")
 coordsGMS<-data.frame(coordsGMS)
 
 coordsGMS$tileNumberXCoord<-floor(coordsGMS$loc_lon/1000)*1000
 coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 
-#tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
+tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
 
- pointX2<- 198000
- pointY2<- 500000
- 
- pointX3<-175000
- pointY3<-558000
-   
-   pointX4<-054000
-   pointY4<-407000
-   
-   pointX5<-084000
-   pointY5<-445000
-   
-   pointX6<-189000
-   
-   pointY6<-352000
-   
-   pointX7<-034000
-   pointY7<-389000
-   pointX8<-165000
-   pointY8<-475000
- 
- 
-# 
- c2<-c(pointX2, pointY2)
- c3<-c(pointX3, pointY3)
- 
- c4<-c(pointX4, pointY4)
- c5<-c(pointX5, pointY5)
- c6<-c(pointX6, pointY6)
- c7<-c(pointX7, pointY7)
- c8<-c(pointX8, pointY8)
- 
- 
-# 
-coord <<- list(c1,  c2,c3,c4,c5,c6,c7,c8)
 
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 
 #1:length(coordsGMS[,1])
 
 system.time(
-foreach(i = 1:length(coordsGMS[,1]) , .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
+foreach(i = 1:length(tiles_unique[,1]) , .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
 {
   print(i)
-  #print(paste0(workingPath,"/data/gridsSVF/",
-             # str_pad(floor(coordsGMS[i,]$loc_lon/1000)*1000, 6, pad = "0"),"_", 
-             #  str_pad(floor(coordsGMS[i,]$loc_lat/1000)*1000,  6, pad = "0"),".gri"))
-  #print(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000))
-  #print(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000))
-    # 
-  
   outp<-1
-    if(!file.exists(paste0(workingPath,"/data/gridsSVF/",
+    if(!file.exists(paste0(workingPath,"/data/gridsSVFTest2/",
                             str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
                             str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri")))
        {
-       #print("ABC")
-     print(paste0(workingPath,"/data/gridsSVF/",
+     print(paste0(workingPath,"/data/gridsSVFTest2/",
                   str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
                   str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-      tryCatch(SVF(coordsGMS[i,]$loc_lon, coordsGMS[i,]$loc_lat,maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
+      tryCatch(outp<-SVF(tiles_unique[i,]$loc_lon, tiles_unique[i,]$loc_lat,maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
   
   #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
   if(is.null(outp))
@@ -120,7 +78,6 @@ foreach(i = 1:length(coordsGMS[,1]) , .packages = c("raster", "horizon", "rgdal"
     next
   }
   gc()
-  #}
   #SVF(coord[i,]$loc_lon, coord[i,]$loc_lat,maxView, pro)
     }
 }
@@ -129,7 +86,7 @@ foreach(i = 1:length(coordsGMS[,1]) , .packages = c("raster", "horizon", "rgdal"
 #26 rasters were computed without error, checking the 27th and 28th file
 #SVF(133743.9, 445509.3,maxView, pro)
 
-unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
+#unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 }
 
@@ -143,8 +100,8 @@ unlink("/home/pagani/development/SkyViewFactor/data/tiles/", recursive = T)
 
 loadTile <- function(path, coordX, coordY){
   
-  coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
-  coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
+  #coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
+  #coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
   
   uuid<-UUIDgenerate()
   multifileFlag<-checkIfMultiTile(path, coordX, coordY)
@@ -389,8 +346,11 @@ makeRaster<-function(spatialDF, xres, yres, pro){
 SVF<-function(pointX, pointY, maxView, proj){
   
   
-  tileNumberXCoord<-floor(pointX/1000)*1000
-  tileNumberYCoord<-floor(pointY/1000)*1000
+  #tileNumberXCoord<-floor(pointX/1000)*1000
+  #tileNumberYCoord<-floor(pointY/1000)*1000
+  
+  tileNumberXCoord<-str_pad(as.integer(floor(pointX/1000)*1000), 6, pad = "0")
+  tileNumberYCoord<-str_pad(as.integer(floor(pointY/1000)*1000), 6, pad = "0")
   
   
   
@@ -399,7 +359,7 @@ SVF<-function(pointX, pointY, maxView, proj){
   mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
 
-  neighbors<-loadNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  neighbors<-loadNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
   #neighbors<-loadNeighborTilesTest(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
 
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
@@ -425,11 +385,14 @@ SVF<-function(pointX, pointY, maxView, proj){
 
   #cells<-ncell(r.svf)
   #write.table(cells,file="/nobackup/users/pagani/cells.txt",row.names=FALSE,col.names=FALSE,append=TRUE)
-  writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVF/",
+  
+  
+  
+  writeRaster(r.b,filename=paste0("/home/pagani/development/SkyViewFactor/data/gridsSVFTest2/",
                                   tileNumberXCoord, "_",tileNumberYCoord,".grd"),
                                   format="raster",
                                   overwrite=TRUE)
-  write.table(r.df,file="testSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
+  write.table(r.df,file="testSVF8Bugs.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("testSVF.txt"))
   return("file written")
 }
 
