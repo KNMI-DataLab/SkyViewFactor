@@ -59,7 +59,7 @@ dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 system.time(
 foreach(i = 1:length(tiles_unique[,1]) , .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"), 
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres", "coord")) %dopar%
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres")) %dopar%
 {
   print(i)
   outp<-1
@@ -70,7 +70,7 @@ foreach(i = 1:length(tiles_unique[,1]) , .packages = c("raster", "horizon", "rgd
      print(paste0(workingPath,"/data/gridsSVFTest2/",
                   str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
                   str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-      tryCatch(outp<-SVF(tiles_unique[i,]$loc_lon, tiles_unique[i,]$loc_lat,maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
+      tryCatch(outp<-SVF(tiles_unique[i,]$tileNumberXCoord, tiles_unique[i,]$tileNumberYCoord,maxView, pro), error=function(e){print(paste0("tile with point x=", tiles_unique[[i]][1], " y=",tiles_unique[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
   
   #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
   if(is.null(outp))
