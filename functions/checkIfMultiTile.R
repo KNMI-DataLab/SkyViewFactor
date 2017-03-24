@@ -4,5 +4,6 @@ checkIfMultiTile <- function(path, coordX, coordY){
   if (length(file)!=0){
     multifile<-TRUE}
   rm(file)
+  gc()
   return(multifile)
 }  
