@@ -12,6 +12,7 @@ loadTile <- function(path, coordX, coordY){
   dir.create(paste0(temp_dir,uuid,"/"))
   centralFile<-list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
   files<-c(centralFile,multifiles)
+  if(length(files)!=0){
   lapply(files,file.copy,to=paste0(temp_dir,uuid,"/"))
   currentFiles<-list.files(path = paste0(temp_dir, uuid,"/"), full.names = TRUE)
   print(paste(lasZipLocation, currentFiles))
@@ -25,5 +26,11 @@ loadTile <- function(path, coordX, coordY){
   system(paste0("rm ", temp_dir, uuid,"/*.las"))
   
   rm(out.matrix,multifiles,uuid,centralFile,files,currentFiles,files_las)
+  gc()
   return(outDF)
+  }
+  else {
+    return(NULL)
+  }
+
 }

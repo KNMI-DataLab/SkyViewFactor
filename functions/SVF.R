@@ -1,7 +1,7 @@
 SVF<-function(pointX, pointY, maxView, proj){
   
   
-  t#ileNumberXCoord<-str_pad(as.integer(floor(pointX/1000)*1000), 6, pad = "0")
+  #tileNumberXCoord<-str_pad(as.integer(floor(pointX/1000)*1000), 6, pad = "0")
   #tileNumberYCoord<-str_pad(as.integer(floor(pointY/1000)*1000), 6, pad = "0")
   
   tileNumberXCoord<-pointX
