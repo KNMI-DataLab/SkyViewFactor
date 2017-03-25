@@ -19,6 +19,7 @@ SVF<-function(pointX, pointY, maxView, proj){
   rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
+  #rasterOptions(tolerance = 0.1)
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors)
   rm(mergedNeighbors)
   gc()
