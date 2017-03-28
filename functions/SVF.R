@@ -14,7 +14,7 @@ SVF<-function(pointX, pointY, maxView, proj){
   neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
-  mergedNeighbors<-do.call(merge, rasterizedNeighbors)
+  mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =1))
   rm(neighbors)
   rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)

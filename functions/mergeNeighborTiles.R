@@ -103,7 +103,11 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   }
   
   dfs<-c(df1,df2,df3,df4,df5,df6,df7,df8)
-  rm(df1,df2,df3,df4,df5,df6,df7,df8)
+  rm(df1,df2,df3,df4,df5,df6,df7,df8, tileNeighborsCenterUpY, tileNeighborsCenterUpX, 
+     tileNeighborsCenterDownY, tileNeighborsCenterDownX, tileNeighborsRightUpperY, tileNeighborsRightUpperX,
+     tileNeighborsRightY, tileNeighborsRightX, tileNeighborsRightLowerY, tileNeighborsRightLowerX, 
+     tileNeighborsLeftUpperY, tileNeighborsLeftUpperX, tileNeighborsLeftY, tileNeighborsLeftX,
+     tileNeighborsLeftLowerY, tileNeighborsLeftLowerX)
   gc()
   return(dfs)
   #########################################################

@@ -15,7 +15,7 @@ loadTile <- function(path, coordX, coordY){
   if(length(files)!=0){
   lapply(files,file.copy,to=paste0(temp_dir,uuid,"/"))
   currentFiles<-list.files(path = paste0(temp_dir, uuid,"/"), full.names = TRUE)
-  #print(paste(lasZipLocation, currentFiles))
+  print(paste(currentFiles))
   lapply(paste(lasZipLocation, currentFiles), system)
   #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
   system(paste0("rm ", temp_dir, uuid,"/*.laz"))
