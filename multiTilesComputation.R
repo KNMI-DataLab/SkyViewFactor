@@ -80,7 +80,7 @@ system.time(
 foreach(i =  1:length(tiles_unique[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
-                    "loadNeighborTile_v2","mergeNeighborTiles")) %do%
+                    "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
 {
   print(i)
   outp<-1
