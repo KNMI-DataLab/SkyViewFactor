@@ -30,7 +30,7 @@ SVF<-function(pointX, pointY, maxView, proj){
   #to fix the small inconsistencies in the extention (sometimes small approx are introduced in the extent)
   out<-fix_extent(rasterizedMainTile,out)
 
-  r.b<-brick(rasterizedMainTile,out)
+  r.b<-brick(rasterizedMainTile,out[[1]])
   names(r.b)<-c("Z","SVF")
   r.df<-as.data.frame(r.b,xy=TRUE)
   
