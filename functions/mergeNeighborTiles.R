@@ -7,7 +7,10 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   df<-loadTile(path,tileNeighborsLeftLowerX,tileNeighborsLeftLowerY)
   if(is.null(df)==FALSE){
     df<-makeSpatialDF(df,projection)
+    extensionDF<-extent(df)
+    if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+    }
   }
   
   #tileNeighborLeft<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz")
@@ -16,7 +19,10 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
   if(is.null(df)==FALSE){
     df<-makeSpatialDF(df,projection)
+    extensionDF<-extent(df)
+    if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
+    }
   }
   
   #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
@@ -114,7 +120,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     df7<-NULL
   }
   if(exists("df8")==FALSE){
-    df1<-NULL
+    df8<-NULL
   }
   
   if(exists("df")==TRUE){
@@ -126,7 +132,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
      tileNeighborsCenterDownY, tileNeighborsCenterDownX, tileNeighborsRightUpperY, tileNeighborsRightUpperX,
      tileNeighborsRightY, tileNeighborsRightX, tileNeighborsRightLowerY, tileNeighborsRightLowerX, 
      tileNeighborsLeftUpperY, tileNeighborsLeftUpperX, tileNeighborsLeftY, tileNeighborsLeftX,
-     tileNeighborsLeftLowerY, tileNeighborsLeftLowerX)
+     tileNeighborsLeftLowerY, tileNeighborsLeftLowerX, extensionDF)
   gc()
   return(dfs)
   #########################################################
