@@ -1,7 +1,7 @@
 loadTile <- function(path, coordX, coordY){
   
-  #coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
-  #coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
+  coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
+  coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
   
   uuid<-UUIDgenerate()
   multifileFlag<-checkIfMultiTile(path, coordX, coordY)
