@@ -56,7 +56,7 @@ main<-function(){
 
 listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 
-listTiles <- listTiles[1:2]
+listTiles <- listTiles[1:500]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
@@ -67,7 +67,7 @@ system.time(
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
-                    "loadNeighborTile_v2","mergeNeighborTiles")) %do%
+                    "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
 {
   print(i)
   outp<-1
@@ -75,9 +75,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
     if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))
      {
 
-      #print(paste0(output_dir,
-      #             str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
-        #           str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri"))
+      
       #print("ABC")
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
@@ -92,6 +90,9 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
         next
       }
     gc()
+    }
+  else {
+    print(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri", " already computed"))
   }
 })
 
