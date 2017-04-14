@@ -71,14 +71,13 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
 {
   print(i)
   outp<-1
-    if(!file.exists(paste0(output_dir,
-                           str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
-                           str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri")))
-      {
+  tilesToBeWorked<-getTileNumber(listTiles[[i]])
+    if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))
+     {
 
-      print(paste0(output_dir,
-                   str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
-                   str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri"))
+      #print(paste0(output_dir,
+      #             str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
+        #           str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri"))
       #print("ABC")
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
@@ -100,5 +99,20 @@ unlink(temp_dir, recursive = T)
 }
 
 
-
+getTileNumber <- function(filepath){
+  
+  
+  file<-basename(filepath)
+  splits<-unlist(strsplit(file, c("\\.")))
+  splits<-unlist(strsplit(splits[[1]], "_"))
+  
+  
+  coordX<-splits[[2]] #str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
+  coordY<-splits[[3]]
+  
+  coordsXY<-c(str_pad(as.integer(coordX), width = 6, pad = "0"), str_pad(as.integer(coordY), width = 6, pad = "0"))
+  rm(file,splits,coordX,coordY)
+  return(coordsXY)
+  
+}
 

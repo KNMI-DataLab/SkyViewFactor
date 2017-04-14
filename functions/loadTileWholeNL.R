@@ -1,4 +1,4 @@
-loadTilWholeNL <- function(filepath){
+loadTileWholeNL <- function(filepath){
   
   #coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
   #coordY<-str_pad(as.integer(floor(coordY/1000)*1000), 6, pad = "0")
@@ -14,7 +14,7 @@ loadTilWholeNL <- function(filepath){
   
   uuid<-UUIDgenerate()
   #multifileFlag<-checkIfMultiTile(path, coordX, coordY) not needed in this verison since file is already available
-  if (splits > 3)
+  if (length(splits) > 3)
   {
     multifileFlag <- TRUE
   }
