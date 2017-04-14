@@ -1,17 +1,27 @@
-SVF<-function(pointX, pointY, maxView, proj){
+SVFWholeNL<-function(filepath, maxView){
   
   
   #tileNumberXCoord<-str_pad(as.integer(floor(pointX/1000)*1000), 6, pad = "0")
   #tileNumberYCoord<-str_pad(as.integer(floor(pointY/1000)*1000), 6, pad = "0")
   
-  tileNumberXCoord<-pointX
-  tileNumberYCoord<-pointY
   
-  mainTile<-loadTile(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord))
+  
+  
+  file<-basename(filepath)
+  splits<-unlist(strsplit(file, c("\\.")))
+  splits<-unlist(strsplit(splits[[1]], "_"))
+  
+  tileNumberXCoord<-as.integer(splits[[2]])
+  tileNumberYCoord<-as.integer(splits[[3]])
+  
+  
+  
+  
+  mainTile<-loadTileWholeNL(filepath)
   mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
   
-  neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
+  neighbors<-mergeNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
@@ -50,6 +60,6 @@ SVF<-function(pointX, pointY, maxView, proj){
   ##############################################
   ##############################################
   ##############################################
-  rm(r.svf,r.b,r.df)
+  rm(r.svf,r.b,r.df,splits,file)
   gc()
 }
