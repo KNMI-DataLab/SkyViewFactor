@@ -21,6 +21,9 @@ SVFWholeNL<-function(filepath, maxView){
   mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
   
+  if(xmax(extensionMainTile)!=xmin(extensionMainTile) & ymax(extensionMainTile)!=ymin(extensionMainTile))
+     {
+  
   neighbors<-mergeNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
@@ -57,6 +60,11 @@ SVFWholeNL<-function(filepath, maxView){
   
   #Writing a table which will be appended if exists
   write.table(r.df,file="NLSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF.txt"))
+  
+  }
+  else {
+    print(paste0("tile ", filepath, " with odd extention: ", extensionMainTile))
+  }
   ##############################################
   ##############################################
   ##############################################

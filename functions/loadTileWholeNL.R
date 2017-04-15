@@ -13,6 +13,7 @@ loadTileWholeNL <- function(filepath){
   
   
   uuid<-UUIDgenerate()
+  multifileFlag <- FALSE
   #multifileFlag<-checkIfMultiTile(path, coordX, coordY) not needed in this verison since file is already available
   if (length(splits) > 3)
   {
