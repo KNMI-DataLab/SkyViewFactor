@@ -60,7 +60,7 @@ crs(GMS_meta)<-WGS84
 GMS_meta<-spTransform(GMS_meta,CRSobj=pro)
 #####################################################################
 
-main<-function(){
+mainWithCoords<-function(){
 coordsGMS<-as(GMS_meta,"SpatialPoints")
 coordsGMS<-data.frame(coordsGMS)
 

@@ -10,6 +10,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+    df1<-checkCoordinates(df1)
     }
   }
   
@@ -22,6 +23,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
+    df2<-checkCoordinates(df2)
     }
   }
   
@@ -34,6 +36,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+    df3<-checkCoordinates(df3)
     }
   }
   
@@ -46,6 +49,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+    df4<-checkCoordinates(df4)
     }
   }
   
@@ -58,6 +62,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
+    df5<-checkCoordinates(df5)
     }
   }
     
@@ -71,6 +76,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+    df6<-checkCoordinates(df6)
     }
   }
   
@@ -83,6 +89,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+    df7<-checkCoordinates(df7)
     }
   }
   
@@ -95,6 +102,7 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
     df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+    df8<-checkCoordinates(df8)
     }
   }
   
@@ -138,4 +146,14 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   #########################################################
   
   
+}
+
+
+
+checkCoordinates<-function(spatialDF){
+  
+  if(xmax(spatialDF)==xmin(spatialDF) | ymax(spatialDF)==ymin(spatialDF)){
+    spatialDF<-NULL
+  }
+  spatialDF
 }

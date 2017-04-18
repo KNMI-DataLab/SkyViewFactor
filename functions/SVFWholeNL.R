@@ -25,6 +25,8 @@ SVFWholeNL<-function(filepath, maxView){
      {
   
   neighbors<-mergeNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  
+  #neighbors<-lapply(neighbors,checkCoordinates)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
   mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
@@ -71,3 +73,4 @@ SVFWholeNL<-function(filepath, maxView){
   rm(r.svf,r.b,r.df,splits,file)
   gc()
 }
+
