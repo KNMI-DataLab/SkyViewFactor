@@ -151,9 +151,10 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
 
 
 checkCoordinates<-function(spatialDF){
-  
+  if(is.null(spatialDF)==FALSE){
   if(xmax(spatialDF)==xmin(spatialDF) | ymax(spatialDF)==ymin(spatialDF)){
     spatialDF<-NULL
+  }
   }
   spatialDF
 }

@@ -47,7 +47,7 @@ Yres<<-5 # y-resolution in meters
 
 maxView<<-100 # max view for the SVF
 
-registerDoParallel(8) #number of parallel cores
+registerDoParallel(10) #number of parallel cores
 #####################################################################
 
 
@@ -56,7 +56,7 @@ main<-function(){
 
 listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 
-listTiles <- listTiles[1:500]
+listTiles <- listTiles[501:1500]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
