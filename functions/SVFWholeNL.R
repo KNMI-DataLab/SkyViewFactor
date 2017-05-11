@@ -29,7 +29,12 @@ SVFWholeNL<-function(filepath, maxView){
   #neighbors<-lapply(neighbors,checkCoordinates)
  
   rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
-  mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
+  if(length(rasterizedNeighbors)==1){
+    mergedNeighbors<-rasterizedNeighbors[[1]]
+  }
+  else{
+    mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
+  }
   rm(neighbors)
   rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
@@ -65,7 +70,7 @@ SVFWholeNL<-function(filepath, maxView){
   
   }
   else {
-    print(paste0("tile ", filepath, " with odd extention: ", extensionMainTile))
+    print(paste0("tile ", filepath, " with odd extention: ", as.character(extensionMainTile)))
   }
   ##############################################
   ##############################################

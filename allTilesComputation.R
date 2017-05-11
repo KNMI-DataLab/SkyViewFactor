@@ -56,7 +56,7 @@ main<-function(){
 
 listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 
-listTiles <- listTiles[501:1500]
+listTiles <- listTiles[10001:20000]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
@@ -80,9 +80,9 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-      #tryCatch(outp<-SVF(tiles_unique[i,]$tileNumberXCoord, tiles_unique[i,]$tileNumberYCoord,maxView, pro), error=function(e){print(paste0("tile with point x=", tiles_unique[[i]][1], " y=",tiles_unique[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
+      tryCatch(outp<-SVFWholeNL(listTiles[[i]],maxView), error=function(e){print(paste0("tile with point x=", listTiles[[i]][1], " y=",listTiles[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
 
-      SVFWholeNL(listTiles[[i]],maxView)
+      #SVFWholeNL(listTiles[[i]],maxView)
 
       #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
       if(is.null(outp))
@@ -92,7 +92,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
     gc()
     }
   else {
-    print(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri", " already computed"))
+   # print(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri", " already computed"))
   }
 })
 
