@@ -55,8 +55,9 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 
 tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
 
+tiles_unique100 <-tiles_unique[1:100,]
 
-mc<-10
+mc<-20
 
 cl<-makeCluster(mc)
 
@@ -66,7 +67,7 @@ clusterEvalQ(cl,expr = c(library(stringr), source("NeighborsFilesCopy.R"), libra
 clusterExport(cl, varlist = c("filesToCopy", "lazFolder", "lasZipLocation"))
 
 
-filesss<-parApply(cl=cl, X=tiles_unique, MARGIN = 1, FUN= function(w) {
+filesss<-parApply(cl=cl, X=tiles_unique100, MARGIN = 1, FUN= function(w) {
 
 x<-w[1]#$tileNumberXCoord
 y<-w[2]#$tileNumberYCoord
@@ -88,9 +89,9 @@ filesToCopy<-c(filesToCopy,getNeighborAndMainTilesFile(lazFolder, x, y))
 })
 
 files2<-unlist(filesss)
-lapply(files2, file.copy, to = "/data1/GMSsvf/")
+parLapply(cl, files2, file.copy, to = "/ssd1/GMSsvf/")
 
-filesZipped<-list.files(path = "/data1/GMSsvf", pattern = paste0("*.laz"), full.names = T, recursive = T)
+filesZipped<-list.files(path = "/ssd1/GMSsvf", pattern = paste0("*.laz"), full.names = T, recursive = T)
 
 parLapply(cl, X = filesZipped, fun = function(x) { system(paste(lasZipLocation, x))})
 
