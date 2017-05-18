@@ -1,5 +1,14 @@
 #get the files corresponding to the GMS
-
+library(raster)
+library(horizon)
+library(rgdal)
+library(rLiDAR)
+library(foreach)
+library(doParallel)
+library(uuid)
+library(data.table)
+library(stringr)
+library(spatial.tools)
 library(R.utils)
 sourceDirectory("functions")
 
@@ -46,12 +55,21 @@ coordsGMS$tileNumberYCoord<-floor(coordsGMS$loc_lat/1000)*1000
 
 tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
 
+
+mc<-10
+
+cl<-makeCluster(mc)
+
 filesToCopy<-NULL
+clusterEvalQ(cl,expr = c(library(stringr), source("NeighborsFilesCopy.R"), library(R.utils)
+, sourceDirectory("functions")))
+clusterExport(cl, varlist = c("filesToCopy", "lazFolder", "lasZipLocation"))
 
-for (tile in tiles_unique){
 
-x<-tiles_unique$tileNumberXCoord
-y<-tiles_unique$tileNumberYCoord
+filesss<-parApply(cl=cl, X=tiles_unique, MARGIN = 1, FUN= function(w) {
+
+x<-w[1]#$tileNumberXCoord
+y<-w[2]#$tileNumberYCoord
 
 x<-str_pad(as.integer(floor(x/1000)*1000), 6, pad = "0")
 y<-str_pad(as.integer(floor(y/1000)*1000), 6, pad = "0")
@@ -67,12 +85,14 @@ y<-str_pad(as.integer(floor(y/1000)*1000), 6, pad = "0")
 
 filesToCopy<-c(filesToCopy,getNeighborAndMainTilesFile(lazFolder, x, y))
 
-}
+})
 
-#lapply(file_s,file.copy,to="/data1/GMSsvf/")
+files2<-unlist(filesss)
+lapply(files2, file.copy, to = "/data1/GMSsvf/")
 
+filesZipped<-list.files(path = "/data1/GMSsvf", pattern = paste0("*.laz"), full.names = T, recursive = T)
 
-
+parLapply(cl, X = filesZipped, fun = function(x) { system(paste(lasZipLocation, x))})
 
 
 
