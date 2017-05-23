@@ -24,10 +24,11 @@ workingPath <<- getwd()
 
 #Andrea
 output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsSVF_GMS/"
-lazFolder <<- c("/data1/", "/data2/", "/data3")
+#lazFolder <<- c("/data1/", "/data2/", "/data3", "/ssd1/GMSsvf/")
+lazFolder <<- c("/ssd1/GMSsvf/")
 lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
-dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
-temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
+#dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
+#temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
 
 #Marieke
 # output_dir<<-"/home/dirksen/SVF/gridsSVF/"
@@ -48,7 +49,7 @@ WGS84<<-CRS("+init=epsg:4326")
 Xres<<-5 # x-resolution in meters
 Yres<<-5 # y-resolution in meters
 
-maxView<<-100 # max view for the SVF
+maxView<<-300 # max view for the SVF
 
 registerDoParallel(11) #number of parallel cores
 #####################################################################
@@ -72,7 +73,7 @@ mainWithCoordsGMS<-function(){
   
   tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
   
-  tiles_unique<<-tiles_unique[1:2,]
+  tiles_unique<-tiles_unique[1:1,]
   
   
   
@@ -80,10 +81,9 @@ mainWithCoordsGMS<-function(){
   
   
   
-  system.time(
     foreach(i =  1:length(tiles_unique[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
             .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                        "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
+                        "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres",
                         "loadNeighborTile_v2","mergeNeighborTiles")) %do%
                         {
                           print(i)
@@ -111,13 +111,10 @@ mainWithCoordsGMS<-function(){
                             }
                             gc()
                           }
-                        })
+                        }
   
-  unlink(temp_dir, recursive = T)
+  #unlink(temp_dir, recursive = T)
 }
 
 
-profvis({
-  mainWithCoordsGMS()
-})
 
