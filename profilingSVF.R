@@ -49,7 +49,7 @@ WGS84<<-CRS("+init=epsg:4326")
 Xres<<-5 # x-resolution in meters
 Yres<<-5 # y-resolution in meters
 
-maxView<<-300 # max view for the SVF
+maxView<<-100 # max view for the SVF
 
 registerDoParallel(11) #number of parallel cores
 #####################################################################
@@ -74,6 +74,8 @@ mainWithCoordsGMS<-function(){
   tiles_unique<-unique(coordsGMS[c("tileNumberXCoord","tileNumberYCoord")])
   
   tiles_unique<-tiles_unique[1:1,]
+  tiles_unique$tileNumberXCoord<-261000
+  tiles_unique$tileNumberYCoord<-468000
   
   
   
