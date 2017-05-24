@@ -3,7 +3,8 @@ library(raster)
 library(rgdal)
 library(rLiDAR)
 library(horizon)
-
+library(rgeos)
+library(data.table)
 pro<-CRS("+init=epsg:28992")
 WGS84<-CRS("+init=epsg:4326")
 
@@ -49,6 +50,20 @@ crop_extent<-extent(c(x_min,x_max,y_min,y_max))
 
 extCropped<-crop(r,crop_extent)
 point.svf<-svf(extCropped,maxDist=200)
+#################################################################
+########Cropping for a circle using raster and rgeos packages
+#################################################################
+#install rgeos for the gBuffer function
+
+points <- as(GMS_meta[I.point,],"SpatialPoints")
+pbuf <- gBuffer(points, widt=R)
+buf <- mask(r, pbuf)
+buffer <- trim(buf, pad=2)
+
+plot(buf)
+plot(buffer)
+#################################################################
+#################################################################
 # sp_gms<-as(GMS_meta[I.point,],"SpatialPoints")
 
 # extCropped<-crop(ext,r)
