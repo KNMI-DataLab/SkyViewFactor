@@ -69,7 +69,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
                     "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
 {
-  print(i)
+  #print(i)
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
     if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))

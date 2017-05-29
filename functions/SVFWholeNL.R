@@ -32,6 +32,9 @@ SVFWholeNL<-function(filepath, maxView){
   if(length(rasterizedNeighbors)==1){
     mergedNeighbors<-rasterizedNeighbors[[1]]
   }
+  else if (length(rasterizedNeighbors)==0){
+    return(-1)  
+  }
   else{
     mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
   }
