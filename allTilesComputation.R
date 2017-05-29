@@ -56,20 +56,20 @@ main<-function(){
 
 listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 
-listTiles <- listTiles[10001:20000]
+listTiles <- listTiles[20001:40000]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
 
-
+logfile<-"log.txt"
 
 system.time(
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
-                    "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
+                    "loadNeighborTile_v2","mergeNeighborTiles"), .combine = f(length(listTiles))) %dopar%
 {
-  #print(i)
+  write(paste("processing ", i, listTiles[[i]]),file = logfile, append = T)
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
     if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))
@@ -87,7 +87,13 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
       #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
       if(is.null(outp))
       {
+        print(paste("error in tile ",listTiles[[i]]))
         next
+      }
+      else if (outp == -1)
+      {
+        write(paste("tile has no neighbors",listTiles[[i]]),logfile, append = T)
+        
       }
     gc()
     }
@@ -116,4 +122,23 @@ getTileNumber <- function(filepath){
   return(coordsXY)
   
 }
+
+
+
+
+
+#Progress combine function
+f <- function(n){
+  pb <- txtProgressBar(min=1, max=n-1,style=3)
+  count <- 0
+  function(...) {
+    count <<- count + length(list(...)) - 1
+    setTxtProgressBar(pb,count)
+    #Sys.sleep(5)
+    flush.console()
+    c(...)
+  }
+}
+
+
 
