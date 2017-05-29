@@ -12,6 +12,7 @@ xres<-5 # x-resolution in meters
 yres<-5 # y-resolution in meters
 
 R<-100
+Runcertainty<-10
 
 GMS_meta<-fread("/home/pagani/development/SkyViewFactor/GMS stations metadata (incl. regio en coordinator) 2016_2017 v20161010.csv")
 coordinates(GMS_meta)<-~loc_lon+loc_lat
@@ -34,36 +35,77 @@ r<-rasterize(df,dummyRaster,field="Z") #rasterizing the spatial points to a 1x1 
 # ext <-as(r, "SpatialPolygonsDataFrame")
 
 r.grid<-as(r,"SpatialGridDataFrame")
-
-
+# 
+# 
 test<-over(GMS_meta,r.grid)
 I.point<-which(!is.na(test))
-
-coords<-coordinates(GMS_meta[I.point,])
-
-x_min<-coords[1]-R
-x_max<-coords[1]+R
-y_min<-coords[2]-R
-y_max<-coords[2]+R
-
-crop_extent<-extent(c(x_min,x_max,y_min,y_max))
-
-extCropped<-crop(r,crop_extent)
-point.svf<-svf(extCropped,maxDist=200)
+# 
+# coords<-coordinates(GMS_meta[I.point,])
+# 
+# x_min<-coords[1]-R
+# x_max<-coords[1]+R
+# y_min<-coords[2]-R
+# y_max<-coords[2]+R
+# 
+# crop_extent<-extent(c(x_min,x_max,y_min,y_max))
+# 
+# extCropped<-crop(r,crop_extent)
+# point.svf<-svf(extCropped,maxDist=200)
 #################################################################
 ########Cropping for a circle using raster and rgeos packages
 #################################################################
 #install rgeos for the gBuffer function
 
 points <- as(GMS_meta[I.point,],"SpatialPoints")
-pbuf <- gBuffer(points, widt=R)
+
+cut.svf.buf<-gBuffer(points, widt=Runcertainty)
+pbuf <- gBuffer(points, widt=R+Runcertainty)
 buf <- mask(r, pbuf)
-buffer <- trim(buf, pad=2)
+buffer <- trim(buf)
 
 plot(buf)
 plot(buffer)
+
+buffer.svf<-mask(buffer,cut.svf.buf)
+buffer.svf<-trim(buffer.svf)
+
+plot(buffer.svf)
 #################################################################
 #################################################################
+#Extract lines
+xy<-data.frame(points)
+
+theta<-20
+x<-as.numeric(xy[1])
+y<-as.numeric(xy[2])
+radius<-100
+
+dx<-cos(theta)*radius
+dy<-sin(theta)*radius
+
+x1<-x+dx
+y1<-y+dy
+
+xy1<-data.frame(x1,y1)
+
+X<-rbind(x,x1)
+Y<-rbind(y,y1)
+XY<-data.frame(X,Y)
+coordinates(XY)<-~X+Y
+# coordinates(xy1)<-~x1+y1
+# 
+# points1<-SpatialPoints(xy1)
+
+
+line<-spLines(XY)
+crs(line)<-crs(points)
+
+plot(buffer)
+lines(line)
+
+values<-extract(buffer,line)
+
+
 # sp_gms<-as(GMS_meta[I.point,],"SpatialPoints")
 
 # extCropped<-crop(ext,r)
