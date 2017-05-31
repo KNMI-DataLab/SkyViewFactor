@@ -125,6 +125,7 @@ y1<-y+dy
 
 xy1<-data.frame(x1,y1)
 
+zero<-0
 
 distance<-c(zero,radius)
 
