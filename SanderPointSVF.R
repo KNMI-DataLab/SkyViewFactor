@@ -11,7 +11,7 @@ WGS84<-CRS("+init=epsg:4326")
 xres<-5 # x-resolution in meters
 yres<-5 # y-resolution in meters
 
-R<-100
+R<-200
 Runcertainty<-10
 
 GMS_meta<-fread("/home/pagani/development/SkyViewFactor/GMS stations metadata (incl. regio en coordinator) 2016_2017 v20161010.csv")
@@ -58,27 +58,64 @@ I.point<-which(!is.na(test))
 
 points <- as(GMS_meta[I.point,],"SpatialPoints")
 
-cut.svf.buf<-gBuffer(points, widt=Runcertainty)
-pbuf <- gBuffer(points, widt=R+Runcertainty)
+cut.svf.buf<-gBuffer(points, width = Runcertainty)
+pbuf <- gBuffer(points, width = R+Runcertainty)
+
+
 buf <- mask(r, pbuf)
-buffer <- trim(buf)
+buffer <- raster::trim(buf)
 
 plot(buf)
 plot(buffer)
 
-buffer.svf<-mask(buffer,cut.svf.buf)
-buffer.svf<-trim(buffer.svf)
+buffer.svf<-mask(buf,cut.svf.buf)
+buffer.svf<-raster::trim(buffer.svf)
 
 plot(buffer.svf)
 #################################################################
 #################################################################
 #Extract lines
+# xy<-data.frame(points)
+# 
+# theta<-20
+# x<-as.numeric(xy[1])
+# y<-as.numeric(xy[2])
+# radius<-100
+# 
+# dx<-cos(theta)*radius
+# dy<-sin(theta)*radius
+# 
+# x1<-x+dx
+# y1<-y+dy
+# 
+# xy1<-data.frame(x1,y1)
+# 
+# X<-rbind(x,x1)
+# Y<-rbind(y,y1)
+# XY<-data.frame(X,Y)
+# coordinates(XY)<-~X+Y
+# # coordinates(xy1)<-~x1+y1
+# # 
+# # points1<-SpatialPoints(xy1)
+# 
+# 
+# line<-spLines(XY)
+# crs(line)<-crs(points)
+# 
+# plot(buffer)
+# lines(line)
+# 
+# values<-raster::extract(buffer,line)
+
+
+##################### INCREMENTAL RADIUS######################################
+#Extract lines
 xy<-data.frame(points)
 
-theta<-20
+theta<-30
 x<-as.numeric(xy[1])
 y<-as.numeric(xy[2])
-radius<-100
+radius<-seq(from = 1, to =200,by = 2)
 
 dx<-cos(theta)*radius
 dy<-sin(theta)*radius
@@ -88,29 +125,25 @@ y1<-y+dy
 
 xy1<-data.frame(x1,y1)
 
-X<-rbind(x,x1)
-Y<-rbind(y,y1)
-XY<-data.frame(X,Y)
-coordinates(XY)<-~X+Y
+
+distance<-c(zero,radius)
+
+XY<-rbind(c(x,y),xy1)
+XY<-cbind(XY,distance)
+XY<-data.frame(XY)
+#coordinates(XY)<-~x1+y1
 # coordinates(xy1)<-~x1+y1
 # 
 # points1<-SpatialPoints(xy1)
 
 
-line<-spLines(XY)
-crs(line)<-crs(points)
+#line<-spLines(XY)
+#crs(line)<-crs(points)
 
-plot(buffer)
-lines(line)
+#plot(buffer)
+#lines(line)
 
-values<-extract(buffer,line)
-
-
-# sp_gms<-as(GMS_meta[I.point,],"SpatialPoints")
-
-# extCropped<-crop(ext,r)
-
-
-# SVF(location = sp_gms,
-    # obstacles = extCropped, 
-    # obstacles_height_field = "layer")
+values<-raster::extract(buffer,XY[1:2])
+XY<-cbind(XY,values)
+plot(XY$distance,XY$values)
+lines(XY$distance,XY$values)
