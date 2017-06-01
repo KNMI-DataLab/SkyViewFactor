@@ -1,4 +1,3 @@
-library(shadow)
 library(raster)
 library(rgdal)
 library(rLiDAR)
