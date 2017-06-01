@@ -1,12 +1,23 @@
 lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
                          xres=5,yres=5,field="Z",
                          point=testPoint,R=200,Runcertainty=10,theta=c(5,10,30)){
+  
+  if(inherits(point,'sp')){
+    warning('No spatial point input, returning NULL')
+    return(NULL)
+  }
+  
   #1 Read the LAS
   message("reading LAS file")
-  spPointTile<-readLAS(testTile)
+  spPointTile<-readLAS(LAS)
   df<-data.frame(spPointTile)
   coordinates(df)<-~X+Y
   proj4string(df)<-pro
+  
+  if (is.null(df)){
+    warning(sprintf('Nothing in ?LAS  file %s \n',LAS))
+    return(NULL)
+  }
   
   #2 Make a raster from the LAS
   message("rasterizing Point data")
@@ -32,10 +43,10 @@ lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
   xy<-data.frame(point)
   x<-as.numeric(xy[1])
   y<-as.numeric(xy[2])
-  radius<-seq(from = 0, to = R -2 , by = 2)
-  
+  distance<-seq(from = 0, to = R, by = 2)
+  # radius<-seq(from = 0, to = R, by = 2)
   #5 Return vector with height 
-  message("Extracting values")
-  XY<-lapply(theta,calculate_path,radius=radius,x=x,y=y,distance=distance)
+  message("Extracting values for the angles %s \n",theta)
+  XY<-lapply(theta,calculate_path,x=x,y=y,distance=distance)
   return(XY)
 }

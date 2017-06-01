@@ -14,6 +14,10 @@ library(spatial.tools)
 library(R.utils)
 sourceDirectory("functions")
 
+#Newest function
+testTile<-"/ssd1/GMSsvf/ahn_261000_468000.las"
+testPoint<-readRDS("test_data/point.rds")
+test<-lines_from_las()
 #####################################################################
 #DIRECTORIES
 #####################################################################
