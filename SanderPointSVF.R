@@ -147,3 +147,65 @@ values<-raster::extract(buffer,XY[1:2])
 XY<-cbind(XY,values)
 plot(XY$distance,XY$values)
 lines(XY$distance,XY$values)
+#######################################################
+
+testTile<-"/ssd1/GMSsvf/ahn_261000_468000.las"
+testPoint<-readRDS("test_data/point.rds")
+#########################################################
+#TO DO
+#1 for a single point, determine the tile/tiles
+#########################################################
+lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
+                         xres=5,yres=5,field="Z",
+                         point=testPoint,R=200,Runcertainty=10,angle=30){
+  #1 Read the LAS
+  message("reading LAS file")
+  spPointTile<-readLAS(testTile)
+  df<-data.frame(spPointTile)
+  coordinates(df)<-~X+Y
+  proj4string(df)<-pro
+  
+  #2 Make a raster from the LAS
+  message("rasterizing Point data")
+  dummyRaster<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
+  extent(dummyRaster)<-extent(df)
+  res(dummyRaster)<-c(xres,yres) # set the resolution
+  r<-rasterize(df,dummyRaster,field=field) #rasterizing the spatial points to a 1x1 grid
+  #r.grid<-as(r,"SpatialGridDataFrame")
+
+  #3 Cut the radius out of the raster
+  message("Masking raster")
+  cut.svf.buf<-gBuffer(points, width = Runcertainty)
+  pbuf <- gBuffer(points, width = R+Runcertainty)
+  
+  buf <- mask(r, pbuf)
+  buffer <- raster::trim(buf)
+
+  buffer.svf<-mask(buf,cut.svf.buf)
+  buffer.svf<-raster::trim(buffer.svf)
+  
+  #4 Get the lines out the buffered grid
+  message("Creating lines")
+  xy<-data.frame(points)
+  x<-as.numeric(xy[1])
+  y<-as.numeric(xy[2])
+  distance<-seq(from = 0, to = R , by = 2)
+  
+  dx<-cos(theta)*radius
+  dy<-sin(theta)*radius
+  
+  x1<-x+dx
+  y1<-y+dy
+  
+  xy1<-data.frame(x1,y1)
+  
+  XY<-rbind(c(x,y),xy1)
+  XY<-cbind(XY,distance)
+  XY<-data.frame(XY)
+  #5 Return vector with height 
+  message("Extracting values")
+  values<-raster::extract(buffer,XY[1:2])
+  XY<-cbind(XY,values)
+  names(XY)<-c("x","y","distance","height")
+  return(XY)
+}
