@@ -1,3 +1,17 @@
+#' Sky view factor
+#' 
+#' \code{SVF} Calculates the sky view factor from las point data and save raster files. 
+#' 
+#' 
+#' 
+#' @param pointX x-coordinates
+#' @param pointY y-coordinates
+#' @param maxView viewing distance of the sky view factor
+#' 
+#' 
+#' @seealso This function calls upon the following functions \code{\link{loadTile}}, \code{\link{makeSpatialDF}},
+#' \code{\link{mergeNeighborTiles}}, \code{\link{makeRaster}},and from the horizon package \code{\link{svf}}.
+
 SVF<-function(pointX, pointY, maxView, proj){
   
   

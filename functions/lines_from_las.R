@@ -1,24 +1,36 @@
+#' Calculate pahts from a raster
+#' 
+#' \code{calculate_path} calculates the path for given distance, angles and coordinates from a raster file. A test file in
+#' the folder test_data with test parameters is included. 
+#' 
+#' @seealso This function calls \code{\link{calculate_path}}
+#' @param LAS location of the las file to read
+#' @param pro projection, now only 28992 (RDcoordinates) is excepted 
+#' @param xres x-resolution to grid the las points
+#' @param yres y-resolution to grid the las points
+#' @param field field to grid
+#' @param point location for which the lines are calculated
+#' @param R radius for which the line is calculated
+#' @param Runcertainty can be used if the location coordinates are uncertain or if you want a surrounding area
+#' @param theta angles for which the path is calculated
+#' 
+#' 
+#' 
+#' @export
+
 lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
                          xres=5,yres=5,field="Z",
                          point=testPoint,R=200,Runcertainty=10,theta=c(5,10,30)){
-  
-  if(inherits(point,'sp')){
-    warning('No spatial point input, returning NULL')
-    return(NULL)
-  }
-  
   #1 Read the LAS
   message("reading LAS file")
-  spPointTile<-readLAS(LAS)
+  spPointTile<-readLAS(testTile)
   df<-data.frame(spPointTile)
   coordinates(df)<-~X+Y
   proj4string(df)<-pro
   
-  if (is.null(df)){
-    warning(sprintf('Nothing in ?LAS  file %s \n',LAS))
-    return(NULL)
+  if (i){
+    warning
   }
-  
   #2 Make a raster from the LAS
   message("rasterizing Point data")
   dummyRaster<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
@@ -43,10 +55,10 @@ lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
   xy<-data.frame(point)
   x<-as.numeric(xy[1])
   y<-as.numeric(xy[2])
-  distance<-seq(from = 0, to = R, by = 2)
-  # radius<-seq(from = 0, to = R, by = 2)
+  radius<-seq(from = 0, to = R -2 , by = 2)
+  
   #5 Return vector with height 
-  message("Extracting values for the angles %s \n",theta)
-  XY<-lapply(theta,calculate_path,x=x,y=y,distance=distance)
+  message("Extracting values")
+  XY<-lapply(theta,calculate_path,radius=radius,x=x,y=y,distance=distance)
   return(XY)
 }

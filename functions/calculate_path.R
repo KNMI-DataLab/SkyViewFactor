@@ -1,7 +1,8 @@
-#' Calculate pahts from a raster
+#' Calculate paths from a raster
 #' 
 #' \code{calculate_path} calculates the path for given distance, angles and coordinates from a raster file.
 #' 
+#' @seealso This function is called in \code{\link{lines_from_las}}
 #' @param theta angle or angles in degrees
 #' @param x x-coordinates in meters (RDcoordinates)
 #' @param y y-coordinates in meters (RDcoordinates)
