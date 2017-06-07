@@ -11,46 +11,59 @@ file.points<-spTransform(file.points,CRSobj=pro)
 
 df<-data.frame(file.points)
 
-df$tileNumberXCoord<-floor(df$lon/1000)*1000
-df$tileNumberYCoord<-floor(df$lat/1000)*1000
-tiles_unique<-unique(df[c("tileNumberXCoord","tileNumberYCoord")])
-tiles_unique_names<-paste0(str_pad(as.integer(tiles_unique$tileNumberXCoord), width = 6, pad = "0"),"_",
-                           str_pad(as.integer(tiles_unique$tileNumberYCoord),  width = 6, pad = "0"), ".grd")
-# GMS_meta<-as(GMS_meta,"SpatialPoints")
-
-#Grid files with SVF
-grids.location<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
-#grid.files.loc<-list.files(grids.location,pattern=".grd",full.names=TRUE)
-grid.files.name<-list.files(grids.location,pattern=".grd",full.names=FALSE)
-
-I<-which(tiles_unique_names %in% grid.files.name)
-
-###########################################
-grid.file<-paste0(grids.location,tiles_unique_names[I])
-save_dir<-"data/SVF_Nadir.txt"
-df<-df[I,]
-df$grid.file<-grid.file
-
+#why does this work?
 for (i in 1:length(df$name)){
+point_info_from_grid(point=df[i,])
+}
 
-points<-df[i,]
-grid<-grid.file[i]
+#and this one not? :(
+lapply(df,point_info_from_grid)
+
+point_info_from_grid<-function(point=df[1,],n=2,save_dir="data/test_point.txt"){
+  point$tileNumberXCoord<-floor(point$lon/1000)*1000
+  point$tileNumberYCoord<-floor(point$lat/1000)*1000
+  tiles_unique<-unique(point[c("tileNumberXCoord","tileNumberYCoord")])
+  tiles_unique_names<-paste0(str_pad(as.integer(tiles_unique$tileNumberXCoord), width = 6, pad = "0"),"_",
+                             str_pad(as.integer(tiles_unique$tileNumberYCoord),  width = 6, pad = "0"), ".grd")
+  # GMS_meta<-as(GMS_meta,"SpatialPoints")
+  
+  #Grid files with SVF
+  grids.location<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+  #grid.files.loc<-list.files(grids.location,pattern=".grd",full.names=TRUE)
+  grid.files.name<-list.files(grids.location,pattern=".grd",full.names=FALSE)
+  
+  I<-which(tiles_unique_names %in% grid.files.name)
+  
+  ###########################################
+  grid.file<-paste0(grids.location,tiles_unique_names[I])
+  point<-point[I,]
+  point$grid.file<-grid.file
+  
+  
+grid<-as.character(point["grid.file"])
 br<-brick(grid)
-r<-br[[2]]
+r<-br[[n]]
 
-r<-as(r,"SpatialGridDataFrame")
+sgdf<-as(r,"SpatialGridDataFrame")
 
-coordinates(points)<-~lon+lat
-crs(points)<-crs(r)
-svf.point<-over(points,r)
+coordinates(point)<-~lon+lat
+crs(point)<-crs(sgdf)
 
-df.svf<-cbind(points,svf.point)
+svf.point<-over(point,sgdf)
+
+svf.extract<-raster::extract(x=r,y=point,buffer=10,fun=mean,na.rm=TRUE)
+svf.extract.sd<-raster::extract(x=r,y=point,buffer=10,fun=sd,na.rm=TRUE)
+
+df.svf<-cbind(point,svf.point)
+
 #sampled.svf = apply(X = points, MARGIN = 1, FUN = function(points) r@data@values[which.min(replace(distanceFromPoints(r, points), is.na(r), NA))])
 #https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel
 
-#out<-cbind(df.svf,sampled.svf)
-out<-data.frame(points,df.svf[2])
+out<-data.frame(point,df.svf[2],svf.extract,svf.extract.sd)
+names(out)<-c("name","netwerk","lon","lat","optional","tileNumberXCoord", "tileNumberYCoord" ,"grid.file","optional","svf.over","svf.extract","svf.extract.sd")
 write.table(out,file=save_dir,sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists(save_dir))
+
+return(TRUE)
 }
 
 
@@ -67,32 +80,16 @@ write.table(out,file=save_dir,sep=",",row.names = FALSE, append = TRUE, col.name
 
 
 
-#To DO: create a new dataframe with points and grid file names in one, so lapply function does work!
-lapply(df,extract_point_from_grid,
-       save_dir=save_dir)
 
 
-#############################################
-extract_point_from_grid<-function(df,save_dir){
-#require a point and a grid file for the same location  
-  grid<-df$grid.file
-  br<-brick(grid)
-  r<-br[[2]]
-  
-  r<-as(r,"SpatialGridDataFrame")
-  
-  svf.point<-over(GMS_meta,r)
-  
-  df.svf<-cbind(points,svf.point)
-  if(!is.na(df.svf$SVF)){
-    message("point has NA value in raster")
-  }
-  
-  sampled.svf = apply(X = points, MARGIN = 1, FUN = function(points) r@data@values[which.min(replace(distanceFromPoints(r, points), is.na(r), NA))])
-  #https://stackoverflow.com/questions/27562076/if-raster-value-na-search-and-extract-the-nearest-non-na-pixel
-  
-  out<-cbind(df.svf,sampled.svf)
-  
-  write.table(out,file=save_dir,sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists(save_dir))
-  return(TRUE)
-}
+
+
+
+
+
+
+
+
+
+
+
