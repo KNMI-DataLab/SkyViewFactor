@@ -1,3 +1,16 @@
+#' Calculate pahts from a raster
+#' 
+#' \code{calculate_path} calculates the path for given distance, angles and coordinates from a raster file.
+#' 
+#' @param theta angle or angles in degrees
+#' @param x x-coordinates in meters (RDcoordinates)
+#' @param y y-coordinates in meters (RDcoordinates)
+#' @param distance distance for which the path should be calculated
+#' 
+#' 
+#' 
+#' @export
+
 calculate_path<-function(theta,x=x,y=y,distance=distance){
   dx<-cos(theta)*distance
   dy<-sin(theta)*distance
