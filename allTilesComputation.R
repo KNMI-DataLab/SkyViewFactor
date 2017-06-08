@@ -61,7 +61,7 @@ listTiles <- listTiles[20001:40000]
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
 
-logfile<-"log.txt"
+logfile<-"logNew.txt"
 
 system.time(
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),

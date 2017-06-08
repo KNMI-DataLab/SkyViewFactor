@@ -22,3 +22,17 @@ saveRDS(files.Eindhoven,"data/ReinderEindhoven.rds")
 
 
 
+HaagTiles<-readRDS("data/ReinderHaag.rds")
+EindhoveTiles<-readRDS("data/ReinderEindhoven.rds")
+
+
+
+##Checking if the suppoosed GRD files are computed already or those tiles do not exist (e.g., sea, Germany, Belgium)
+wholeNLSVFData<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+
+files<-lapply(HaagTiles,list.files, path = wholeNLSVFData, full.names = T)
+
+
+tilesAvailableHaag<-sum(unlist(lapply(files, function(x) !identical(x,character(0)))))
+
+
