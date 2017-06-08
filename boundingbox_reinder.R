@@ -14,6 +14,7 @@ crs(Haag.r)<-WGS84
 Haag.r<-as(Haag.r,"SpatialPointsDataFrame")
 Haag.r<-spTransform(Haag.r,pro)
 
+grid_file_name_from_extent<-function(spdf=Haag.r){
 ext<-extent(Haag.r)
 
 topleft<-SpatialPoints(cbind(ext[1],ext[4]), proj4string=pro)
@@ -32,13 +33,23 @@ ynr.tiles<-ceiling(ydiff/1000)
 #Get the first tile (topleft)
 tl<-data.frame(topleft)
 names(tl)<-c("x","y")
-
 tileNumberXCoord<-floor(tl$x/1000)*1000
-tileNumberYCoord<-floor(tl$y/1000)*1000
-
 toprow.xtiles<-seq(tileNumberXCoord,tileNumberXCoord+xnr.tiles*1000,by=1000)
-toprow.ytiles<-rep(tileNumberYCoord,length(xtiles))
-toprow<-cbind(toprow.xtiles,toprow.ytiles)
+
+bl<-data.frame(downleft)
+names(bl)<-c("x","y")
+tileNumberYCoord<-floor(bl$y/1000)*1000
+downrow.ytiles<-seq(tileNumberYCoord,tileNumberYCoord+ynr.tiles*1000,by=1000)
+
+tiles.out<-data.frame(expand.grid(toprow.xtiles,downrow.ytiles))
+tiles.out<-apply(tiles.out,1,function(x) paste0(str_pad(as.integer(x[1]), width = 6, pad = "0"),"_",
+                                     str_pad(as.integer(x[2]),  width = 6, pad = "0"), ".grd"))
+return(tiles.out)
+}
+#Test how the function workd
+#test <- c("A","B","C","D")
+#test2<-c("E","F","G","H")
+#expand.grid(test,test2)
 
 #tiles_unique<-unique(point[c("tileNumberXCoord","tileNumberYCoord")])
 #tiles_unique_names<-paste0(str_pad(as.integer(tiles_unique$tileNumberXCoord), width = 6, pad = "0"),"_",
