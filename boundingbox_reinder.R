@@ -30,9 +30,47 @@ EindhoveTiles<-readRDS("data/ReinderEindhoven.rds")
 ##Checking if the suppoosed GRD files are computed already or those tiles do not exist (e.g., sea, Germany, Belgium)
 wholeNLSVFData<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
 
-files<-lapply(HaagTiles,list.files, path = wholeNLSVFData, full.names = T)
+#files<-lapply(HaagTiles,list.files, path = wholeNLSVFData, full.names = T)
 
 
-tilesAvailableHaag<-sum(unlist(lapply(files, function(x) !identical(x,character(0)))))
+#tilesAvailableHaag<-sum(unlist(lapply(files, function(x) !identical(x,character(0)))))
 
+computedFiles<-list.files(wholeNLSVFData, ".grd")
+computedAvailableForHaag<-sum(HaagTiles %in% computedFiles)
+computedAvailableForEindhoven<-sum(EindhoveTiles %in% computedFiles)
+
+
+
+
+lazFolder <- c("/data1/", "/data2/", "/data3")
+
+
+listLAZTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
+
+rawTilesNamesHaag<-HaagTiles %>% str_replace(".grd", "")
+rawTilesNamesEindhoven<-EindhoveTiles %>% str_replace(".grd", "")
+
+
+
+
+test11<-listLAZTiles %>% str_replace("_[1,2,3,4,5,6].laz",".laz")
+
+lazRaw<-lapply(test11, function(x) str_replace(str_replace(tail(unlist(str_split(x,patter = "/")),1),pattern = ".laz",""),"ahn_",""))
+removedUndescoreTiles<-unique(lazRaw)
+
+totalLazForHaag<-sum(rawTilesNamesHaag %in% lazRaw)
+totalLazForEindhoven<-sum(rawTilesNamesEindhoven %in% lazRaw)
+
+ 
+if(computedAvailableForHaag==totalLazForHaag){
+  message("Haag is fully computed")
+} else{
+  message("Haag not fully computed")
+}
+
+if(computedAvailableForEindhoven==totalLazForEindhoven){
+  message("Eindhoven is fully computed")
+} else{
+  message("Einhoven not fully computed")
+}
 
