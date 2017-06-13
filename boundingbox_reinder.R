@@ -2,6 +2,9 @@
 #Den Haag  51.7-52.4 N, 3.8-4.9 E. 
 #Eindhoven 51.1-51.9 N, 5-6 E.
 library(R.utils)
+library(magrittr)
+library(stringr)
+library(RCurl)
 sourceDirectory("functions")
 
 pro<-CRS("+init=epsg:28992")
@@ -20,11 +23,11 @@ files.Eindhoven<-grid_file_name_from_extent(Eindhoven.ext)
 saveRDS(files.Haag,"data/ReinderHaag.rds")
 saveRDS(files.Eindhoven,"data/ReinderEindhoven.rds")
 
-
-
 HaagTiles<-readRDS("data/ReinderHaag.rds")
 EindhoveTiles<-readRDS("data/ReinderEindhoven.rds")
 
+#copy data with RCurl
+scp() #some code to copy
 
 
 ##Checking if the suppoosed GRD files are computed already or those tiles do not exist (e.g., sea, Germany, Belgium)
