@@ -4,11 +4,31 @@
 library(R.utils)
 library(magrittr)
 library(stringr)
-library(RCurl)
-sourceDirectory("functions")
 
-pro<-CRS("+init=epsg:28992")
-WGS84<-CRS("+init=epsg:4326")
+library(raster)
+library(horizon)
+library(rgdal)
+library(rLiDAR)
+library(foreach)
+library(doParallel)
+library(uuid)
+library(data.table)
+library(stringr)
+library(spatial.tools)
+library(sp)
+
+sourceDirectory("~/development/SkyViewFactor/functions")
+
+pro<<-CRS("+init=epsg:28992")
+WGS84<<-CRS("+init=epsg:4326")
+
+Xres<<-5 # x-resolution in meters
+Yres<<-5 # y-resolution in meters
+
+maxView<<-100 # max view for the SVF
+
+
+checkNonComputedTiles<-function(){
 
 
 Haag<-extent(3.8,4.9,51.7,52.4)
@@ -23,8 +43,8 @@ files.Eindhoven<-grid_file_name_from_extent(Eindhoven.ext)
 saveRDS(files.Haag,"data/ReinderHaag.rds")
 saveRDS(files.Eindhoven,"data/ReinderEindhoven.rds")
 
-HaagTiles<-readRDS("data/ReinderHaag.rds")
-EindhovenTiles<-readRDS("data/ReinderEindhoven.rds")
+HaagTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderHaag.rds")
+EindhovenTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderEindhoven.rds")
 
 #copy data with RCurl
 #scp() #some code to copy
@@ -66,8 +86,8 @@ lazToBeProcessedForEindhoven<-rawTilesNamesEindhovenToHave[rawTilesNamesEindhove
 
 #get the files that are already computed
 computedFiles<-list.files(wholeNLSVFData, ".grd")
-computedAvailableForHaag<-sum(HaagTiles %in% computedFiles)
-computedAvailableForEindhoven<-sum(EindhovenTiles %in% computedFiles)
+#computedAvailableForHaag<-sum(HaagTiles %in% computedFiles)
+#computedAvailableForEindhoven<-sum(EindhovenTiles %in% computedFiles)
 computedFiles<-computedFiles %>% str_replace(".grd", "")
 
 
@@ -77,8 +97,25 @@ stillToComputeHaag<-lazToBeProcessedForHaag[!lazToBeProcessedForHaag %in% comput
 
 length(stillToComputeEindhoven)
 
+return(stillToComputeEindhoven)
+}
+
+##SAVING THE FILES TO A ZIP
+#if(length(stillToComputeHaag)==0){
+readyToShipHaagGRI<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".grd"))
+readyToShipHaagGRD<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".gri"))
+setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
+files<-c(readyToShipHaagGRD, readyToShipHaagGRI)
+zip("/home/pagani/archiveSVFHaag.zip", files = files)
+#}
 
 
+##########TILES EINDHOVEN NOT ACCORDING TO NAMING CONVENTION############################
+#leftRAWEIND<-rawTilesNamesEindhovenToHave[rawTilesNamesEindhovenToHave %in% computedFiles]
+#leftLAZEIND<-lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles]
+#leftRAWEIND %in% leftLAZEIND
+#leftRAWEIND[!leftRAWEIND %in% leftLAZEIND]
+#####################################
  
 # if(computedAvailableForHaag==totalLazForHaag){
 #   message("Haag is fully computed")
@@ -91,4 +128,69 @@ length(stillToComputeEindhoven)
 # } else{
 #   message("Einhoven not fully computed")
 # }
+
+
+
+
+computeTilesReinder<-function(tilesList){
+ 
+  
+  output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+  lazFolder <<- c("/data1/", "/data2/", "/data3")
+  lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
+  dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
+  temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
+  
+  
+  
+  coords<-lapply(tilesList, str_split, "_")
+  # pro<-CRS("+init=epsg:28992")
+  # WGS84<-CRS("+init=epsg:4326")
+  # 
+  # Xres<-5 # x-resolution in meters
+  # Yres<-5 # y-resolution in meters
+  # 
+  # maxView<-100 # max view for the SVF
+  
+  tiles_unique<-data.frame(matrix(as.numeric(unlist(coords)), nrow = length(coords), byrow = T))
+  colnames(tiles_unique)<-c("tileNumberXCoord","tileNumberYCoord")
+  
+  registerDoParallel(10)
+  
+  foreach(i =  1:length(tiles_unique[,1]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
+          .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
+                      "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
+                      "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
+                      {
+                        print(i)
+                        outp<-1
+                        if(!file.exists(paste0(output_dir,
+                                               str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
+                                               str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri")))
+                        {
+                          
+                          print(paste0(output_dir,
+                                       str_pad(as.integer(tiles_unique[i,]$tileNumberXCoord), width = 6, pad = "0"),"_",
+                                       str_pad(as.integer(tiles_unique[i,]$tileNumberYCoord),  width = 6, pad = "0"), ".gri"))
+                          #print("ABC")
+                          # print(paste0(output_dir,
+                          #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
+                          #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
+                          #tryCatch(outp<-SVF(tiles_unique[i,]$tileNumberXCoord, tiles_unique[i,]$tileNumberYCoord,maxView, pro), error=function(e){print(paste0("tile with point x=", tiles_unique[[i]][1], " y=",tiles_unique[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
+                          
+                          SVF(tiles_unique[i,]$tileNumberXCoord, tiles_unique[i,]$tileNumberYCoord,maxView, pro)
+                          
+                          #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
+                          if(is.null(outp))
+                          {
+                            next
+                          }
+                          gc()
+                        }
+                      }
+  
+  
+  
+}
+
 

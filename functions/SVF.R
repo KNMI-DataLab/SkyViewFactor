@@ -1,17 +1,3 @@
-#' Sky view factor
-#' 
-#' \code{SVF} Calculates the sky view factor from las point data and save raster files. 
-#' 
-#' 
-#' 
-#' @param pointX x-coordinates
-#' @param pointY y-coordinates
-#' @param maxView viewing distance of the sky view factor
-#' 
-#' 
-#' @seealso This function calls upon the following functions \code{\link{loadTile}}, \code{\link{makeSpatialDF}},
-#' \code{\link{mergeNeighborTiles}}, \code{\link{makeRaster}},and from the horizon package \code{\link{svf}}.
-
 SVF<-function(pointX, pointY, maxView, proj){
   
   
@@ -25,10 +11,42 @@ SVF<-function(pointX, pointY, maxView, proj){
   mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
   
-  neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
+  
+  
+  
+  if(xmax(extensionMainTile)!=xmin(extensionMainTile) & ymax(extensionMainTile)!=ymin(extensionMainTile))
+  {
+    
+    neighbors<-mergeNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+    
+    #neighbors<-lapply(neighbors,checkCoordinates)
+    
+    rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
+    if(length(rasterizedNeighbors)==1){
+      mergedNeighbors<-rasterizedNeighbors[[1]]
+    }
+    else if (length(rasterizedNeighbors)==0){
+      return(-1)  
+    }
+    else{
+      mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
+    }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  #neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
  
-  rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
-  mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
+  #rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
+ #mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
   rm(neighbors)
   rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
@@ -64,6 +82,13 @@ SVF<-function(pointX, pointY, maxView, proj){
   ##############################################
   ##############################################
   ##############################################
+  }
+  else {
+    print(paste0("tile ", filepath, " with odd extention: ", as.character(extensionMainTile)))
+  }
+  
+  
+  
   rm(r.svf,r.b,r.df)
   gc()
 }
