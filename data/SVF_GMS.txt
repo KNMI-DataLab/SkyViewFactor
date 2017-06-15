@@ -1,21 +1,3 @@
-"V1","V2"
-<S4 object of class "SpatialPointsDataFrame">,0.727556949836874
-<S4 object of class "SpatialPointsDataFrame">,0.839735073716871
-<S4 object of class "SpatialPointsDataFrame">,0.803230115910052
-<S4 object of class "SpatialPointsDataFrame">,0.850202320913667
-<S4 object of class "SpatialPointsDataFrame">,0.806676213505136
-<S4 object of class "SpatialPointsDataFrame">,0.930587448651499
-<S4 object of class "SpatialPointsDataFrame">,0.972681047908379
-<S4 object of class "SpatialPointsDataFrame">,0.904207049181515
-<S4 object of class "SpatialPointsDataFrame">,0.9469474664439
-<S4 object of class "SpatialPointsDataFrame">,0.881434490330227
-<S4 object of class "SpatialPointsDataFrame">,0.985303456056784
-<S4 object of class "SpatialPointsDataFrame">,0.800040947713221
-<S4 object of class "SpatialPointsDataFrame">,0.986280198804894
-<S4 object of class "SpatialPointsDataFrame">,0.896075021469313
-<S4 object of class "SpatialPointsDataFrame">,0.559912787434329
-<S4 object of class "SpatialPointsDataFrame">,0.827702289511784
-<S4 object of class "SpatialPointsDataFrame">,0.710267348735965
 "Bolnes","Delft",97504.6245437246,434738.921410709,TRUE,97000,434000,"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/097000_434000.grd",TRUE,0.727556949836874
 "Capelle","Delft",99826.9226883107,437969.502631716,TRUE,99000,437000,"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/099000_437000.grd",TRUE,0.839735073716871
 "Delfshaven","Delft",90242.5401142186,435592.060500617,TRUE,90000,435000,"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/090000_435000.grd",TRUE,0.803230115910052

@@ -1,3 +1,8 @@
+#' Grid file names from extent
+#' @title Grid file names
+#' @param ext extent in RD-coordinates
+#' @export
+
 grid_file_name_from_extent<-function(ext=Haag.ext){
   
   
