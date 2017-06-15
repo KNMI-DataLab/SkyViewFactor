@@ -63,7 +63,7 @@ cl<-makeCluster(mc)
 
 filesToCopy<-NULL
 clusterEvalQ(cl,expr = c(library(stringr), source("NeighborsFilesCopy.R"), library(R.utils)
-, sourceDirectory("functions")))
+, sourceDirectory("R")))
 clusterExport(cl, varlist = c("filesToCopy", "lazFolder", "lasZipLocation"))
 
 

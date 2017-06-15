@@ -1,0 +1,10 @@
+Package: svfAHN2point
+Type: Package
+Title: Calculate the Sky view factor from las files
+Version: 1.0
+Date: 2017-06-15
+Author: Andrea Pagani and Marieke Dirksen
+Maintainer: Who to complain to <marieke.dirksen@knmi.nl>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+RoxygenNote: 6.0.1
