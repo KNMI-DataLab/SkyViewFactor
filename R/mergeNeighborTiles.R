@@ -1,3 +1,13 @@
+#' Merge tiles
+#' @title Merge Tiles function
+#' @param path path to the tiles
+#' @param tileNumberXcoord X-coordinates of the center tile
+#' @param tileNumberYcoord Y-coordinates of the center tile
+#' @param extentionMainTile no clue, Andrea?
+#' @param maxView ?
+#' @param projection a projection, guess RDcoords?
+#' @export
+#' 
 mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
   
   #print("hello")

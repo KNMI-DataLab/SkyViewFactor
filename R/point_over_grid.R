@@ -1,15 +1,10 @@
-# library(raster)
-# pro<-CRS("+init=epsg:28992")
-# WGS84<-CRS("+init=epsg:4326")
-# #GMS data
-# file.points<-fread("data/allstations_edit.txt")
-# names(file.points)<-c("name","lat","lon","netwerk")
-# 
-# coordinates(file.points)<-~lon+lat
-# crs(file.points)<-WGS84
-# file.points<-spTransform(file.points,CRSobj=pro)
-# 
-# df<-data.frame(file.points)
+#' Point information from the grid files
+#' @title Point info from grid
+#' @param point a point with tileNumerXCoord, tilenumberYcoord
+#' @param n layer number of the grid
+#' @param save_dir save file name with extention .txt
+#' @author Marieke Dirksen
+#' @export
 
 point_info_from_grid<-function(point=df[1,],n=2,save_dir="data/test_point.txt"){
   point$tileNumberXCoord<-floor(point$lon/1000)*1000
@@ -58,13 +53,7 @@ point_info_from_grid<-function(point=df[1,],n=2,save_dir="data/test_point.txt"){
   return(TRUE)
 }
 
-# #why does this work?
-# for (i in 1:length(df$name)){
-# point_info_from_grid(point=df[i,])
-# }
-# 
-# #and this one not? :(
-# lapply(df,point_info_from_grid)
+
 
 
 

@@ -1,3 +1,10 @@
+#' Test function
+#' @title Test function for a point dataset of the GMS
+#' @param pointX x-coordinates of the point in RD coordinates
+#' @param pointY y-coordinates of the point in RD coordinates
+#' @param proj projection
+#' @export
+
 SVFGMSTest<-function(pointX, pointY, maxView, proj){
   
   

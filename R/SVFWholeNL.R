@@ -1,3 +1,9 @@
+#' Calculate the SVF for the whole Netherlands
+#' @title SVF Netherlands
+#' @param filepath path to the LAS files
+#' @param maxView maximum viewing distance for the sky view factor calculations
+#' @export
+
 SVFWholeNL<-function(filepath, maxView){
   file<-basename(filepath)
   splits<-unlist(strsplit(file, c("\\.")))
