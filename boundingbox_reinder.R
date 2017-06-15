@@ -102,12 +102,26 @@ return(stillToComputeEindhoven)
 
 ##SAVING THE FILES TO A ZIP
 #if(length(stillToComputeHaag)==0){
-readyToShipHaagGRI<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".grd"))
-readyToShipHaagGRD<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".gri"))
-setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
-files<-c(readyToShipHaagGRD, readyToShipHaagGRI)
-zip("/home/pagani/archiveSVFHaag.zip", files = files)
+#readyToShipHaagGRI<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".grd"))
+#readyToShipHaagGRD<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".gri"))
+#setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
+#files<-c(readyToShipHaagGRD, readyToShipHaagGRI)
+#file.copy(files, "~/filesReiner/")
+#Zipping directly from R somehow fails
+#zip("/home/pagani/archiveSVFHaag.zip", files = files)
 #}
+
+if(length(stillToComputeEindhoven)==0){
+readyToShipEindhovenGRI<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".grd"))
+readyToShipEindhovenGRD<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".gri"))
+setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
+files<-c(readyToShipEindhovenGRD, readyToShipEindhovenGRI)
+file.copy(files, "~/SVFEindhoven/")
+#Zipping directly from R somehow fails
+#zip("/home/pagani/archiveSVFHaag.zip", files = files)
+}
+
+
 
 
 ##########TILES EINDHOVEN NOT ACCORDING TO NAMING CONVENTION############################
