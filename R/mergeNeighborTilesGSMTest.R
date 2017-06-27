@@ -1,10 +1,11 @@
 #' Merge tiles
 #' @title Merge Tiles test function
+#' @description merging tiles surrounding your object 
 #' @param path path to the tiles
-#' @param tileNumberXcoord X-coordinates of the center tile
-#' @param tileNumberYcoord Y-coordinates of the center tile
-#' @param extentionMainTile no clue, Andrea?
-#' @param maxView ?
+#' @param tileNumberXCoord X-coordinates of the center tile
+#' @param tileNumberYCoord Y-coordinates of the center tile
+#' @param extensionMainTile no clue, Andrea?
+#' @param maxView in svf calculations
 #' @param projection a projection, guess RDcoords?
 #' @export
 

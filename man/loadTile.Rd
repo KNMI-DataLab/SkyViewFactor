@@ -7,10 +7,15 @@
 loadTile(path, coordX, coordY)
 }
 \arguments{
+\item{path}{is the path to the files}
+
 \item{coordX}{x-coordinate in RD coordinates}
 
 \item{coordY}{y-coordinate in RD coordinates}
 }
 \description{
+loads the first tile where the point is located
+}
+\details{
 Load a tile
 }

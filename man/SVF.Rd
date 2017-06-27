@@ -12,8 +12,13 @@ SVF(pointX, pointY, maxView, proj)
 \item{pointY}{y-coordinates}
 
 \item{maxView}{viewing distance of the sky view factor}
+
+\item{proj}{projection}
 }
 \description{
+calculates the SVF
+}
+\details{
 \code{SVF} Calculates the sky view factor from las point data and save raster files.
 }
 \seealso{

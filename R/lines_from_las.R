@@ -28,9 +28,6 @@ lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
   coordinates(df)<-~X+Y
   proj4string(df)<-pro
   
-  if (i){
-    warning
-  }
   #2 Make a raster from the LAS
   message("rasterizing Point data")
   dummyRaster<-raster(nrow=10,ncol=10,crs=pro) #dummy raster with projection
@@ -45,7 +42,7 @@ lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
   pbuf <- gBuffer(point, width = R+Runcertainty)
   
   buf <- mask(r, pbuf)
-  buffer <- raster::trim(buf)
+  #buffer <- raster::trim(buf)
   
   buffer.svf<-mask(buf,cut.svf.buf)
   buffer.svf<-raster::trim(buffer.svf)
@@ -55,10 +52,10 @@ lines_from_las<-function(LAS=testTile,pro=CRS("+init=epsg:28992"),
   xy<-data.frame(point)
   x<-as.numeric(xy[1])
   y<-as.numeric(xy[2])
-  radius<-seq(from = 0, to = R -2 , by = 2)
+  radius<-seq(from = 0, to = R+Runcertainty - 2 , by = 2)
   
   #5 Return vector with height 
   message("Extracting values")
-  XY<-lapply(theta,calculate_path,radius=radius,x=x,y=y,distance=distance)
+  XY<-lapply(theta=theta,calculate_path,x=x,y=y,distance=radius,rbuffer=buffer.svf)
   return(XY)
 }

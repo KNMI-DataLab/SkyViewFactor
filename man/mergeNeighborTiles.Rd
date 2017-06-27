@@ -10,16 +10,19 @@ mergeNeighborTiles(path, tileNumberXCoord, tileNumberYCoord, extensionMainTile,
 \arguments{
 \item{path}{path to the tiles}
 
-\item{maxView}{?}
+\item{tileNumberXCoord}{X-coordinates of the center tile}
+
+\item{tileNumberYCoord}{Y-coordinates of the center tile}
+
+\item{extensionMainTile}{no clue, Andrea?}
+
+\item{maxView}{svf view}
 
 \item{projection}{a projection, guess RDcoords?}
-
-\item{tileNumberXcoord}{X-coordinates of the center tile}
-
-\item{tileNumberYcoord}{Y-coordinates of the center tile}
-
-\item{extentionMainTile}{no clue, Andrea?}
 }
 \description{
+Merging tiles surrounding the point
+}
+\details{
 Merge tiles
 }

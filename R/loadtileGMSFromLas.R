@@ -2,6 +2,7 @@
 #' @title Load LAS tile
 #' @param coordX x-coordinate in RD coordinates
 #' @param coordY y-coordinate in RD coordinates
+#' @param path path to the files
 #' @export
 #' 
 loadTileGMSFromLas <- function(path, coordX, coordY){

@@ -1,8 +1,10 @@
 #' Test function
 #' @title Test function for a point dataset of the GMS
+#' @description test function for the GMS dataset to calculate the SVF
 #' @param pointX x-coordinates of the point in RD coordinates
 #' @param pointY y-coordinates of the point in RD coordinates
 #' @param proj projection
+#' @param maxView maximum viewing distance of the svf calculation
 #' @export
 
 SVFGMSTest<-function(pointX, pointY, maxView, proj){

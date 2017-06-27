@@ -1,5 +1,6 @@
 #' Grid file names from extent
 #' @title Grid file names
+#' @description get the grid file names for an extention 
 #' @param ext extent in RD-coordinates
 #' @export
 

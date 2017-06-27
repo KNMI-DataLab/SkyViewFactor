@@ -1,0 +1,238 @@
+loc_nr,loc_lat,loc_lon,loc_nm,reg_nr,reg_nm
+101,52.531,6.150,Berkum,12,Overijssel
+102,52.584,6.194,Lichtmis,12,Overijssel
+103,52.676,6.193,Lankhorst A32,12,Overijssel
+104,52.742,6.194,Veendijk,12,Overijssel
+105,52.804,6.102,Steenwijk,12,Overijssel
+106,52.500,6.054,Katerveer,12,Overijssel
+107,52.582,5.857,Eilandbrug,12,Overijssel
+109,52.197,6.942,Enschede,12,Overijssel
+111,52.419,6.249,Heino,12,Overijssel
+112,52.368,6.413,Nijverdal,12,Overijssel
+113,52.558,6.482,Ommen N36,12,Overijssel
+201,52.022,5.064,Nieuwegein,1,Midden Nederland
+202,52.066,5.070,Oudenrijn,1,Midden Nederland
+203,52.081,4.943,Harmelen,1,Midden Nederland
+204,52.195,4.987,Breukelen,1,Midden Nederland
+205,52.061,5.092,Galecopperbrug,1,Midden Nederland
+206,52.003,5.115,Hagestein,1,Midden Nederland
+207,52.056,5.147,Lunetten,1,Midden Nederland
+208,52.058,5.391,Maarn,1,Midden Nederland
+209,52.081,5.161,Rijnsweerd,1,Midden Nederland
+210,52.093,5.200,De Bilt,1,Midden Nederland
+211,52.115,5.308,Soesterberg,1,Midden Nederland
+212,52.131,5.379,Leusden,1,Midden Nederland
+213,52.191,5.190,Hilversum,1,Midden Nederland
+214,52.236,5.233,Eemnes,1,Midden Nederland
+215,52.208,5.365,Bunschoten,1,Midden Nederland
+216,52.003,5.075,Vianen,1,Midden Nederland
+217,52.044,5.526,Veenendaal,1,Midden Nederland
+351,51.873,4.386,Knooppunt Benelux,2,Zuid Holland Zuid 
+352,51.865,4.515,Vaanplein,2,Zuid Holland Zuid 
+353,51.904,4.543,Van Brienenoordbrug,2,Zuid Holland Zuid 
+354,51.858,4.596,Knooppunt Ridderkerk,2,Zuid Holland Zuid 
+355,51.693,4.402,Volkeraksluis,2,Zuid Holland Zuid 
+356,51.781,4.419,De Hoge Lus,2,Zuid Holland Zuid 
+357,51.776,4.650,s Gravendeel,5,Brabant West
+358,51.824,4.800,Alblasserdam,5,Brabant West
+359,51.830,4.876,Buldersteeg,5,Brabant West
+360,51.829,4.943,Merwedebrug,1,Midden Nederland
+361,51.940,5.004,De Zouwe,1,Midden Nederland
+362,51.963,5.087,Everdingen,1,Midden Nederland
+363,51.942,5.147,Diefdijk,1,Midden Nederland
+364,51.877,4.569,Ridderster,2,Zuid Holland Zuid 
+371,51.799,3.939,Ouddorp Haven,9,Zeeland
+372,51.845,4.075,Haringvliet,2,Zuid Holland Zuid 
+373,51.901,4.231,Calandbrug,2,Zuid Holland Zuid 
+374,51.822,4.706,Papendrechtsebrug,5,Brabant West
+410,52.027,5.610,Maanderbroek,10,Gelderland
+411,52.022,5.727,De Ginkel,10,Gelderland
+412,52.023,5.884,Waterberg,10,Gelderland
+413,51.973,5.991,IJsselbrug,10,Gelderland
+414,51.908,6.153,Babberich,10,Gelderland
+415,51.948,6.322,Doetinchem,10,Gelderland
+416,52.002,5.804,De Slenk,10,Gelderland
+417,52.047,5.938,Terlet,10,Gelderland
+418,52.117,5.569,Barneveld,10,Gelderland
+419,52.098,6.662,Groenlo,10,Gelderland
+451,51.843,5.095,Vuren,1,Midden Nederland
+452,51.857,5.227,Deil,1,Midden Nederland
+453,51.900,5.420,Tiel,10,Gelderland
+454,51.897,5.868,Knooppunt Ressen,10,Gelderland
+455,51.887,5.739,Ewijk brug,10,Gelderland
+456,51.813,5.679,Bankhoef,10,Gelderland
+457,51.843,5.781,Neerbosch,10,Gelderland
+458,51.759,5.838,Heumen brug,10,Gelderland
+500,52.392,4.810,Westpoort,11,Noord Holland
+501,52.603,4.731,Alkmaar,11,Noord Holland
+502,52.516,4.716,Uitgeest,11,Noord Holland
+503,52.386,4.747,Halfweg,11,Noord Holland
+504,52.384,4.784,Kruithuis,11,Noord Holland
+505,52.373,4.710,Spieringweg,11,Noord Holland
+506,52.330,4.798,Knooppunt Badhoevedorp,3,Zuid Holland Noord
+507,52.233,4.648,Knooppunt Burgerveen,3,Zuid Holland Noord
+508,52.230,4.616,Abbenes,3,Zuid Holland Noord
+509,52.472,4.780,Westzaan,11,Noord Holland
+510,52.447,4.852,Zaandam,11,Noord Holland
+511,52.419,4.912,Kadoelen,11,Noord Holland
+512,52.338,4.847,Schinkelbrug,11,Noord Holland
+513,52.332,5.017,Muiderbrug,11,Noord Holland
+514,52.305,5.135,Naardertrekvaart,11,Noord Holland
+515,52.255,5.210,Laren,11,Noord Holland
+516,52.289,4.945,Holendrecht,3,Zuid Holland Noord
+517,52.393,4.838,West Randweg,11,Noord Holland
+518,52.312,4.734,De Hoek,3,Zuid Holland Noord
+520,52.910,5.033,Robbenoordbos,11,Noord Holland
+521,52.772,5.034,West Frieschevaart,11,Noord Holland
+522,52.712,5.027,Broerdijk,11,Noord Holland
+523,52.649,5.036,Hoorn,11,Noord Holland
+524,52.512,4.935,Purmerend,11,Noord Holland
+528,52.688,4.732,Koedijk,11,Noord Holland
+529,52.733,4.689,Zijpersluis,11,Noord Holland
+530,52.865,4.765,Julianadorp,11,Noord Holland
+531,52.909,4.980,Hippolytushoef,11,Noord Holland
+532,52.934,5.041,Den Oever,11,Noord Holland
+533,53.071,5.316,Konwerderzand dijk,11,Noord Holland
+534,53.074,5.336,Konwerderzand brug,11,Noord Holland
+535,53.039,5.243,Breezanddijk,11,Noord Holland
+551,52.193,4.464,Oegstgeesterkanaal,3,Zuid Holland Noord
+552,52.159,4.550,Dwarswetering,3,Zuid Holland Noord
+553,52.220,4.538,Sassenheim,3,Zuid Holland Noord
+554,52.060,4.381,Prins Clausplein,3,Zuid Holland Noord
+555,51.971,4.400,Delft,3,Zuid Holland Noord
+556,51.926,4.266,Maasland,2,Zuid Holland Zuid 
+557,52.030,4.566,Zevenhuizen,3,Zuid Holland Noord
+558,52.067,4.753,Bodegraven,3,Zuid Holland Noord
+559,52.008,4.655,Groene Brug,3,Zuid Holland Noord
+560,51.942,4.488,Rotteviaduct,2,Zuid Holland Zuid 
+571,52.102,4.717,Zwammerdam,3,Zuid Holland Noord
+601,52.343,5.177,Almere Stad,11,Noord Holland
+602,52.373,5.288,Almere Buiten,11,Noord Holland
+603,52.436,5.426,Aalscholverweg,11,Noord Holland
+604,52.509,5.533,Runderweg,11,Noord Holland
+605,52.604,5.625,Ketelbrug,6,Friesland
+606,52.682,5.740,Emmeloord,6,Friesland
+607,52.691,5.775,Vogelbek,6,Friesland
+608,52.637,5.821,Ens,6,Friesland
+609,52.766,5.767,Bant,6,Friesland
+610,52.808,5.749,Hopweg,6,Friesland
+611,52.314,5.328,Stichtsebrug,11,Noord Holland
+612,52.614,5.841,Ramspolbrug,6,Friesland
+711,51.527,4.464,Roosendaal,9,Zeeland
+712,51.609,4.502,De Mark,5,Brabant West
+713,51.713,4.639,Moerdijkbrug,5,Brabant West
+714,51.630,4.874,Oosterhout,5,Brabant West
+715,51.526,4.751,Knooppunt Galder,5,Brabant West
+716,51.649,4.701,Knooppunt Zonzeel,5,Brabant West
+717,51.530,4.429,Knooppunt De Stok,9,Zeeland
+718,51.657,4.419,Knooppunt Sabina,5,Brabant West
+719,51.431,4.280,Knooppunt Markiezaat,9,Zeeland
+810,50.949,5.789,Elsloo brug,8,Limburg
+811,50.960,5.759,Stein brug,8,Limburg
+812,51.276,5.672,Boshoven,8,Limburg
+813,51.162,5.887,Maasbrug,8,Limburg
+814,50.969,5.787,Knooppunt Kerensheide,8,Limburg
+815,50.901,5.755,Kruisberg,8,Limburg
+816,50.874,5.816,Dalbrug,8,Limburg
+817,50.776,5.728,Eijsden,8,Limburg
+818,50.970,5.786,Flyover Kerensheide,8,Limburg
+850,51.394,6.126,Knooppunt Zaarderheiken,8,Limburg
+851,51.236,5.793,Kelpen,8,Limburg
+852,51.078,5.826,Roosteren,8,Limburg
+853,50.906,5.924,Knooppunt Ten Esschen,8,Limburg
+854,50.835,6.008,Knooppunt Bocholtz,8,Limburg
+870,51.029,5.821,Born,8,Limburg
+871,51.585,5.980,Overloon,8,Limburg
+872,51.479,6.049,Venray,8,Limburg
+873,51.263,6.058,Waterloo,8,Limburg
+900,51.698,5.352,Hintham,4,Brabant Oost
+901,51.723,5.327,Empel,4,Brabant Oost
+902,51.666,5.301,Vught,4,Brabant Oost
+904,51.737,5.306,Kerkdriel,4,Brabant Oost
+905,51.688,4.884,Raamsdonksveer,5,Brabant West
+906,51.760,4.927,Nieuwendijk,5,Brabant West
+907,51.785,5.648,Ravenstein,4,Brabant Oost
+908,51.735,5.576,Oss,4,Brabant Oost
+909,51.719,4.890,Keizersveer,5,Brabant West
+910,51.692,5.121,Drunen,5,Brabant West
+911,51.698,5.249,Den Bosch Noord,4,Brabant Oost
+912,51.579,5.149,Berkel Enschot,4,Brabant Oost
+913,51.606,5.517,Veghel,4,Brabant Oost
+914,51.662,5.944,Beugen,10,Gelderland
+951,51.548,4.972,Gilze-Rijen,4,Brabant Oost
+952,51.527,5.212,Oirschot,4,Brabant Oost
+953,51.406,5.557,Geldrop,4,Brabant Oost
+954,51.346,5.266,Eersel,4,Brabant Oost
+955,51.333,5.582,Leende,4,Brabant Oost
+956,51.422,5.698,Kempen-Peelland,4,Brabant Oost
+957,51.490,5.427,Knooppunt Ekkersweijer,4,Brabant Oost
+958,51.405,5.435,De Hogt,4,Brabant Oost
+1001,51.428,4.236,Kreekrakbrug,9,Zeeland
+1002,51.456,4.033,Nishoek,9,Zeeland
+1003,51.485,3.854,Vliedberg,9,Zeeland
+1004,51.483,3.654,Arnestein,9,Zeeland
+1005,51.678,4.142,De Hevel,9,Zeeland
+1011,51.651,3.936,Zierikzee,9,Zeeland
+1012,51.698,3.817,De Schelphoek,9,Zeeland
+1013,51.620,3.685,Roompot,9,Zeeland
+1015,51.321,3.689,Biervliet,9,Zeeland
+1102,52.892,6.528,Oranjekanaal,7,Groningen/Drenthe
+1103,52.678,6.351,Lageveen,7,Groningen/Drenthe
+1104,52.681,6.219,Lankhorst A28,12,Overijssel
+1105,52.814,6.461,Spier,7,Groningen/Drenthe
+1106,52.708,6.458,Hoogeveen,7,Groningen/Drenthe
+1107,52.628,6.427,Nolde,7,Groningen/Drenthe
+1108,52.721,6.663,Zwinderen,7,Groningen/Drenthe
+1109,52.971,6.543,Assen,7,Groningen/Drenthe
+1110,52.975,6.652,Rolde,7,Groningen/Drenthe
+1112,53.115,6.611,De Punt,7,Groningen/Drenthe
+1113,53.013,6.761,Albrechttunnel,7,Groningen/Drenthe
+1115,52.727,6.788,Holsloot,7,Groningen/Drenthe
+1116,52.734,6.997,Scholtenskanaal,7,Groningen/Drenthe
+1150,53.198,6.453,Munnikesloot,7,Groningen/Drenthe
+1151,53.184,6.375,Leek,7,Groningen/Drenthe
+1152,53.133,6.196,Frieschepalen,7,Groningen/Drenthe
+1156,53.205,6.619,Roodehaan,7,Groningen/Drenthe
+1157,53.169,6.763,Hoogezand,7,Groningen/Drenthe
+1158,53.270,6.875,Geerland,7,Groningen/Drenthe
+1159,53.171,6.895,Zuidbroek,7,Groningen/Drenthe
+1160,53.146,7.085,Winschoterzijl,7,Groningen/Drenthe
+1161,53.177,7.203,Hamdijk,7,Groningen/Drenthe
+1162,53.138,6.609,Glimmen,7,Groningen/Drenthe
+1163,53.052,6.855,Bareveld,7,Groningen/Drenthe
+1201,53.097,5.391,Kop Afsluitdijk,6,Friesland
+1202,53.056,5.535,Bolsward,6,Friesland
+1203,53.011,5.688,Sneek,6,Friesland
+1204,52.955,5.796,Joure,6,Friesland
+1205,52.910,5.774,St. Nicolaasga,6,Friesland
+1206,52.852,5.721,Lemmer,6,Friesland
+1207,52.864,6.026,Wolvega,6,Friesland
+1208,53.111,5.813,Grouw,6,Friesland
+1221,53.164,5.931,Pr. Margrietkanaal,6,Friesland
+1222,53.161,5.954,Garijp,6,Friesland
+1223,53.127,6.178,Drachten,6,Friesland
+1224,53.020,6.009,Gorredijk,6,Friesland
+1225,53.201,5.541,Franeker,6,Friesland
+1401,52.189,6.026,Beekbergen,10,Gelderland
+1402,52.185,5.894,De Hucht,10,Gelderland
+1403,52.192,5.704,Stroe,1,Midden Nederland
+1404,52.166,5.556,Terschuur,1,Midden Nederland
+1405,52.175,5.428,Hoevelaken,1,Midden Nederland
+1406,52.268,5.536,Nulde,1,Midden Nederland
+1407,52.342,5.672,Harderwijk,12,Overijssel
+1408,52.378,5.824,Nunspeet,12,Overijssel
+1409,52.232,6.169,Wilp brug,10,Gelderland
+1410,52.226,6.147,Wilp,10,Gelderland
+1411,52.333,6.009,Epe,10,Gelderland
+1412,52.411,6.016,Heerde,12,Overijssel
+1413,52.487,6.025,Knooppunt Hattemmerbroek,12,Overijssel
+1414,52.410,5.890,'t Harde,12,Overijssel
+1415,52.243,6.304,Bathmen,12,Overijssel
+1416,52.310,6.699,Azelo,12,Overijssel
+1417,52.309,7.006,De Lutte,12,Overijssel
+1418,52.266,6.751,Delden,12,Overijssel
+1419,52.133,6.682,Haaksbergen,12,Overijssel
+1420,52.357,6.570,Wierden,12,Overijssel
+1421,52.488,6.600,Westerhaar,12,Overijssel
+1435,52.136,5.983,Immenberg,10,Gelderland
+1505,51.696,5.101,Tijdelijke brug Waalijk,4,Brabant West

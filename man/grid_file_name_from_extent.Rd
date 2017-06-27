@@ -10,5 +10,8 @@ grid_file_name_from_extent(ext = Haag.ext)
 \item{ext}{extent in RD-coordinates}
 }
 \description{
+get the grid file names for an extention
+}
+\details{
 Grid file names from extent
 }

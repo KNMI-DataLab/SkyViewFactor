@@ -1,3 +1,9 @@
+#' Load tile whole Netherlands
+#' @title Load Tiles
+#' @description Load tiles for the whole Netherlands
+#' @param filepath path to the LAS files
+#' @export 
+
 loadTileWholeNL <- function(filepath){
   
   #coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")

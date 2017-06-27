@@ -7,6 +7,8 @@
 loadTileGMSFromLas(path, coordX, coordY)
 }
 \arguments{
+\item{path}{path to the files}
+
 \item{coordX}{x-coordinate in RD coordinates}
 
 \item{coordY}{y-coordinate in RD coordinates}

@@ -9,12 +9,12 @@
 #' @param x x-coordinates in meters (RDcoordinates)
 #' @param y y-coordinates in meters (RDcoordinates)
 #' @param distance distance for which the path should be calculated
-#' 
+#' @param rbuffer raster which is masked in \code{\link{lines_from_las}}
 #' 
 #' 
 #' @export
 
-calculate_path<-function(theta,x=x,y=y,distance=distance){
+calculate_path<-function(theta,x=x,y=y,distance,rbuffer){
   dx<-cos(theta)*distance
   dy<-sin(theta)*distance
   
@@ -31,7 +31,7 @@ calculate_path<-function(theta,x=x,y=y,distance=distance){
   XY<-cbind(xy1,distance)
   XY<-data.frame(XY)
   
-  values<-raster::extract(buffer,XY[1:2])
+  values<-raster::extract(rbuffer,XY[1:2],buffer=3,fun=mean,na.rm=TRUE)
   XY<-cbind(XY,values)
   names(XY)<-c("x","y","distance","height")
   return(XY)

@@ -5,7 +5,7 @@
 \title{Calculate Path
 \code{calculate_path} calculates the path for given distance, angles and coordinates from a raster file.}
 \usage{
-calculate_path(theta, x = x, y = y, distance = distance)
+calculate_path(theta, x = x, y = y, distance, rbuffer)
 }
 \arguments{
 \item{theta}{angle or angles in degrees}
@@ -15,6 +15,8 @@ calculate_path(theta, x = x, y = y, distance = distance)
 \item{y}{y-coordinates in meters (RDcoordinates)}
 
 \item{distance}{distance for which the path should be calculated}
+
+\item{rbuffer}{raster which is masked in \code{\link{lines_from_las}}}
 }
 \description{
 calculates the path for different angles

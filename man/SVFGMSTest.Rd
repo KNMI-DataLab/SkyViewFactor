@@ -11,8 +11,13 @@ SVFGMSTest(pointX, pointY, maxView, proj)
 
 \item{pointY}{y-coordinates of the point in RD coordinates}
 
+\item{maxView}{maximum viewing distance of the svf calculation}
+
 \item{proj}{projection}
 }
 \description{
+test function for the GMS dataset to calculate the SVF
+}
+\details{
 Test function
 }

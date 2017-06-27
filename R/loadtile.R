@@ -1,5 +1,7 @@
 #' Load a tile
 #' @title Load LAS tile
+#' @description loads the first tile where the point is located
+#' @param path is the path to the files
 #' @param coordX x-coordinate in RD coordinates
 #' @param coordY y-coordinate in RD coordinates
 #' @export

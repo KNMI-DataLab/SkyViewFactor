@@ -10,16 +10,19 @@ mergeNeighborTilesGSMTest(path, tileNumberXCoord, tileNumberYCoord,
 \arguments{
 \item{path}{path to the tiles}
 
-\item{maxView}{?}
+\item{tileNumberXCoord}{X-coordinates of the center tile}
+
+\item{tileNumberYCoord}{Y-coordinates of the center tile}
+
+\item{extensionMainTile}{no clue, Andrea?}
+
+\item{maxView}{in svf calculations}
 
 \item{projection}{a projection, guess RDcoords?}
-
-\item{tileNumberXcoord}{X-coordinates of the center tile}
-
-\item{tileNumberYcoord}{Y-coordinates of the center tile}
-
-\item{extentionMainTile}{no clue, Andrea?}
 }
 \description{
+merging tiles surrounding your object
+}
+\details{
 Merge tiles
 }

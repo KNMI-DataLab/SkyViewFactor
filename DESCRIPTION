@@ -3,8 +3,20 @@ Type: Package
 Title: Calculate the Sky view factor from las files
 Version: 1.0
 Date: 2017-06-15
-Author: Andrea Pagani and Marieke Dirksen
+Authors@R:person("Marieke", "Dirksen", email = "marieke.dirksen@knmi.nl",
+                  role = c("aut", "cre"))
 Maintainer: Who to complain to <marieke.dirksen@knmi.nl>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
+Imports:  data.table, 
+          doParallel,
+          horizon,
+          magrittr,
+          raster,
+          RCurl,
+          rgeos,
+          rLiDAR,
+          R.utils,
+          stringr
 RoxygenNote: 6.0.1
+
