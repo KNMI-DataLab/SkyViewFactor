@@ -11,12 +11,17 @@ License: What license is it under?
 Imports:  data.table, 
           doParallel,
           horizon,
+          leaflet,
           magrittr,
           raster,
           RCurl,
+          rgdal,
           rgeos,
           rLiDAR,
           R.utils,
-          stringr
+          shiny,
+          sp,
+          stringr,
+          stringi
 RoxygenNote: 6.0.1
 

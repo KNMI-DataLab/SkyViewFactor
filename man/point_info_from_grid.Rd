@@ -4,17 +4,17 @@
 \alias{point_info_from_grid}
 \title{Point info from grid}
 \usage{
-point_info_from_grid(point = df[1, ], n = 2,
-  save_dir = "data/test_point.txt")
+point_info_from_grid(point = df[1, ], n = 2)
 }
 \arguments{
-\item{point}{a point with tileNumerXCoord, tilenumberYcoord}
+\item{point}{a point with x-coords and y-coords in RD}
 
 \item{n}{layer number of the grid}
-
-\item{save_dir}{save file name with extention .txt}
 }
 \description{
+returns the grid file name the point is in
+}
+\details{
 Point information from the grid files
 }
 \author{
