@@ -8,6 +8,7 @@ library(stringi)
 library(stringr)
 library(leaflet)
 library(DT)
+library(shinyjs)
 
 pro=CRS("+init=epsg:28992")
 WGS84<-CRS("+init=epsg:4326")
@@ -30,7 +31,7 @@ box<-bbox(st)
 
 
 server<-function(input,output,session){
-  
+  #addClass(selector = "body", class = "sidebar-collapse") # to collapse sidebar
   
   output$coords = DT::renderDataTable(coords.pro, selection = 'single')
  
@@ -46,13 +47,12 @@ server<-function(input,output,session){
     
   })
   
-  output$test<-renderTable(selectedTiles())
-  
   output$svf<-renderLeaflet({
     
     if(is.null(input$coords_row_last_clicked)){dat<-st
     } else {dat <- selectedTiles()
-            box<-bbox(dat)}
+           }
+    box<-bbox(dat)
     
     pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(dat[[2]]),
                         na.color = "transparent")
