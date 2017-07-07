@@ -24,6 +24,8 @@ loadTile <- function(path, coordX, coordY){
   outDF<-do.call(rbind.data.frame, out.matrix)
   #out<-data.frame(out.matrix)
   system(paste0("rm ", temp_dir, uuid,"/*.las"))
+  system(paste0("rm -r ", temp_dir,uuid))
+  
   
   rm(out.matrix,multifiles,uuid,centralFile,files,currentFiles,files_las)
   gc()

@@ -69,7 +69,7 @@ SVFWholeNL<-function(filepath, maxView){
               overwrite=TRUE)
   
   #Writing a table which will be appended if exists
-  write.table(r.df,file="NLSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF.txt"))
+  write.table(r.df,file="NLSVF200m.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF200m.txt"))
   
   }
   else {

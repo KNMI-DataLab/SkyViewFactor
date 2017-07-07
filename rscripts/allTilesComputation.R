@@ -20,7 +20,7 @@ sourceDirectory("functions")
 workingPath <<- getwd()
 
 #Andrea
-output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF_200m/"
 lazFolder <<- c("/data1/", "/data2/", "/data3")
 lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
 dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
@@ -45,7 +45,7 @@ WGS84<<-CRS("+init=epsg:4326")
 Xres<<-5 # x-resolution in meters
 Yres<<-5 # y-resolution in meters
 
-maxView<<-100 # max view for the SVF
+maxView<<-200 # max view for the SVF
 
 registerDoParallel(10) #number of parallel cores
 #####################################################################
@@ -56,12 +56,12 @@ main<-function(){
 
 listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 
-listTiles <- listTiles[20001:40000]
+#listTiles <- listTiles[40001:length(listTiles)]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
 
-logfile<-"logNew.txt"
+logfile<-"logNew200m.txt"
 
 system.time(
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
