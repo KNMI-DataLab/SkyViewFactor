@@ -57,7 +57,7 @@ server<-function(input,output,session){
     pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(dat[[2]]),
                         na.color = "transparent")
     
-    leaflet() %>% addTiles() %>% setView((box[1]+box[3])/2,(box[2]+box[4])/2,15) %>% 
+    leaflet() %>% addTiles() %>% fitBounds(box[1],box[2],box[3],box[4]) %>% 
       addRasterImage(dat[[2]], colors = pal,opacity = 0.8) %>% 
       addMarkers(data=coords, popup = ~ DS_CODE) %>%
       addLegend("bottomright",title="Sky View Factor",pal = pal,values=values(dat[[2]]),opacity = 1)

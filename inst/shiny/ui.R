@@ -31,6 +31,12 @@ ui<-dashboardPage(
     #useShinyjs(), # to collapse sidebar
     fluidPage(
     
-    fluidRow(leafletOutput("svf")),
-    fluidRow(DT::dataTableOutput("coords"))))
+    fluidRow(
+      
+      column(4,DT::dataTableOutput("coords")),
+             column(4,leafletOutput("svf"))
+    )
+     
+)
+)
 )
