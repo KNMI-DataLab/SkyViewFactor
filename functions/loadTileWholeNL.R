@@ -1,3 +1,17 @@
+#' Load a tile into memory from a LAZ file and clean up the disk location after is loaded in memory
+#' 
+#' \code{loadTileWholeNL}  loads a tile into memory from a LAZ file given the path where the tiles are located. 
+#' The coordinates are extracted form the file name. It is used to load all the tiles by looping through them.
+#' A check is performed if a tile is composed by multiple tiles; if so they are loaded as well.
+#' 
+#' @seealso This function is called in \code{\link{SVFWholeNL}}
+#' @param path filesystem location of all tiles
+#' 
+#' 
+#' 
+#' @export
+
+
 loadTileWholeNL <- function(filepath){
   
   #coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")

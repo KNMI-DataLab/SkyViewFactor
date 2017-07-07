@@ -1,3 +1,20 @@
+#' Identifies and crops the 8 tiles surrounding a central tile if they exist
+#' 
+#' \code{mergeNeighborTiles} returns a spatial dataframe list of the 8-tile edge surrounding a central cell.
+#' The edge has an extention of maxView, thus the dataframes are cropped to the appropriate extention. 
+#' 
+#' @seealso This function is called in \code{\link{SVF}}
+#' @param path location of the all tiles
+#' @param tileNumberXcoord tile x coordinate (RDcoordinate)
+#' @param tileNumberYcoord tile y coordinate (RDcoordinate)
+#' @param extentionMainTile spatial extention of the main tile to attach the edges to
+#' @param maxView maximal horizon view
+#' @param projection CRS projection object
+#' @return dfs cropped spatial dataframe list of the edge frame
+#' 
+#' 
+#' @export
+
 mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView,projection){
   
   #print("hello")

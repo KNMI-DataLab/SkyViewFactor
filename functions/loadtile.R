@@ -1,3 +1,18 @@
+#' Load a tile into memory from a LAZ file and clean up the disk location after is loaded in memory
+#' 
+#' \code{loadTile}  loads a tile into memory from a LAZ file given the path where the tiles are and the coordinates.
+#' A check is performed if a tile is composed by multiple tiles; if so they are loaded as well.
+#' 
+#' @seealso This function is called in \code{\link{mergeNeighborTiles}}
+#' @param path filesystem location of all tiles
+#' @param coordX x-coordinates in meters (RDcoordinates)
+#' @param coordY y-coordinates in meters (RDcoordinates)
+#' 
+#' 
+#' 
+#' @export
+
+
 loadTile <- function(path, coordX, coordY){
   
   coordX<-str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
@@ -25,8 +40,6 @@ loadTile <- function(path, coordX, coordY){
   #out<-data.frame(out.matrix)
   system(paste0("rm ", temp_dir, uuid,"/*.las"))
   system(paste0("rm -r ", temp_dir,uuid))
-  
-  
   rm(out.matrix,multifiles,uuid,centralFile,files,currentFiles,files_las)
   gc()
   return(outDF)

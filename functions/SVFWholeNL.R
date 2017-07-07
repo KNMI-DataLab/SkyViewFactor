@@ -1,3 +1,17 @@
+#' Coumputes Sky View Factor (SVF) of a tile. The SVF of the whole tile is returned.
+#' 
+#' \code{SVF} computes the Sky View Factor (SVF) given a path of a tile, maximal horizon view.
+#' The data is saved into a text file (NLSVF200m.txt) and in a grid file (with name as the coordinates).
+#' 
+#' @param pointX x-coordinates in meters (RDcoordinates)
+#' @param pointY y-coordinates in meters (RDcoordinates)
+#' @param maxView maximal horizon view
+#' 
+#' 
+#' 
+#' @export
+
+
 SVFWholeNL<-function(filepath, maxView){
   
   

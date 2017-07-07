@@ -1,3 +1,18 @@
+#' Coumputes Sky View Factor (SVF) of a point belonging to a tile. The SVF of the whole tile is returned.
+#' 
+#' \code{SVF} computes the Sky View Factor (SVF) given x and y coordinates (RDcoordinates), maximal horizon view and the projection used.
+#' The data is saved into a text file (NLSVF.txt) and in a grid file (with name as the coordinates).
+#' 
+#' @param pointX x-coordinates in meters (RDcoordinates)
+#' @param pointY y-coordinates in meters (RDcoordinates)
+#' @param maxView maximal horizon view
+#' @param proj coordinate referencs system object
+#' 
+#' 
+#' 
+#' @export
+
+
 SVF<-function(pointX, pointY, maxView, proj){
   
   
@@ -31,17 +46,6 @@ SVF<-function(pointX, pointY, maxView, proj){
     else{
       mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
     }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   #neighbors<-mergeNeighborTiles(lazFolder, as.integer(tileNumberXCoord), as.integer(tileNumberYCoord), extensionMainTile, maxView, pro)
  
