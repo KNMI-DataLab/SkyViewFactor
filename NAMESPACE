@@ -1,1 +1,7 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("methods", "as")
+importFrom("stats", "df")
+importFrom("utils", "write.table")
+importFrom("stringr","str_pad")
+importFrom("raster","crop","extent","rasterize","res","crs","mask")
+importFrom("rgeos","gBuffer")
