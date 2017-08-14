@@ -1,0 +1,14 @@
+default:
+  pro : !expr CRS("+init=epsg:28992") #you need the config package and: config::get(file="config/config.yml")
+  WGS84: !expr CRS("+init=epsg:4326")
+  Xres : 5 # x-resolution in meters
+  Yres : 5 # y-resolution in meters
+  maxView : 200 # max view for the SVF
+  cores : 10 #number of parallel cores
+  output_dir : "/home/pagani/development/SkyViewFactor/data/gridsNLSVF_200m/"
+  lazFolder : !expr c("/data1/", "/data2/", "/data3")
+  lasZipLocation : "/home/pagani/tools/LAStools/bin/laszip"
+  temp_dir : "/home/pagani/development/SkyViewFactor/data/tiles/"
+  output_dir_m : "/home/dirksen/SVF/gridsSVF/"
+  lazFolder_m : !expr c("/data1/", "/data2/", "/data3")
+  temp_dir_m : "/home/dirksen/SVF/temp/"  
