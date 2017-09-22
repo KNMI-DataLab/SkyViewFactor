@@ -21,9 +21,9 @@ lasZipLocation <- "/home/pagani/tools/LAStools/bin/laszip"
 temp_dir <- "/home/pagani/development/SkyViewFactor/data/LAZsample/"
 
 
-pro<<-CRS("+init=epsg:28992")
+pro<-CRS("+init=epsg:28992")
 
-registerDoParallel(10) #number of parallel cores
+registerDoParallel(8) #number of parallel cores
 
 
 Xres<-1 # x-resolution in meters
@@ -35,7 +35,7 @@ listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
                     "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
-                    "loadNeighborTile_v2","mergeNeighborTiles")) %do%
+                    "loadNeighborTile_v2","mergeNeighborTiles")) %dopar%
                     {
 fileLAZ<-listTiles[[i]]
 splitStr<-stringr::str_split(fileLAZ,"/", simplify = T)
@@ -47,8 +47,8 @@ fileLAS<-paste0(temp_dir,filename,".las")
 if(!file.exists(paste0(output_dir, filename, ".tif")))
 {
   system(paste0(lasZipLocation, " -i ", fileLAZ, " -o ", fileLAS))
-  file.remove(fileLAS)
   lasData<-readLAS(fileLAS)
+  file.remove(fileLAS)
   DF<-data.frame(lasData)
   pro<-CRS("+init=epsg:28992")
   DFSpatial<-makeSpatialDF(DF,projection = pro)
@@ -57,7 +57,7 @@ if(!file.exists(paste0(output_dir, filename, ".tif")))
   DFraster<-makeRaster(DFSpatial,Xres,Yres,pro)
   #writeRaster(DFraster,"/home/pagani/development/SkyViewFactor/data/LAZsample/testRaster")
   writeRaster(DFraster,paste0(output_dir,filename), format="GTiff")
-  
+  gc()
 }
 
 }
