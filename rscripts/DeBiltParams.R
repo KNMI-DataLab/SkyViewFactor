@@ -11,7 +11,7 @@ library(rgdal)
 library(rLiDAR)
 library(foreach)
 library(doParallel)
-library(uuid)
+#library(uuid)
 library(data.table)
 library(stringr)
 library(spatial.tools)
@@ -144,7 +144,7 @@ registerDoParallel(3) #number of parallel cores
 
 
 
-raster_dir<-"/data1/lidarTilesDeBilt5m/"
+raster_dir<-"/home/ubuntu/efs/TilesDeBilt5m/"
 
 
 listGRDTiles <- list.files(path = raster_dir, ".grd", full.names = T, recursive = T)
@@ -156,18 +156,18 @@ merged <- do.call(merge, test)
 
 
 tasks<-list(
-svf100_16 = function() svf(merged, nAngles = 16, maxDist = 100),
-svf200_16 = function() svf(merged, nAngles = 16, maxDist = 200),
-svf400_16 = function() svf(merged, nAngles = 16, maxDist = 400),
-svf800_16 = function() svf(merged, nAngles = 16, maxDist = 800),
-svf100_32 = function() svf(merged, nAngles = 32, maxDist = 100),
-svf200_32 = function() svf(merged, nAngles = 32, maxDist = 200),
-svf400_32 = function() svf(merged, nAngles = 32, maxDist = 400),
-svf800_32 = function() svf(merged, nAngles = 32, maxDist = 800),
-svf100_64 = function() svf(merged, nAngles = 64, maxDist = 100),
-svf200_64 = function() svf(merged, nAngles = 64, maxDist = 200),
-svf400_64 = function() svf(merged, nAngles = 64, maxDist = 400),
-svf800_64 = function() svf(merged, nAngles = 64, maxDist = 800)
+svf100_16 = function() svf(merged, nAngles = 16, maxDist = 100, ll=F),
+svf200_16 = function() svf(merged, nAngles = 16, maxDist = 200, ll=F),
+svf400_16 = function() svf(merged, nAngles = 16, maxDist = 400, ll=F),
+svf800_16 = function() svf(merged, nAngles = 16, maxDist = 800, ll=F),
+svf100_32 = function() svf(merged, nAngles = 32, maxDist = 100, ll=F),
+svf200_32 = function() svf(merged, nAngles = 32, maxDist = 200, ll=F),
+svf400_32 = function() svf(merged, nAngles = 32, maxDist = 400, ll=F),
+svf800_32 = function() svf(merged, nAngles = 32, maxDist = 800, ll=F),
+svf100_64 = function() svf(merged, nAngles = 64, maxDist = 100, ll=F),
+svf200_64 = function() svf(merged, nAngles = 64, maxDist = 200, ll=F),
+svf400_64 = function() svf(merged, nAngles = 64, maxDist = 400, ll=F),
+svf800_64 = function() svf(merged, nAngles = 64, maxDist = 800, ll=F)
 )
 
   
@@ -179,7 +179,9 @@ out <- mclapply(
   mc.cores = 8 
 )
 
-
+for(i in 1:length(tasks)){
+  writeRaster(tasks[[i]],paste0("/home/ubuntu/efs/output/5m",names(tasks[i])))
+}
 
 
   
