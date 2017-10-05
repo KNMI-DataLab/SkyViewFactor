@@ -23,7 +23,7 @@ temp_dir <- "/home/pagani/development/SkyViewFactor/data/LAZsample/"
 
 pro<-CRS("+init=epsg:28992")
 
-registerDoParallel(8) #number of parallel cores
+registerDoParallel(6) #number of parallel cores
 
 
 Xres<-1 # x-resolution in meters
@@ -47,6 +47,8 @@ fileLAS<-paste0(temp_dir,filename,".las")
 if(!file.exists(paste0(output_dir, filename, ".tif")))
 {
   system(paste0(lasZipLocation, " -i ", fileLAZ, " -o ", fileLAS))
+  print(i)
+  print(fileLAS)
   lasData<-readLAS(fileLAS)
   file.remove(fileLAS)
   DF<-data.frame(lasData)
@@ -54,10 +56,14 @@ if(!file.exists(paste0(output_dir, filename, ".tif")))
   DFSpatial<-makeSpatialDF(DF,projection = pro)
   Xres<-1
   Yres<-1
+  print(extent(DFSpatial))
+  #introduced since several tiles have the x component with extention 0
+  if((xmin(DFSpatial)!=xmax(DFSpatial)) & (ymin(DFSpatial)!=ymax(DFSpatial))){
   DFraster<-makeRaster(DFSpatial,Xres,Yres,pro)
   #writeRaster(DFraster,"/home/pagani/development/SkyViewFactor/data/LAZsample/testRaster")
   writeRaster(DFraster,paste0(output_dir,filename), format="GTiff")
   gc()
+  }
 }
 
 }
