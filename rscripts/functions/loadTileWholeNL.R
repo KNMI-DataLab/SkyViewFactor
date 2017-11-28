@@ -35,7 +35,7 @@ loadTileWholeNL <- function(filepath){
   }
   multifiles <- NULL
   if(multifileFlag){
-    multifiles<-list.files(path = lazFolder, pattern = paste0("ahn_", coordX,"_", coordY,"_.*"), full.names = T, recursive = T)
+    multifiles<-list.files(path = dataFolder, pattern = paste0("ahn_", coordX,"_", coordY,"_.*"), full.names = T, recursive = T)
   }
   #dir.create(paste0(temp_dir,uuid,"/"))
   centralFile<-filepath #list.files(path = path, paste0("ahn_", coordX,"_", coordY,".laz"), full.names = T, recursive = T)
@@ -48,13 +48,16 @@ loadTileWholeNL <- function(filepath){
   #system("/usr/people/pagani/opt/testFile/LAStools/bin/laszip .laz")
   #system(paste0("rm ", temp_dir, uuid,"/*.laz"))
   #files_las<-list.files(paste0(temp_dir, uuid),pattern="*.las$",full.names = TRUE)
-  out.matrix<-lapply(files, raster)
-  outDF<-do.call(merge, c(out.matrix, tolerance = 10))
+  out.matrix<-lapply(unique(unlist(files)), stack)
+  #out.matrix$tolerance = 10
+  #names(out.matrix)<- 'x'
+  #out.matrix$filename <- 'test.tif'
+  outDF<-do.call(raster::merge, c(out.matrix, tolerance =10))
   #out<-data.frame(out.matrix)
   #system(paste0("rm ", temp_dir, uuid,"/*.las"))
   #system(paste0("rm -r ", temp_dir,uuid))
   
-  rm(out.matrix,multifiles,uuid,centralFile,files,currentFiles,files_las, splits, filepath)
+  rm(out.matrix,multifiles,uuid,centralFile,files, splits, filepath)
   gc()
   return(outDF)
   }

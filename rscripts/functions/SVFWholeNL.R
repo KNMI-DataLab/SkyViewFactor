@@ -32,17 +32,18 @@ SVFWholeNL<-function(filepath, maxView){
   
   
   mainTile<-loadTileWholeNL(filepath)
-  mainTile<-makeSpatialDF(mainTile,projection = pro)
+  #mainTile<-makeSpatialDF(mainTile,projection = pro)
   extensionMainTile<-extent(mainTile)
   
   if(xmax(extensionMainTile)!=xmin(extensionMainTile) & ymax(extensionMainTile)!=ymin(extensionMainTile))
      {
   
-  neighbors<-mergeNeighborTiles(lazFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
+  neighbors<-mergeNeighborTiles(dataFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
   
   #neighbors<-lapply(neighbors,checkCoordinates)
  
-  rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
+  #rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
+  rasterizedNeighbors<-neighbors
   if(length(rasterizedNeighbors)==1){
     mergedNeighbors<-rasterizedNeighbors[[1]]
   }
@@ -54,7 +55,7 @@ SVFWholeNL<-function(filepath, maxView){
   }
   rm(neighbors)
   rm(rasterizedNeighbors)
-  rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
+  rasterizedMainTile<-mainTile#makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
   #rasterOptions(tolerance = 0.1)
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 10)
@@ -67,8 +68,9 @@ SVFWholeNL<-function(filepath, maxView){
   #to fix the small inconsistencies in the extention (sometimes small approx are introduced in the extent)
   out<-fix_extent(rasterizedMainTile,out)
 
-  r.b<-brick(rasterizedMainTile,out[[1]])
+  r.b<-brick(list(rasterizedMainTile,out[[1]]))
   names(r.b)<-c("Z","SVF")
+  print("testtt")
   r.df<-as.data.frame(r.b,xy=TRUE)
   
   ##############################################
@@ -83,7 +85,7 @@ SVFWholeNL<-function(filepath, maxView){
               overwrite=TRUE)
   
   #Writing a table which will be appended if exists
-  write.table(r.df,file="NLSVF200m.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF200m.txt"))
+  #write.table(r.df,file="NLSVF200m.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF200m.txt"))
   
   }
   else {

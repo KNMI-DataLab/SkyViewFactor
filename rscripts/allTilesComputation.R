@@ -12,7 +12,7 @@ library(spatial.tools)
 #All the functions are stored in the folder functions
 #With the library R.utils and the command sourceDirectory all the functions are loaded
 library(R.utils)
-sourceDirectory("functions")
+sourceDirectory("functions/")
 
 #####################################################################
 #DIRECTORIES
@@ -20,11 +20,14 @@ sourceDirectory("functions")
 workingPath <<- getwd()
 
 #Andrea
-output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF_200m/"
-lazFolder <<- c("/data1/", "/data2/", "/data3")
-lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
-dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
-temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
+#output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF_200m/"
+#dataFolder <<- "/efs/tiles"
+dataFolder <<- "/data1/lidarTilesGTiff_1m"
+output_dir<<-"/home/pagani/temp/efs/output/"
+logDir<<-"/home/pagani/temp/efs/log/"
+#lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
+#dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
+#temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
 
 #Marieke
 # output_dir<<-"/home/dirksen/SVF/gridsSVF/"
@@ -42,10 +45,10 @@ temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
 
-Xres<<-5 # x-resolution in meters
-Yres<<-5 # y-resolution in meters
+Xres<<-100 # x-resolution in meters
+Yres<<-100 # y-resolution in meters
 
-maxView<<-200 # max view for the SVF
+maxView<<-100 # max view for the SVF
 
 registerDoParallel(10) #number of parallel cores
 #####################################################################
@@ -54,24 +57,27 @@ registerDoParallel(10) #number of parallel cores
 
 main<-function(){
 
-listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
+listTiles <- list.files(path = dataFolder, ".tif", full.names = T, recursive = T)
 
 #listTiles <- listTiles[40001:length(listTiles)]
 
 
 #SVF(tiles_unique[1,]$tileNumberXCoord, tiles_unique[1,]$tileNumberYCoord,maxView, pro)
 
-logfile<-"logNew200m.txt"
+logfile<-paste0(logDir,"logNewAWS.txt")
+logfile2<-paste0(logDir,"22logNewAWS.txt")
+
 
 system.time(
-foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
+foreach(i =  2500:2510, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
         .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "temp_dir", "maxView", "Xres", "Yres",
+                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres",
                     "loadNeighborTile_v2","mergeNeighborTiles"), .combine = f(length(listTiles))) %dopar%
 {
   write(paste("processing ", i, listTiles[[i]]),file = logfile, append = T)
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
+  #write(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri"), file = logfile2, append = T)
     if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))
      {
 
@@ -80,7 +86,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
-      tryCatch(outp<-SVFWholeNL(listTiles[[i]],maxView), error=function(e){print(paste0("tile with point x=", listTiles[[i]][1], " y=",listTiles[[i]][2]," not available in dataset. Skipping point.")); return(NULL)})
+      tryCatch(outp<-SVFWholeNL(listTiles[[i]],maxView), error=function(e){write(paste0(e, "tile ", listTiles[[i]]," with error"),file = logfile, append = T); return(NULL)})
 
       #SVFWholeNL(listTiles[[i]],maxView)
 
@@ -102,7 +108,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
   }
 })
 
-unlink(temp_dir, recursive = T)
+#unlink(temp_dir, recursive = T)
 }
 
 
