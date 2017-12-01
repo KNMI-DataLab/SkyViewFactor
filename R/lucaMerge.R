@@ -39,7 +39,7 @@ getNeighbors<-function(X,Y){
   cells<-expand.grid(c(X,Xleft,Xright),c(Y,Yabove,Ybelow))
   
   rastersCells<-apply(cells[,c('Var1','Var2')], 1, function(x) getRaster(x[1],x[2]))
-  mergedRaster<-do.call(merge,rastersCells)
+  mergedRaster<-do.call(raster::merge,rastersCells)
   
   
   
