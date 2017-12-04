@@ -37,9 +37,10 @@ getNeighbors<-function(X,Y){
   Ybelow<-Y-1000
   Yabove<-Y+1000
   cells<-expand.grid(c(X,Xleft,Xright),c(Y,Yabove,Ybelow))
+  print(cells)
   
   rastersCells<-apply(cells[,c('Var1','Var2')], 1, function(x) getRaster(x[1],x[2]))
-  mergedRaster<-do.call(raster::merge,rastersCells)
+  mergedRaster<-do.call(raster::merge,c(rastersCells, tolerance =100))
   
   
   
@@ -52,16 +53,17 @@ getRaster<-function(X,Y){
   multifileFlag<-checkIfMultiTile(path,X,Y)
   if(multifileFlag){
     multifiles<-list.files(path = path, pattern = paste0("ahn_",X,"_", Y,"_.*"), full.names = T, recursive = T)
-    rasterData<-lapply(multifiles, function(i){raster(i)})
+    rasterData<-lapply(multifiles, function(i){stack(i)})
   } else{
     multifiles<-file
-    rasterData<-raster(multifiles)
+    rasterData<-lapply(multifiles,stack)
   }
   
   
   
   
-  rasterData
+  merrasters<-do.call(raster::merge,c(rasterData, tolerance =100))
+  merrasters
 }
 
 
@@ -88,7 +90,7 @@ if(multifileFlag){
   multifiles<-file
 }
 neig<-getNeighbors(coordX,coordY)
-mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
+#mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))
 
 
 
