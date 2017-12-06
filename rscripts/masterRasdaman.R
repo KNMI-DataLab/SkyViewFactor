@@ -7,6 +7,7 @@ library(raster)
 library(rgdal)
 library(rtiff)
 library(horizon)
+library(uuid)
 
 
 
@@ -49,13 +50,12 @@ processingTileSideY<-slaveBand/10
 
 
 #contentTIFF<-content(coverageExample,"raw")
+cl <- makeCluster(8)
+registerDoParallel(cl)
 
-
-#foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
- # .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-   #           "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres",
-   #           "loadNeighborTile_v2","mergeNeighborTiles"), .combine = f(length(listTiles))) %dopar%{
-    i=1            
+foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
+  .export = c( "radiusSVF")) %dopar%{
+    #i=1            
                 
                 Xmin=140000
                 Ymin=456000
@@ -86,7 +86,7 @@ processingTileSideY<-slaveBand/10
                   if(ySelHigh>Ymax){
                     ySelHigh = Ymax
                   }
-                  for(xside in 1:8){#numTilesX){
+                  for(xside in 1:2){#numTilesX){
                     if(xP==Xmin){
                       xSelLow = Xmin
                       xSelHigh = xSelLow + processingTileSideX + radiusSVF
@@ -101,7 +101,9 @@ processingTileSideY<-slaveBand/10
                     print(c(xP, yP))
                     coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
                     
-                    command<-paste0("wget \"", coverageExample, "\" -O temp.tiff")
+                    uuidVal<-UUIDgenerate()
+                    
+                    command<-paste0("wget \"", coverageExample, "\" -O ", uuidVal,"temp.tiff")
                     
                     system(command)
                     
@@ -110,20 +112,25 @@ processingTileSideY<-slaveBand/10
                     #tiffRaw<-coverageExample$content
                     #tiffByte<-readTIFF(tiffRaw)
                     #writeTiff(tiffByte,"temp.tiff")
-                    rastertest<-raster("temp.tiff")
+                    
+                    filename<-paste0(uuidVal,"temp.tiff")
+                    
+                    rastertest<-raster(filename)
                     #crs(rastertest)<-CRS("+init=epsg:28992")
                     #extent(rastertest)<-extent(xSelLow,xSelHigh,ySelLow,ySelHigh)
-                    info<-GDALinfo(fname = "temp.tiff")
+                    info<-GDALinfo(fname = filename)
                     #print(tiffByte)
                     rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
                     rastertest<-aggregate(rastertest, fact = 20)
                     rasterSVF<-svf(rastertest, nAngles = 16, maxDist = 100, ll = F)
+                    writeRaster(rasterSVF, paste0(uuidVal,"--SVF.tiff"), format="GTiff")
                     plot(rastertest)
                     plot(rasterSVF)
+                    unlink(filename)
                     
                   }
                   xP = xInitial
                   yP =  yInitial + processingTileSideY*(yside)
                 }
-             # }
+             }
 
