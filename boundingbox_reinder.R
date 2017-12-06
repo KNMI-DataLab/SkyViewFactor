@@ -1,6 +1,8 @@
 #coordinates box
 #Den Haag  51.7-52.4 N, 3.8-4.9 E. 
 #Eindhoven 51.1-51.9 N, 5-6 E.
+#Zwolle 52.35-52.65 N, 5.7-6.5 E.
+#Amsterdam 52.2-52.5 N, 4.5-5.4 E.
 library(R.utils)
 library(magrittr)
 library(stringr)
@@ -31,8 +33,8 @@ maxView<<-100 # max view for the SVF
 checkNonComputedTiles<-function(){
 
 
-Haag<-extent(3.8,4.9,51.7,52.4)
-Eindhoven<-extent(5,6,51.1,51.9)
+Haag<-extent(5.7,6.5,52.35,52.65)
+Eindhoven<-extent(4.4,5.7,52.1,52.7)
 
 Haag.ext<-extent_from_new_pro(Haag)
 Eindhoven.ext<-extent_from_new_pro(Eindhoven)
@@ -40,18 +42,18 @@ Eindhoven.ext<-extent_from_new_pro(Eindhoven)
 files.Haag<-grid_file_name_from_extent(Haag.ext)
 files.Eindhoven<-grid_file_name_from_extent(Eindhoven.ext)
 
-saveRDS(files.Haag,"data/ReinderHaag.rds")
-saveRDS(files.Eindhoven,"data/ReinderEindhoven.rds")
+saveRDS(files.Haag,"data/ReinderZwolle.rds")
+saveRDS(files.Eindhoven,"data/ReinderAmsterdam.rds")
 
-HaagTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderHaag.rds")
-EindhovenTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderEindhoven.rds")
+HaagTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderZwolle.rds")
+EindhovenTiles<-readRDS("/home/pagani/development/SkyViewFactor/data/ReinderAmsterdam.rds")
 
 #copy data with RCurl
 #scp() #some code to copy
 
 
 ##Checking if the suppoosed GRD files are computed already or those tiles do not exist (e.g., sea, Germany, Belgium)
-wholeNLSVFData<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+wholeNLSVFData<-"/data1/SVFprocessedGrids/gridsNLSVF_100m/"
 
 #files<-lapply(HaagTiles,list.files, path = wholeNLSVFData, full.names = T)
 
@@ -95,32 +97,35 @@ computedFiles<-computedFiles %>% str_replace(".grd", "")
 stillToComputeEindhoven<-lazToBeProcessedForEindhoven[!lazToBeProcessedForEindhoven %in% computedFiles]
 stillToComputeHaag<-lazToBeProcessedForHaag[!lazToBeProcessedForHaag %in% computedFiles]
 
-length(stillToComputeEindhoven)
-
-return(stillToComputeEindhoven)
-}
-
-##SAVING THE FILES TO A ZIP
-#if(length(stillToComputeHaag)==0){
-#readyToShipHaagGRI<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".grd"))
-#readyToShipHaagGRD<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".gri"))
-#setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
-#files<-c(readyToShipHaagGRD, readyToShipHaagGRI)
-#file.copy(files, "~/filesReiner/")
-#Zipping directly from R somehow fails
-#zip("/home/pagani/archiveSVFHaag.zip", files = files)
+#length(stillToComputeEindhoven)
+print(stillToComputeHaag)
+#return(stillToComputeEindhoven)
 #}
 
-if(length(stillToComputeEindhoven)==0){
-readyToShipEindhovenGRI<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".grd"))
-readyToShipEindhovenGRD<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".gri"))
-setwd("/home/pagani/development/SkyViewFactor/data/gridsNLSVF/")
-files<-c(readyToShipEindhovenGRD, readyToShipEindhovenGRI)
-file.copy(files, "~/SVFEindhoven/")
+#SAVING THE FILES TO A ZIP
+if(length(stillToComputeHaag)==0){
+readyToShipHaagGRI<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".grd"))
+readyToShipHaagGRD<-unlist(lapply(lazToBeProcessedForHaag[lazToBeProcessedForHaag %in% computedFiles], paste0, ".gri"))
+setwd("/data1/SVFprocessedGrids/gridsNLSVF_100m/")
+files<-c(readyToShipHaagGRD, readyToShipHaagGRI)
+file.copy(files, "~/SVFZwolle/")
 #Zipping directly from R somehow fails
 #zip("/home/pagani/archiveSVFHaag.zip", files = files)
+
 }
 
+return(stillToComputeHaag)
+
+# if(length(stillToComputeEindhoven)==0){
+# readyToShipEindhovenGRI<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".grd"))
+# readyToShipEindhovenGRD<-unlist(lapply(lazToBeProcessedForEindhoven[lazToBeProcessedForEindhoven %in% computedFiles], paste0, ".gri"))
+# setwd("/data1/SVFprocessedGrids/gridsNLSVF_100m/")
+# files<-c(readyToShipEindhovenGRD, readyToShipEindhovenGRI)
+# file.copy(files, "~/SVFAmsterdam/")
+##Zipping directly from R somehow fails
+##zip("/home/pagani/archiveSVFHaag.zip", files = files)
+#}
+}
 
 
 
@@ -149,7 +154,7 @@ file.copy(files, "~/SVFEindhoven/")
 computeTilesReinder<-function(tilesList){
  
   
-  output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF/"
+  output_dir<<-"/data1/SVFprocessedGrids/temp/"
   lazFolder <<- c("/data1/", "/data2/", "/data3")
   lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
   dir.create("/home/pagani/development/SkyViewFactor/data/tiles")

@@ -26,7 +26,8 @@ SVF<-function(pointX, pointY, maxView, proj){
       mergedNeighbors<-rasterizedNeighbors[[1]]
     }
     else if (length(rasterizedNeighbors)==0){
-      return(-1)  
+      #return(-1)
+      mergedNeighbors <- NULL
     }
     else{
       mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
@@ -52,7 +53,11 @@ SVF<-function(pointX, pointY, maxView, proj){
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
   #rasterOptions(tolerance = 0.1)
+  if(is.null(mergedNeighbors)==FALSE){
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 10)
+  }else{
+    fullRaster<-rasterizedMainTile
+  }
   rm(mergedNeighbors)
   gc()
   
