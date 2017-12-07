@@ -21,10 +21,10 @@ workingPath <<- getwd()
 
 #Andrea
 #output_dir<<-"/home/pagani/development/SkyViewFactor/data/gridsNLSVF_200m/"
-#dataFolder <<- "/efs/tiles"
-dataFolder <<- "/data1/lidarTilesGTiff_1m"
-output_dir<<-"/home/pagani/temp/efs/output/"
-logDir<<-"/home/pagani/temp/efs/log/"
+dataFolder <<- "/home/ubuntu/efs/tiles/"
+#dataFolder <<- "/data1/lidarTilesGTiff_1m"
+output_dir<<-"/home/ubuntu/efs/output/SVF_1m/"
+logDir<<-"/home/ubuntu/efs/log/"
 #lasZipLocation <<- "/home/pagani/tools/LAStools/bin/laszip"
 #dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
 #temp_dir<<-"/home/pagani/development/SkyViewFactor/data/tiles/"
@@ -45,12 +45,12 @@ logDir<<-"/home/pagani/temp/efs/log/"
 pro<<-CRS("+init=epsg:28992")
 WGS84<<-CRS("+init=epsg:4326")
 
-Xres<<-100 # x-resolution in meters
-Yres<<-100 # y-resolution in meters
+#Xres<<-100 # x-resolution in meters
+#Yres<<-100 # y-resolution in meters
 
 maxView<<-100 # max view for the SVF
 
-registerDoParallel(10) #number of parallel cores
+registerDoParallel(2) #number of parallel cores
 #####################################################################
 
 
@@ -76,12 +76,12 @@ prepareCLuster<-function(){
   primary <- '172.31.39.160'
   
   #IPs contains a list of slaves that will run the computations
-  IPs<-paste0("172.31.46.", seq(from = 157, to = 174))
-  #IPs<-c(IPs, "172.31.38.73") ##slave gold master machine
-  IPs<-c("172.31.38.73")
+  #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
+  IPs<-c("172.31.33.94" , "172.31.43.145") ##slave gold master machine
+  #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
-    machines[[i]]<-list(host=ip, user = user, ncore=16)
+    machines[[i]]<-list(host=ip, user = user, ncore=2)
   }
   
   machineAddresses <- list(
@@ -112,11 +112,11 @@ prepareCLuster<-function(){
   
   ##some libraries and functions are explicitly exported
   #clusterEvalQ(parallelCluster, library(imager), FileNameParser())
-  parallelCluster <- cl
+  #parallelCluster <- cl
   registerDoParallel(parallelCluster)
   
   
-  
+ return(parallelCluster)
 }
 
 
@@ -141,25 +141,27 @@ logfile2<-paste0(logDir,"22logNewAWS.txt")
 
 
 system.time(
-foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
-        .export = c("loadTile", "checkMultiTile", "makeSpatialDF", "loadNeighborTiles","makeRaster",
-                    "pro", "workingPath", "lazFolder", "lasZipLocation", "maxView", "Xres", "Yres",
-                    "loadNeighborTile_v2","mergeNeighborTiles"), .combine = f(length(listTiles))) %dopar%
+foreach(i =  1:length(listTiles[1:10]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid","stringr"),
+        .export = c("getTileNumber","loadTile", "checkIfMultiTile", "makeSpatialDF", "makeRaster", "pro", "workingPath", "maxView", "Xres", "Yres","mergeNeighborTiles", "listTiles","dataFolder","output_dir","logDir","SVFWholeNL","loadTileWholeNL","checkCoordinates","fix_extent"), .combine = f(length(listTiles))) %dopar%
 {
+print("first step in")
+ # print(length(listTiles[1:10]))
+#  print(paste("processing ", i, listTiles[[i]]),file = logfile, append = T)
   write(paste("processing ", i, listTiles[[i]]),file = logfile, append = T)
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
+print(tilesToBeWorked)
   #write(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri"), file = logfile2, append = T)
     if(!file.exists(paste0(output_dir, tilesToBeWorked[[1]],"_", tilesToBeWorked[[2]], ".gri")))
      {
 
       
-      #print("ABC")
+      print("ABC")
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))
       tryCatch(outp<-SVFWholeNL(listTiles[[i]],maxView), error=function(e){write(paste0(e, "tile ", listTiles[[i]]," with error"),file = logfile, append = T); return(NULL)})
-
+      print(outp)
       #SVFWholeNL(listTiles[[i]],maxView)
 
       #tryCatch(outp<-SVF(coord[[i]][1], coord[[i]][2],maxView, pro), error=function(e){print(paste0("tile with point x=", coord[[i]][1], " y=",coord[[i]][2],"not available in dataset. Skipping point.")); return(NULL)})
@@ -207,7 +209,7 @@ getTileNumber <- function(filepath){
 
 #Progress combine function
 f <- function(n){
-  pb <- txtProgressBar(min=1, max=n-1,style=3)
+  pb <- txtProgressBar(min=1, max=10,style=3) #temporaly converted to from n-1 to 10
   count <- 0
   function(...) {
     count <<- count + length(list(...)) - 1
