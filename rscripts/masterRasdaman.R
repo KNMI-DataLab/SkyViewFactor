@@ -8,10 +8,12 @@ library(rgdal)
 library(rtiff)
 library(horizon)
 library(uuid)
+library(logging)
 
 
 
 #master operation
+outputDir<-"/home/pagani/temp/"
 host<-"145.100.59.171"
 reqCapabilities <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCapabilities"))
 xmlList<-xmlToList(reqCapabilities)
@@ -38,33 +40,63 @@ processingTileSideX<-xDistance/100
 
 radiusSVF<-100
 
-numSlaves<-10
+numSlaves<-15
 
 slaveBand<-yDistance/numSlaves
 
-processingTileSideY<-slaveBand/10
+processingTileSideY<-slaveBand/20
   
+
+
+#logger setup
+logReset()
+basicConfig(level='FINEST')
+addHandler(writeToFile, file="~/testing.log", level='DEBUG')
+with(getLogger(), names(handlers))
+
+
+
+#logger for slaves
+
+loginit <- function(logfile) {
+  library(logging)
+  basicConfig(level='FINEST')
+  addHandler(writeToFile, file="~/testing.log", level='DEBUG')
+  with(getLogger(), names(handlers))
+  NULL
+}
+
+
+
+
 
 
 #coverageExample <- GET(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(140000,141000)&subset=Y(456200,458200)&format=image/tiff"))
 
 
 #contentTIFF<-content(coverageExample,"raw")
-cl <- makeCluster(8)
+cl <- makeCluster(numSlaves)
 registerDoParallel(cl)
+loginfo("cluster created")
 
-foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
+
+foreach(input=rep('~/Desktop/out.log', numSlaves), 
+      .packages='logging') %dopar% loginit(input)
+
+
+foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr"), 
   .export = c( "radiusSVF")) %dopar%{
     #i=1            
-                
+                #print("ABC")
                 Xmin=140000
-                Ymin=456000
+                Ymin=306250
                 
                 
                 xInitial = Xmin
                 
-                ySlaveBand<-i * slaveBand
-                yInitial = Ymin + ySlaveBand*(i-1)
+                #ySlaveBand<-i * slaveBand
+                yInitial = Ymin + slaveBand*(i-1)
+                loginfo(paste0(i," ", i, " ", yInitial))
                 
                 xP<-xInitial
                 yP<-yInitial
@@ -79,33 +111,56 @@ foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", 
                   if (yP==Ymin){
                     ySelLow = Ymin
                     ySelHigh = ySelLow + processingTileSideY + radiusSVF
+                    yLowNoFrame = ySelLow
+                    yHighNoFrame = ySelHigh - radiusSVF
                   } else{
                     ySelLow = yInitial + processingTileSideY*(yside-1) -radiusSVF
                     ySelHigh = ySelLow + processingTileSideY + 2*radiusSVF
+                    yLowNoFrame = ySelLow + radiusSVF
+                    yHighNoFrame = ySelHigh - radiusSVF
                   }
                   if(ySelHigh>Ymax){
                     ySelHigh = Ymax
+                    yHighNoFrame = ySelHigh
                   }
+                  loginfo(paste0(i," yLow: ", ySelLow, " yHigh: ", ySelHigh," yinit:",yInitial))
                   for(xside in 1:2){#numTilesX){
                     if(xP==Xmin){
                       xSelLow = Xmin
                       xSelHigh = xSelLow + processingTileSideX + radiusSVF
+                      xLowNoFrame = xSelLow
+                      xHighNoFrame = xSelHigh - radiusSVF
                     } else{
                       xSelLow = xInitial + processingTileSideX*(xside-1) -radiusSVF
                       xSelHigh = xSelLow + processingTileSideX + 2*radiusSVF
+                      xLowNoFrame = xSelLow + radiusSVF
+                      xHighNoFrame = xSelHigh - radiusSVF
                     }
                     
                     if(xSelHigh>Xmax){
                       xSelHigh = Xmax
+                      xHighNoFrame = xSelHigh
                     }
-                    print(c(xP, yP))
+                    #print(c(i, xP, yP))
                     coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
-                    
+
+                    loginfo(paste0("getting coverage: ", coverageExample))
+
                     uuidVal<-UUIDgenerate()
-                    
-                    command<-paste0("wget \"", coverageExample, "\" -O ", uuidVal,"temp.tiff")
-                    
+
+                    command<-paste0("wget -q \"", coverageExample, "\" -O ", outputDir,uuidVal,"temp.tiff")
+
+
+                    headerResponse <- HEAD(coverageExample)
+
+                    if(headerResponse$status_code==200){
                     system(command)
+                    } else{
+                      logerror(paste0("response status server ",headerResponse$status_code, " coverage ",
+                                     coverageExample, " not available"))
+                      next
+                    }
+
                     
                     #print(coverageExample)
                     xP =  xInitial + processingTileSideX*(xside)
@@ -113,24 +168,27 @@ foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", 
                     #tiffByte<-readTIFF(tiffRaw)
                     #writeTiff(tiffByte,"temp.tiff")
                     
-                    filename<-paste0(uuidVal,"temp.tiff")
-                    
+                    filename<-paste0(outputDir,uuidVal,"temp.tiff")
+                    loginfo(paste0("processing raster: ", filename))
                     rastertest<-raster(filename)
-                    #crs(rastertest)<-CRS("+init=epsg:28992")
-                    #extent(rastertest)<-extent(xSelLow,xSelHigh,ySelLow,ySelHigh)
-                    info<-GDALinfo(fname = filename)
-                    #print(tiffByte)
+
                     rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
                     rastertest<-aggregate(rastertest, fact = 20)
+                    message("computing SVF: ")
                     rasterSVF<-svf(rastertest, nAngles = 16, maxDist = 100, ll = F)
-                    writeRaster(rasterSVF, paste0(uuidVal,"--SVF.tiff"), format="GTiff")
-                    plot(rastertest)
-                    plot(rasterSVF)
+                    rasterNoFrameExt<-extent(xLowNoFrame,xHighNoFrame,yLowNoFrame,yHighNoFrame)
+                    rasterNoFrame<-crop(rasterSVF,rasterNoFrameExt)
+                    outputFile<-paste0(outputDir,uuidVal,"--SVF.tiff")
+                    writeRaster(rasterNoFrame, outputFile, format="GTiff")
+                    loginfo(paste0("written SVF raster at file ", outputFile))
+                    #loginfo(paste0("written SVF raster at file ", outputFile))
+                    #plot(rastertest)
+                    #plot(rasterSVF)
                     unlink(filename)
                     
                   }
                   xP = xInitial
                   yP =  yInitial + processingTileSideY*(yside)
                 }
-             }
+            }
 
