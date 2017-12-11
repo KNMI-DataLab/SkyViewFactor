@@ -179,8 +179,17 @@ foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", 
                     rasterNoFrameExt<-extent(xLowNoFrame,xHighNoFrame,yLowNoFrame,yHighNoFrame)
                     rasterNoFrame<-crop(rasterSVF,rasterNoFrameExt)
                     outputFile<-paste0(outputDir,uuidVal,"--SVF.tiff")
-                    writeRaster(rasterNoFrame, outputFile, format="GTiff")
-                    loginfo(paste0("written SVF raster at file ", outputFile))
+                    
+                    result = tryCatch({
+                      writeRaster(rasterNoFrame, outputFile, format="GTiff")
+                      loginfo(paste0("written SVF raster at file ", outputFile))
+                    }, error = function(e) {
+                      logerror(paste0("error writing file ",outputFile, " error ", e$message))
+                    })
+                    
+                    
+                    
+                    
                     #loginfo(paste0("written SVF raster at file ", outputFile))
                     #plot(rastertest)
                     #plot(rasterSVF)
