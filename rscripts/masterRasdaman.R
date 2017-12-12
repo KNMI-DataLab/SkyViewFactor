@@ -13,7 +13,8 @@ library(logging)
 
 
 #master operation
-outputDir<-"/home/pagani/temp/"
+outputDir<-"/home/ubuntu/data/slaves/output/"
+logDir<-"/home/ubuntu/data/slaves/log/"
 host<-"145.100.59.171"
 reqCapabilities <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCapabilities"))
 xmlList<-xmlToList(reqCapabilities)
@@ -40,7 +41,7 @@ processingTileSideX<-xDistance/100
 
 radiusSVF<-100
 
-numSlaves<-4
+numSlaves<-3
 
 slaveBand<-yDistance/numSlaves
 
@@ -51,7 +52,7 @@ processingTileSideY<-slaveBand/40
 #logger setup
 logReset()
 basicConfig(level='FINEST')
-addHandler(writeToFile, file="~/testing.log", level='DEBUG')
+addHandler(writeToFile, file=paste0(logDir,"testing.log"), level='DEBUG')
 with(getLogger(), names(handlers))
 
 
@@ -61,7 +62,7 @@ with(getLogger(), names(handlers))
 loginit <- function(logfile) {
   library(logging)
   basicConfig(level='FINEST')
-  addHandler(writeToFile, file="~/testing.log", level='DEBUG')
+  addHandler(writeToFile, file=paste0(logDir,"testing.log"), level='DEBUG')
   with(getLogger(), names(handlers))
   NULL
 }

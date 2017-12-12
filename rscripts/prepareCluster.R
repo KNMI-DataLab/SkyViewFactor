@@ -1,3 +1,4 @@
+library(doParallel)
 prepareCLuster<-function(){
   
   
@@ -16,11 +17,11 @@ prepareCLuster<-function(){
   machines<-list()
   ## the users and addresses are based on the AWS configuration
   user    <- 'ubuntu'
-  primary <- '10.100.253.6'
+  primary <- '10.100.253.7'
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("10.100.253.7")# , "172.31.43.145") ##slave gold master machine
+  IPs<-c("10.100.253.8")# , "172.31.43.145") ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
