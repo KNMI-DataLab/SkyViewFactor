@@ -1,5 +1,5 @@
 library(doParallel)
-prepareCLuster<-function(){
+prepareCluster<-function(){
   
   
   #cl<-makePSOCKcluster(2)
@@ -17,11 +17,11 @@ prepareCLuster<-function(){
   machines<-list()
   ## the users and addresses are based on the AWS configuration
   user    <- 'ubuntu'
-  primary <- '10.100.253.7'
+  primary <- '10.100.253.8'
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("10.100.253.8")# , "172.31.43.145") ##slave gold master machine
+  IPs<-c("10.100.253.9")# , "172.31.43.145") ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
@@ -57,7 +57,9 @@ prepareCLuster<-function(){
   ##some libraries and functions are explicitly exported
   #clusterEvalQ(parallelCluster, library(imager), FileNameParser())
   #parallelCluster <- cl
-  registerDoParallel(parallelCluster)
+  
+  #let it register in the master function
+  #registerDoParallel(parallelCluster)
   
   
   return(parallelCluster)
