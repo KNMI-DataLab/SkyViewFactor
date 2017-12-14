@@ -25,12 +25,12 @@ prepareCluster<-function(){
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
-    machines[[i]]<-list(host=ip, user = user, ncore=2)
+    machines[[i]]<-list(host=ip, user = user, ncore=3)
   }
   
   machineAddresses <- list(
     list(host=primary,user=user,
-         ncore=1)
+         ncore=2)
   )
   machineAddresses<-c(machineAddresses,machines)
   

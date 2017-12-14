@@ -13,12 +13,13 @@ library(logging)
 
 
 #master operation
-outputDir<-"/home/ubuntu/data/slaves/output/"
-logDir<-"/home/ubuntu/data/slaves/log/"
-host<-"10.100.253.2"
+outputDir<-"/home/pagani/temp/slaves/output/"
+logDir<-"/home/pagani/temp/slaves/log/"
+host<-"145.100.59.171"
 reqCapabilities <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCapabilities"))
 xmlList<-xmlToList(reqCapabilities)
-coverageId<-xmlList[["Contents"]][["CoverageSummary"]][["CoverageId"]]
+#coverageId<-xmlList[["Contents"]][["CoverageSummary"]][["CoverageId"]]
+coverageId<-"HeightCoverage"
 
 reqDescriptionCov <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=DescribeCoverage&coverageId=",coverageId))
 xmlListDescriptionCov <- xmlToList(reqDescriptionCov)
@@ -37,15 +38,15 @@ Xmin<-min(upperCorner[[1]][[1]],lowerCorner[[1]][[1]])
 Ymax<-max(upperCorner[[1]][[2]],lowerCorner[[1]][[2]])
 Ymin<-min(upperCorner[[1]][[2]],lowerCorner[[1]][[2]])
 
-processingTileSideX<-xDistance/100
+#processingTileSideX<-xDistance/100
 
 radiusSVF<-100
 
-numSlaves<-getDoParWorkers()
 
-slaveBand<-yDistance/numSlaves
 
-processingTileSideY<-slaveBand/40
+#slaveBand<-yDistance/numSlaves
+
+#processingTileSideY<-slaveBand/40
   
 
 
@@ -68,109 +69,122 @@ loginit <- function(logfile) {
 }
 
 
+localSlaves<-10
 
-
-
-
-#coverageExample <- GET(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(140000,141000)&subset=Y(456200,458200)&format=image/tiff"))
-
-
-#contentTIFF<-content(coverageExample,"raw")
-#cl <- makeCluster(numSlaves)
-cl<-prepareCluster()
+cl <- makeCluster(localSlaves)
+#cl<-prepareCluster()
 registerDoParallel(cl)
 loginfo("cluster created")
+numSlaves<-getDoParWorkers()
 
 
-foreach(input=rep('~/Desktop/out.log', numSlaves), 
+foreach(input=rep('~/Desktop/out.log', numSlaves),
       .packages='logging') %dopar% loginit(input)
 
 
-foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr"), 
+
+
+
+
+#xcoord<-c(Xmin,Xmax)
+#ycoord<-c(Ymin,Ymax)
+
+
+xCoordsCells<-seq(from=Xmin, to=Xmax, by = 2000)
+yCoordsCells<-seq(from=Ymin, to=Ymax, by = 2000)
+
+fullCoords<-list()
+
+counter<-1
+
+for(i in 1:(length(xCoordsCells)-1)){
+  for(j in 1:(length(yCoordsCells)-1)){
+    if(i==1){
+    xcellMin<-xCoordsCells[[i]]
+    }
+    else{
+      xcellMin<-xCoordsCells[[i]]-radiusSVF
+    }
+    if(i==length(xCoordsCells)-1){
+    xcellMax<-xCoordsCells[[i+1]]
+    }
+    else{
+      xcellMax<-xCoordsCells[[i+1]]+radiusSVF
+    }
+    if(j==1){
+      ycellMin<-yCoordsCells[[j]]
+    }
+    else{
+      ycellMin<-yCoordsCells[[j]]-radiusSVF
+    }
+    if(j==length(yCoordsCells)-1){
+      ycellMax<-yCoordsCells[[j+1]]
+    }
+    else{
+      ycellMax<-yCoordsCells[[j+1]]+radiusSVF
+    }
+    #first 4 coords are the one to be used for the query, other 4 are to be used for crop for remove radius frame
+    coordsForQuery<-c(xcellMin,xcellMax,ycellMin,ycellMax,xCoordsCells[[i]],xCoordsCells[[i+1]],yCoordsCells[[j]],yCoordsCells[[j+1]])
+    #coordsFor
+    print(coordsForQuery)
+    fullCoords[[counter]]<-coordsForQuery
+    counter<-counter+1
+  }
+}
+
+
+
+
+foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr"),
   .export = c( "radiusSVF")) %dopar%{
-    #i=1   
-    
+    #i=1
+
     #for(i in 1:numSlaves){
                 #print("ABC")
-                Xmin=140000
-                Ymin=306250
+                #Xmin=140000
+                #Ymin=306250
+
+
+                fullCoords[[i]]
                 
+                xSelLow <- fullCoords[[i]][[1]]
+                xSelHigh <- fullCoords[[i]][[2]]
+                ySelLow <- fullCoords[[i]][[3]]
+                ySelHigh <- fullCoords[[i]][[4]]
                 
-                xInitial = Xmin
-                
-                #ySlaveBand<-i * slaveBand
-                yInitial = Ymin + slaveBand*(i-1)
-                loginfo(paste0(i," ", i, " ", yInitial))
-                
-                xP<-xInitial
-                yP<-yInitial
-                
-                
-              
-                
-                numTilesX<-xDistance/processingTileSideX 
-                numTilesY<-slaveBand/processingTileSideY
-                
-                for(yside in 1:numTilesY){
-                  if (yP==Ymin){
-                    ySelLow = Ymin
-                    ySelHigh = ySelLow + processingTileSideY + radiusSVF
-                    yLowNoFrame = ySelLow
-                    yHighNoFrame = ySelHigh - radiusSVF
-                  } else{
-                    ySelLow = yInitial + processingTileSideY*(yside-1) -radiusSVF
-                    ySelHigh = ySelLow + processingTileSideY + 2*radiusSVF
-                    yLowNoFrame = ySelLow + radiusSVF
-                    yHighNoFrame = ySelHigh - radiusSVF
-                  }
-                  if(ySelHigh>Ymax){
-                    ySelHigh = Ymax
-                    yHighNoFrame = ySelHigh
-                  }
-                  loginfo(paste0(i," yLow: ", ySelLow, " yHigh: ", ySelHigh," yinit:",yInitial))
-                  for(xside in 1:2){#numTilesX){
-                    if(xP==Xmin){
-                      xSelLow = Xmin
-                      xSelHigh = xSelLow + processingTileSideX + radiusSVF
-                      xLowNoFrame = xSelLow
-                      xHighNoFrame = xSelHigh - radiusSVF
-                    } else{
-                      xSelLow = xInitial + processingTileSideX*(xside-1) -radiusSVF
-                      xSelHigh = xSelLow + processingTileSideX + 2*radiusSVF
-                      xLowNoFrame = xSelLow + radiusSVF
-                      xHighNoFrame = xSelHigh - radiusSVF
-                    }
-                    
-                    if(xSelHigh>Xmax){
-                      xSelHigh = Xmax
-                      xHighNoFrame = xSelHigh
-                    }
-                    #print(c(i, xP, yP))
-                    coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
+                xSelLowNoFrame <- fullCoords[[i]][[5]]
+                xSelHighNoFrame <- fullCoords[[i]][[6]]
+                ySelLowNoFrame <- fullCoords[[i]][[7]]
+                ySelHighNoFrame <- fullCoords[[i]][[8]]
+
+             
+                loginfo(paste0("examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
+
+               coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
 
                     xSelLowCh<-as.character(round(xSelLow))
                     xSelHighCh<-as.character(round(xSelHigh))
                     ySelLowCh<-as.character(round(ySelLow))
                     ySelHighCh<-as.character(round(ySelHigh))
-                    
+
                     filenameTemp<-paste0(outputDir,xSelLowCh,"_",xSelHighCh,"--",ySelLowCh,"_",ySelHighCh,"-","temp.tiff")
-                    
-                    
+
+
                     xSelLowNoFrCh<-as.character(round(xLowNoFrame))
                     xSelHighNoFrCh<-as.character(round(xHighNoFrame))
                     ySelLowNoFrCh<-as.character(round(yLowNoFrame))
                     ySelHighNoFrCh<-as.character(round(yHighNoFrame))
-                    
+
                     outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tiff")
-                    
-                    
-                    
-                    
+
+
+
+
                     loginfo(paste0("getting coverage: ", coverageExample, " for file ", filenameTemp))
 
                     uuidVal<-UUIDgenerate()
-                    
-                    
+
+
                     Sys.sleep(round(runif(1, min=0, max=numSlaves)))
 
                     command<-paste0("wget -q \"", coverageExample, "\" -O ", filenameTemp)
@@ -186,28 +200,28 @@ foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", 
                       next
                     }
 
-                    
+
                     #print(coverageExample)
-                    xP =  xInitial + processingTileSideX*(xside)
+                    #xP =  xInitial + processingTileSideX*(xside)
                     #tiffRaw<-coverageExample$content
                     #tiffByte<-readTIFF(tiffRaw)
                     #writeTiff(tiffByte,"temp.tiff")
-                    
-                    
+
+
                     loginfo(paste0("processing raster: ", filenameTemp))
-                    
+
                     rasterFroReply = tryCatch({
                       rastertest<-raster(filenameTemp)
                       loginfo(paste0("FINISHED processing raster: ", filenameTemp))
                     }, error = function(e) {
                       logerror(paste0("error writing file ",filenameTemp, " error ", e$message, " coverage: ", coverageExample))
                     })
-                    
-                    
-                    
-                    
-                    
-                   
+
+
+
+
+
+
 
                     rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
                     rastertest<-aggregate(rastertest, fact = 15)
@@ -221,34 +235,34 @@ foreach(i =  1:numSlaves, .packages = c("raster", "horizon", "rgdal", "rLiDAR", 
                                         as.character(extent(rasterSVF))[[2]], " ",
                                         as.character(extent(rasterSVF))[[3]], " ",
                                         as.character(extent(rasterSVF))[[4]], " ",
-                                        "extent raster to crop to: ", 
-                                        as.character(extent(rasterNoFrameExt))[[1]], " ", 
+                                        "extent raster to crop to: ",
+                                        as.character(extent(rasterNoFrameExt))[[1]], " ",
                                         as.character(extent(rasterNoFrameExt))[[2]], " ",
                                         as.character(extent(rasterNoFrameExt))[[3]]," ",
                                         as.character(extent(rasterNoFrameExt))[[4]]," ",
                                         " error ", e$message))
                     })
-                    
+
                     #outputFile<-paste0(outputDir,uuidVal,"--SVF.tiff")
-                    
+
                     result = tryCatch({
                       writeRaster(rasterNoFrame, outputFile, format="GTiff")
                       loginfo(paste0("written SVF raster at file ", outputFile))
                     }, error = function(e) {
                       logerror(paste0("error writing file ",outputFile, " error ", e$message))
                     })
-                    
-                    
-                    
-                    
+
+
+
+
                     #loginfo(paste0("written SVF raster at file ", outputFile))
                     #plot(rastertest)
                     #plot(rasterSVF)
                     unlink(filenameTemp)
-                    
+
                   }
-                  xP = xInitial
-                  yP =  yInitial + processingTileSideY*(yside)
-                }
-            }
+                  #xP = xInitial
+                 # yP =  yInitial + processingTileSideY*(yside)
+                
+            
 
