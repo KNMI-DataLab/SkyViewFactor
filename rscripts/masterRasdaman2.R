@@ -9,6 +9,7 @@ library(rtiff)
 library(horizon)
 library(uuid)
 library(logging)
+library(stringr)
 
 
 
@@ -135,16 +136,16 @@ for(i in 1:(length(xCoordsCells)-1)){
 
 
 
-processedFiles<-list.files(path = outputDir, pattern = ".tif")
+processedFiles<-list.files(path = substr(outputDir, 1, nchar(outputDir)-1), pattern = ".tif", full.names = T)
 
 
 
 
-foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr"),
-  .export = c( "radiusSVF", "processedFies", "fullCoords")) %dopar%{
-    #i=1
+foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr","stringr"),
+  .export = c( "radiusSVF", "processedFiles", "fullCoords")) %dopar%{
+   # i=1
 
-    #for(i in 1:numSlaves){
+    #for(i in 1:length(fullCoords)){
                 #print("ABC")
                 #Xmin=140000
                 #Ymin=306250
@@ -175,12 +176,12 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 ySelLowNoFrCh<-as.character(round(ySelLowNoFrame))
                 ySelHighNoFrCh<-as.character(round(ySelHighNoFrame))
                 
-                outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tiff")
+                outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tif")
                 
                 
                 
                 
-                if(all(str_detect(processedFiles,outputFile))==FALSE){
+                if(sum(str_detect(processedFiles,outputFile))==0){
 
              
                 loginfo(paste0("examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
