@@ -69,7 +69,7 @@ loginit <- function(logfile) {
 }
 
 
-localSlaves<-10
+localSlaves<-18
 
 cl <- makeCluster(localSlaves)
 #cl<-prepareCluster()
@@ -126,7 +126,7 @@ for(i in 1:(length(xCoordsCells)-1)){
     #first 4 coords are the one to be used for the query, other 4 are to be used for crop for remove radius frame
     coordsForQuery<-c(xcellMin,xcellMax,ycellMin,ycellMax,xCoordsCells[[i]],xCoordsCells[[i+1]],yCoordsCells[[j]],yCoordsCells[[j+1]])
     #coordsFor
-    print(coordsForQuery)
+    #print(coordsForQuery)
     fullCoords[[counter]]<-coordsForQuery
     counter<-counter+1
   }
@@ -135,8 +135,13 @@ for(i in 1:(length(xCoordsCells)-1)){
 
 
 
+processedFiles<-list.files(path = outputDir, pattern = ".tif")
+
+
+
+
 foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr"),
-  .export = c( "radiusSVF")) %dopar%{
+  .export = c( "radiusSVF", "processedFies", "fullCoords")) %dopar%{
     #i=1
 
     #for(i in 1:numSlaves){
@@ -156,26 +161,33 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 xSelHighNoFrame <- fullCoords[[i]][[6]]
                 ySelLowNoFrame <- fullCoords[[i]][[7]]
                 ySelHighNoFrame <- fullCoords[[i]][[8]]
+                
+                xSelLowCh<-as.character(round(xSelLow))
+                xSelHighCh<-as.character(round(xSelHigh))
+                ySelLowCh<-as.character(round(ySelLow))
+                ySelHighCh<-as.character(round(ySelHigh))
+                
+                filenameTemp<-paste0(outputDir,xSelLowCh,"_",xSelHighCh,"--",ySelLowCh,"_",ySelHighCh,"-","temp.tiff")
+                
+                
+                xSelLowNoFrCh<-as.character(round(xSelLowNoFrame))
+                xSelHighNoFrCh<-as.character(round(xSelHighNoFrame))
+                ySelLowNoFrCh<-as.character(round(ySelLowNoFrame))
+                ySelHighNoFrCh<-as.character(round(ySelHighNoFrame))
+                
+                outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tiff")
+                
+                
+                
+                
+                if(all(str_detect(processedFiles,outputFile))==FALSE){
 
              
                 loginfo(paste0("examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
 
                coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
 
-                    xSelLowCh<-as.character(round(xSelLow))
-                    xSelHighCh<-as.character(round(xSelHigh))
-                    ySelLowCh<-as.character(round(ySelLow))
-                    ySelHighCh<-as.character(round(ySelHigh))
-
-                    filenameTemp<-paste0(outputDir,xSelLowCh,"_",xSelHighCh,"--",ySelLowCh,"_",ySelHighCh,"-","temp.tiff")
-
-
-                    xSelLowNoFrCh<-as.character(round(xLowNoFrame))
-                    xSelHighNoFrCh<-as.character(round(xHighNoFrame))
-                    ySelLowNoFrCh<-as.character(round(yLowNoFrame))
-                    ySelHighNoFrCh<-as.character(round(yHighNoFrame))
-
-                    outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tiff")
+                    
 
 
 
@@ -227,7 +239,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     rastertest<-aggregate(rastertest, fact = 15)
                     message("computing SVF: ")
                     rasterSVF<-svf(rastertest, nAngles = 16, maxDist = 100, ll = F)
-                    rasterNoFrameExt<-extent(xLowNoFrame,xHighNoFrame,yLowNoFrame,yHighNoFrame)
+                    rasterNoFrameExt<-extent(xSelLowNoFrame,xSelHighNoFrame,ySelLowNoFrame,ySelHighNoFrame)
                     tryCatch({
                       rasterNoFrame<-crop(rasterSVF,rasterNoFrameExt)},
                       error = function(e) {
@@ -260,7 +272,11 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     #plot(rasterSVF)
                     unlink(filenameTemp)
 
-                  }
+                }else{
+                  loginfo(paste0("file ", outputFile, " already processed, skipping it"))
+                  message(paste0("file ", outputFile, " already processed, skipping it"))
+                }
+  }
                   #xP = xInitial
                  # yP =  yInitial + processingTileSideY*(yside)
                 
