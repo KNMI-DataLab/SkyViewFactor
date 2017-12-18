@@ -70,7 +70,7 @@ loginit <- function(logfile) {
 }
 
 
-localSlaves<-18
+localSlaves<-20
 
 cl <- makeCluster(localSlaves)
 #cl<-prepareCluster()
@@ -145,13 +145,13 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
   .export = c( "radiusSVF", "processedFiles", "fullCoords")) %dopar%{
    # i=1
 
-    #for(i in 1:length(fullCoords)){
+   # for(i in 1:length(fullCoords)){
                 #print("ABC")
                 #Xmin=140000
                 #Ymin=306250
 
 
-                fullCoords[[i]]
+                print(fullCoords[[i]])
                 
                 xSelLow <- fullCoords[[i]][[1]]
                 xSelHigh <- fullCoords[[i]][[2]]
@@ -163,32 +163,35 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 ySelLowNoFrame <- fullCoords[[i]][[7]]
                 ySelHighNoFrame <- fullCoords[[i]][[8]]
                 
+
+
+
                 xSelLowCh<-as.character(round(xSelLow))
                 xSelHighCh<-as.character(round(xSelHigh))
                 ySelLowCh<-as.character(round(ySelLow))
                 ySelHighCh<-as.character(round(ySelHigh))
-                
+
                 filenameTemp<-paste0(outputDir,xSelLowCh,"_",xSelHighCh,"--",ySelLowCh,"_",ySelHighCh,"-","temp.tiff")
-                
-                
+
+
                 xSelLowNoFrCh<-as.character(round(xSelLowNoFrame))
                 xSelHighNoFrCh<-as.character(round(xSelHighNoFrame))
                 ySelLowNoFrCh<-as.character(round(ySelLowNoFrame))
                 ySelHighNoFrCh<-as.character(round(ySelHighNoFrame))
-                
+
                 outputFile<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tif")
-                
-                
-                
-                
+
+
+
+
                 if(sum(str_detect(processedFiles,outputFile))==0){
 
-             
+
                 loginfo(paste0("examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
 
                coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
 
-                    
+
 
 
 
@@ -197,20 +200,31 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
 
                     uuidVal<-UUIDgenerate()
 
-
+                    #guarantee a random choice properly
+                    set.seed(i)
                     Sys.sleep(round(runif(1, min=0, max=numSlaves)))
 
                     command<-paste0("wget -q \"", coverageExample, "\" -O ", filenameTemp)
 
 
-                    headerResponse <- HEAD(coverageExample)
 
+
+
+                    for(retry in 1:5){
+                    headerResponse <- HEAD(coverageExample)
                     if(headerResponse$status_code==200){
                     system(command)
-                    } else{
+                    break
+                    } else if(headerResponse$status_code==500){
                       logerror(paste0("response status server ",headerResponse$status_code, " coverage ",
                                      coverageExample, " not available"))
-                      next
+                      Sys.sleep(30)
+                    }
+                    else{
+                      logerror(paste0("response status server ",headerResponse$status_code, " coverage ",
+                                      coverageExample, " not available"))
+                    }
+
                     }
 
 
@@ -237,7 +251,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
 
 
                     rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
-                    rastertest<-aggregate(rastertest, fact = 15)
+                    rastertest<-aggregate(rastertest, fact = 20)
                     message("computing SVF: ")
                     rasterSVF<-svf(rastertest, nAngles = 16, maxDist = 100, ll = F)
                     rasterNoFrameExt<-extent(xSelLowNoFrame,xSelHighNoFrame,ySelLowNoFrame,ySelHighNoFrame)
@@ -253,7 +267,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                                         as.character(extent(rasterNoFrameExt))[[2]], " ",
                                         as.character(extent(rasterNoFrameExt))[[3]]," ",
                                         as.character(extent(rasterNoFrameExt))[[4]]," ",
-                                        " error ", e$message))
+                                        " error ", e$message, " BBox called was ", coverageExample))
                     })
 
                     #outputFile<-paste0(outputDir,uuidVal,"--SVF.tiff")
@@ -280,6 +294,6 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
   }
                   #xP = xInitial
                  # yP =  yInitial + processingTileSideY*(yside)
-                
-            
+
+
 
