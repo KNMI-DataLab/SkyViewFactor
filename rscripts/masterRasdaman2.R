@@ -246,6 +246,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     if(retry==5){
                       logerror(paste0(workerID,"--FATAL ERROR: RETRIES ARE OVER--response status server ",headerResponse$status_code, " coverage ",
                                       coverageExample, " not available"))
+                      next
                     }
 
 
