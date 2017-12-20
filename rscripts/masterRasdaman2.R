@@ -13,10 +13,16 @@ library(stringr)
 
 
 
+#source("prepareCluster")
+
 #master operation
-outputDir<-"/home/pagani/temp/slaves/output/"
-logDir<-"/home/pagani/temp/slaves/log/"
-host<-"145.100.59.171"
+#outputDir<-"/home/pagani/temp/slaves/output/"
+outputDir<-"/home/ubuntu/data/slaves/output/"
+
+#logDir<-"/home/pagani/temp/slaves/log/"
+logDir<-"/home/ubuntu/data/slaves/log/"
+#host<-"145.100.59.171"
+host<-"10.100.253.10"
 reqCapabilities <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCapabilities"))
 xmlList<-xmlToList(reqCapabilities)
 #coverageId<-xmlList[["Contents"]][["CoverageSummary"]][["CoverageId"]]
@@ -70,10 +76,10 @@ loginit <- function(logfile) {
 }
 
 
-localSlaves<-20
+#localSlaves<-20
 
-cl <- makeCluster(localSlaves)
-#cl<-prepareCluster()
+#cl <- makeCluster(localSlaves)
+cl<-prepareCluster()
 registerDoParallel(cl)
 loginfo("cluster created")
 numSlaves<-getDoParWorkers()
