@@ -143,10 +143,10 @@ for(i in 1:(length(xCoordsCells)-1)){
 
 
 
-tic("processing files")
+#tic("processing files")
 processedFiles<-list.files(path = substr(outputDir, 1, nchar(outputDir)-1), pattern = ".tif", full.names = T)
-timer<-toc()
-loginfo(round(timer$toc-timer$tic,digits = 3))
+#timer<-toc()
+#loginfo(round(timer$toc-timer$tic,digits = 3))
 
 
 
@@ -197,7 +197,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 if(sum(str_detect(processedFiles,outputFile))==0){
 
 
-                loginfo(paste0(workerID,"--examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
+                loginfo(paste(workerID,"--examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
 
                coverageExample <- paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCoverage&coverageId=",coverageId,"&subset=X(",xSelLow,",",xSelHigh,")&subset=Y(",ySelLow,",",ySelHigh,")&format=image/tiff")
 
@@ -206,7 +206,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
 
 
 
-                    loginfo(paste0(workerID,"--getting coverage: ", coverageExample, " for file ", filenameTemp))
+                    loginfo(paste(workerID,"--getting coverage: ", coverageExample, " for file ", filenameTemp))
 
                     uuidVal<-UUIDgenerate()
 
@@ -218,19 +218,19 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     tic("headerCoverage")
                     command<-paste0("wget -q \"", coverageExample, "\" -O ", filenameTemp)
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
 
 
 
 
-
+                    retry<-0
                     for(retry in 1:5){
                     headerResponse <- HEAD(coverageExample)
                     if(headerResponse$status_code==200){
                     tic("gettingCoverage")
                     system(command)
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     break
                     } else if(headerResponse$status_code==500){
                       logerror(paste0(workerID,"--response status server ",headerResponse$status_code, " coverage ",
@@ -241,7 +241,11 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                       logerror(paste0(workerID,"--response status server ",headerResponse$status_code, " coverage ",
                                       coverageExample, " not available"))
                     }
-
+                      
+                    }
+                    if(retry==5){
+                      logerror(paste0(workerID,"--FATAL ERROR: RETRIES ARE OVER--response status server ",headerResponse$status_code, " coverage ",
+                                      coverageExample, " not available"))
                     }
 
 
@@ -252,17 +256,17 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     #writeTiff(tiffByte,"temp.tiff")
 
 
-                    loginfo(paste0(workerID,"--processing raster: ", filenameTemp))
+                    loginfo(paste(workerID,"--processing raster: ", filenameTemp))
                     
                     tic("rasterFromTiff")
                     rasterFroReply = tryCatch({
                       rastertest<-raster(filenameTemp)
-                      loginfo(paste0(workerID,"--FINISHED processing raster: ", filenameTemp))
+                      loginfo(paste(workerID,"--FINISHED processing raster: ", filenameTemp))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",filenameTemp, " error ", e$message, " coverage: ", coverageExample))
                     })
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
 
 
 
@@ -272,7 +276,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     tic("removing NAs")
                     rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     
                     ###############REMOVE IN THE FINAL COMPUTATION####################
                     rastertest<-aggregate(rastertest, fact = 20)
@@ -284,12 +288,12 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     rasterSVF<-svf(rastertest, nAngles = 16, maxDist = 100, ll = F)
                     rasterNoFrameExt<-extent(xSelLowNoFrame,xSelHighNoFrame,ySelLowNoFrame,ySelHighNoFrame)
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     tryCatch({
                       tic("cropRaster")
                       rasterNoFrame<-crop(rasterSVF,rasterNoFrameExt)
                       timer<-toc()
-                      loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                      loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                       
                       },
                       
@@ -311,9 +315,9 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     result = tryCatch({
                       tic("writeResultSVFtiff")
                       writeRaster(rasterNoFrame, outputFile, format="GTiff")
-                      loginfo(paste0(workerID,"--written SVF raster at file ", outputFile))
+                      loginfo(paste(workerID,"--written SVF raster at file ", outputFile))
                       timer<-toc()
-                      loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                      loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",outputFile, " error ", e$message))
                     })
@@ -327,10 +331,10 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     tic("removingTempFile")
                     unlink(filenameTemp)
                     timer<-toc()
-                    loginfo(paste0(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
+                    loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
 
                 }else{
-                  loginfo(paste0(workerID,"--file ", outputFile, " already processed, skipping it"))
+                  loginfo(paste(workerID,"--file ", outputFile, " already processed, skipping it"))
                   message(paste0("file ", outputFile, " already processed, skipping it"))
                 }
   }
