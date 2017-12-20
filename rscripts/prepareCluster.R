@@ -17,10 +17,10 @@ prepareCluster<-function(){
   machines<-list()
   ## the users and addresses are based on the AWS configuration
   user    <- 'ubuntu'
-  primary <- '10.100.253.12'
+  primary <- '10.100.253.1'
   
   #IPs contains a list of slaves that will run the computations
-  IPs<-paste0("10.100.253.", seq(from = 1, to = 6))
+  IPs<-paste0("10.100.253.", seq(from = 2, to = 6))
   #IPs<-c("10.100.253.9")# , "172.31.43.145") ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
