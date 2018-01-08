@@ -17,7 +17,7 @@ library(tictoc)
 #source("prepareCluster")
 
 #master operation
-#outputDir<-"/home/pagani/temp/slaves/output/"
+#outputDir<-"/home/pagani/temp/slaves/outputNew/"
 outputDir<-"/home/ubuntu/data/slaves/output/"
 tempDir<-"/home/ubuntu/temp/"
 
@@ -51,7 +51,7 @@ Ymin<-min(upperCorner[[1]][[2]],lowerCorner[[1]][[2]])
 
 radiusSVF<-100
 
-
+message(paste(Xmin, Xmax, Ymin, Ymax))
 
 #slaveBand<-yDistance/numSlaves
 
@@ -265,6 +265,8 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                       loginfo(paste(workerID,"--FINISHED processing raster: ", filenameTemp))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",filenameTemp, " error ", e$message, " coverage: ", coverageExample))
+		      unlink(filenameTemp)
+		      next
                     })
                     timer<-toc()
                     loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
@@ -280,7 +282,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     
                     ###############REMOVE IN THE FINAL COMPUTATION####################
-                    rastertest<-aggregate(rastertest, fact = 20)
+                   # rastertest<-aggregate(rastertest, fact = 20)
                     ##################################################################
                     
                     
@@ -321,6 +323,8 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                       loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",outputFile, " error ", e$message))
+		      unlink(filenameTemp)
+		      next
                     })
 
 
