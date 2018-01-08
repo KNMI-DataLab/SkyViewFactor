@@ -50,7 +50,7 @@ WGS84<<-CRS("+init=epsg:4326")
 
 maxView<<-100 # max view for the SVF
 
-registerDoParallel(2) #number of parallel cores
+#registerDoParallel(2) #number of parallel cores
 #####################################################################
 
 
@@ -77,16 +77,17 @@ prepareCLuster<-function(){
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("172.31.33.94" , "172.31.43.145") ##slave gold master machine
+  IPs<-c("172.31.15.158", "172.31.8.115", "172.31.0.4", "172.31.12.122", "172.31.6.49")
+ ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
-    machines[[i]]<-list(host=ip, user = user, ncore=2)
+    machines[[i]]<-list(host=ip, user = user, ncore=16)
   }
   
   machineAddresses <- list(
     list(host=primary,user=user,
-         ncore=1)
+         ncore=2)
   )
   machineAddresses<-machines #c(machineAddresses,machines)
   
@@ -141,8 +142,8 @@ logfile2<-paste0(logDir,"22logNewAWS.txt")
 
 
 system.time(
-foreach(i =  1:length(listTiles[1:10]), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid","stringr"),
-        .export = c("getTileNumber","loadTile", "checkIfMultiTile", "makeSpatialDF", "makeRaster", "pro", "workingPath", "maxView", "Xres", "Yres","mergeNeighborTiles", "listTiles","dataFolder","output_dir","logDir","SVFWholeNL","loadTileWholeNL","checkCoordinates","fix_extent"), .combine = f(length(listTiles))) %dopar%
+foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid","stringr"),
+        .export = c("getTileNumber","loadTile", "checkIfMultiTile", "makeSpatialDF", "makeRaster", "pro", "workingPath", "maxView", "mergeNeighborTiles", "listTiles","dataFolder","output_dir","logDir","SVFWholeNL","loadTileWholeNL","checkCoordinates","fix_extent"), .combine = f(length(listTiles))) %dopar%
 {
 print("first step in")
  # print(length(listTiles[1:10]))
