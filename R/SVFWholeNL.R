@@ -31,14 +31,14 @@ SVFWholeNL<-function(filepath, maxView){
     return(-1)  
   }
   else{
-    mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
+    mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =100))  
   }
   rm(neighbors)
   rm(rasterizedNeighbors)
   rasterizedMainTile<-makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
   #rasterOptions(tolerance = 0.1)
-  fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 10)
+  fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 100)
   rm(mergedNeighbors)
   gc()
   
