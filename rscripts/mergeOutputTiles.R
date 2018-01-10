@@ -13,6 +13,7 @@ library(parallel)
 
 output_dir<<-"/home/pagani/SVFAmsterdam"
   #"/home/ubuntu/efs/output/SVF_1m/"
+splits_dir<<-"/home/ubuntu/efs/output/SVF_1m_regions"
 
 
 files<-list.files(output_dir,full.names = T, pattern = "*.gri")
@@ -21,6 +22,7 @@ files<-list.files(output_dir,full.names = T, pattern = "*.gri")
 rasterOutput<-function(x){
   ras<-brick(x)
   rr<-ras[[2]]
+  rr
 }
 
 cl<-makeCluster(16, type = "FORK")
@@ -32,5 +34,13 @@ stopCluster(cl)
 #rasterOptions(tolerance = 100)
 #options(overlap=F)
 totalRaster<-do.call(merge, c(wholeRasterList, list(tolerance=100)))
-sections<-splitRaster(totalRaster,2,2,path = "~/temp/splits/")
+sections<-splitRaster(totalRaster,4,4,path =splits_dir)
+
+
+
+#to check if there are artifacts where SVF<0
+#to be corrected with
+# s<-calc(rr, fun=function(x){x[x<0]<-0; return(x)})
+
+
 
