@@ -157,7 +157,7 @@ print(tilesToBeWorked)
      {
 
       
-      print("ABC")
+      print(paste("inside processing loop tile",tilesToBeWorked))
     # print(paste0(output_dir,
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lon/1000)*1000), 6, pad = "0"),"_",
     #              str_pad(as.integer(floor(coordsGMS[i,]$loc_lat/1000)*1000),  6, pad = "0"), ".gri"))

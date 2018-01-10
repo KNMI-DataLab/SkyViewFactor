@@ -37,9 +37,9 @@ SVFWholeNL<-function(filepath, maxView){
   
   if(xmax(extensionMainTile)!=xmin(extensionMainTile) & ymax(extensionMainTile)!=ymin(extensionMainTile))
      {
-  
+message("before merging neighbors routine")  
   neighbors<-mergeNeighborTiles(dataFolder, tileNumberXCoord, tileNumberYCoord, extensionMainTile, maxView, pro)
-  
+message("neighbors identified")  
   #neighbors<-lapply(neighbors,checkCoordinates)
  
   #rasterizedNeighbors<-lapply(neighbors, makeRaster, Xres, Yres, pro)
@@ -51,14 +51,15 @@ SVFWholeNL<-function(filepath, maxView){
     return(-1)  
   }
   else{
-    mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =10))  
+    print("merging neighbors")
+    mergedNeighbors<-do.call(merge, c(rasterizedNeighbors, tolerance =500))  
   }
   rm(neighbors)
   rm(rasterizedNeighbors)
   rasterizedMainTile<-mainTile#makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
   #rasterOptions(tolerance = 0.1)
-  fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 10)
+  fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 500)
   rm(mergedNeighbors)
   gc()
   

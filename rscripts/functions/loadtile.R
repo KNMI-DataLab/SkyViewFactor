@@ -36,7 +36,7 @@ loadTile <- function(path, coordX, coordY){
   #system(paste0("rm ", temp_dir, uuid,"/*.laz"))
   #files_las<-list.files(paste0(temp_dir, uuid),pattern="*.las$",full.names = TRUE)
   out.matrix<-lapply(unique(unlist(files)), stack)
-  outDF<-do.call(raster::merge, c(out.matrix, tolerance =10))
+  outDF<-do.call(raster::merge, c(out.matrix, tolerance =500))
   #out<-data.frame(out.matrix)
   #system(paste0("rm ", temp_dir, uuid,"/*.las"))
   #system(paste0("rm -r ", temp_dir,uuid))

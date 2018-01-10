@@ -21,66 +21,108 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
   #tileNeighborsLeftLower<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord-1000,".laz")
   tileNeighborsLeftLowerX<-tileNumberXCoord-1000
   tileNeighborsLeftLowerY<-tileNumberYCoord-1000
+message("load tile 1")
   df<-loadTile(path,tileNeighborsLeftLowerX,tileNeighborsLeftLowerY)
+message("tile 1 loaded")
   if(is.null(df)==FALSE){
     #df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+message("cropping one")   
+df1<-tryCatch({ 
+df1<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)),snap='near')
+message("finish crop 1")
     df1<-checkCoordinates(df1)
-    }
+    },
+error=function(e){NULL})
+}
   }
   
   #tileNeighborLeft<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord,".laz")
   tileNeighborsLeftX<-tileNumberXCoord-1000
   tileNeighborsLeftY<-tileNumberYCoord
+message("load tile 2")
   df<-loadTile(path,tileNeighborsLeftX,tileNeighborsLeftY)
+message("loaded tile 2")
   if(is.null(df)==FALSE){
     #df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
+
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)))
+
+    message("cropping 2")
+df2<-tryCatch({ 
+    df2<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymin(extensionMainTile), ymax(extensionMainTile)), snap='near')
+message("finish crop 2")
     df2<-checkCoordinates(df2)
-    }
+    },
+error=function(e){NULL})
+}
   }
   
   #tileNeighborLeftUpper<-paste0("ahn_", tileNumberXCoord-1000,"_",tileNumberYCoord+1000,".laz")
   tileNeighborsLeftUpperX<-tileNumberXCoord-1000
   tileNeighborsLeftUpperY<-tileNumberYCoord+1000
+
+message("load tile 3")
   df<-loadTile(path,tileNeighborsLeftUpperX,tileNeighborsLeftUpperY)
+message("loaded tile 3")
   if(is.null(df)==FALSE){
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
+
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+message("cropping 3")
+df3<-tryCatch({ 
+    df3<-crop(df,c(xmin(extensionMainTile)-maxView,xmin(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView),snap='near')
+messaged("finished crop 3")
     df3<-checkCoordinates(df3)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
   
   #tileNeighborsRightLower<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord-1000,".laz")
   tileNeighborsRightLowerX<-tileNumberXCoord+1000
   tileNeighborsRightLowerY<-tileNumberYCoord-1000
+
+message("load tile 4")
   df<-loadTile(path,tileNeighborsRightLowerX,tileNeighborsRightLowerY)
   if(is.null(df)==FALSE){
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+message("croppring 4")
+df4<-tryCatch({ 
+    df4<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile)-maxView, ymin(extensionMainTile)), snap='near')
+message("finished crop 4")
     df4<-checkCoordinates(df4)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
   
   #tileNeighborRight<-paste0("ahn_", tileNumberXCoord+1000,"_",tileNumberYCoord,".laz")
   tileNeighborsRightX<-tileNumberXCoord+1000
   tileNeighborsRightY<-tileNumberYCoord
+
+message("load tile 5")
   df<-loadTile(path,tileNeighborsRightX,tileNeighborsRightY)
   if(is.null(df)==FALSE){
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)))
+message("cropping 5")
+df5<-tryCatch({ 
+    df5<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymin(extensionMainTile), ymax(extensionMainTile)), snap='near')
+message("finishe crop 5")
     df5<-checkCoordinates(df5)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
     
   
@@ -92,9 +134,15 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+message("cropping 6")
+df6<-tryCatch({ 
+    df6<-crop(df,c(xmax(extensionMainTile),xmax(extensionMainTile)+maxView,ymax(extensionMainTile), ymax(extensionMainTile)+maxView), snap='near')
+message("finish crop 6")
     df6<-checkCoordinates(df6)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
   
   #tileNeighborsCentralDown<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord-1000,".laz")
@@ -105,22 +153,36 @@ mergeNeighborTiles <- function(path,tileNumberXCoord, tileNumberYCoord, extensio
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)))
+message("cropping 7")
+df7<-tryCatch({ 
+    df7<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymin(extensionMainTile)-maxView, ymin(extensionMainTile)), snap='near')
+message("finishe crop 7")
     df7<-checkCoordinates(df7)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
   
   #tileNeighborsCentralUp<-paste0("ahn_", tileNumberXCoord,"_",tileNumberYCoord+1000,".laz")
   tileNeighborsCenterUpX<-tileNumberXCoord
   tileNeighborsCenterUpY<-tileNumberYCoord+1000
+
+message("load tile 8")
   df<-loadTile(path,tileNeighborsCenterUpX,tileNeighborsCenterUpY)
   if(is.null(df)==FALSE){
    # df<-makeSpatialDF(df,projection)
     extensionDF<-extent(df)
     if(xmax(extensionDF)!=xmin(extensionDF) & ymax(extensionDF)!=ymin(extensionDF)){
-    df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView))
+message("cropping 8")
+df8<-tryCatch({ 
+    df8<-crop(df,c(xmin(extensionMainTile),xmax(extensionMainTile),ymax(extensionMainTile), ymax(extensionMainTile)+maxView),snap='near')
+message("finish crop 8")
     df8<-checkCoordinates(df8)
-    }
+    },
+
+error=function(e){NULL})
+}
   }
   
   if(exists("df1")==FALSE){

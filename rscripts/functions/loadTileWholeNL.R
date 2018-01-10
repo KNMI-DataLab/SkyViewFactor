@@ -52,7 +52,7 @@ loadTileWholeNL <- function(filepath){
   #out.matrix$tolerance = 10
   #names(out.matrix)<- 'x'
   #out.matrix$filename <- 'test.tif'
-  outDF<-do.call(raster::merge, c(out.matrix, tolerance =10))
+  outDF<-do.call(raster::merge, c(out.matrix, tolerance =500))
   #out<-data.frame(out.matrix)
   #system(paste0("rm ", temp_dir, uuid,"/*.las"))
   #system(paste0("rm -r ", temp_dir,uuid))
