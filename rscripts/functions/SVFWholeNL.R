@@ -48,7 +48,7 @@ message("neighbors identified")
     mergedNeighbors<-rasterizedNeighbors[[1]]
   }
   else if (length(rasterizedNeighbors)==0){
-    return(-1)  
+    mergedNeighbors<-NULL 
   }
   else{
     print("merging neighbors")
@@ -59,7 +59,13 @@ message("neighbors identified")
   rasterizedMainTile<-mainTile#makeRaster(mainTile,Xres,Yres,pro)
   rm(mainTile)
   #rasterOptions(tolerance = 0.1)
+  
+  if(is.null(mergedNeighbors)==FALSE){
   fullRaster<-merge(rasterizedMainTile, mergedNeighbors, tolerance = 500)
+  } else{
+    fullRaster<-rasterizedMainTile
+  }
+  
   rm(mergedNeighbors)
   gc()
   
