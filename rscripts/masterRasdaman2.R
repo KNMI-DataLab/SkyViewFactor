@@ -18,7 +18,7 @@ library(tictoc)
 
 #master operation
 #outputDir<-"/home/pagani/temp/slaves/outputNew/"
-outputDir<-"/home/ubuntu/data/slaves/output/"
+outputDir<-"/home/ubuntu/data/slaves/outputNew/"
 tempDir<-"/home/ubuntu/temp/"
 
 #logDir<-"/home/pagani/temp/slaves/log/"
