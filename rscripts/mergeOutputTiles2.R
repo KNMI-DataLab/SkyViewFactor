@@ -25,9 +25,9 @@ rasterOutput<-function(x){
 }
 
 
-rasterOptions(maxmemory=460e9)
+rasterOptions(maxmemory=58e9)
 message("building cluster")
-cl<-makeCluster(61, type = "FORK")
+cl<-makeCluster(12, type = "FORK")
 
 
 message("select the layer and getting the raster from every tile")
