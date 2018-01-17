@@ -25,6 +25,8 @@ rasterOutput<-function(x){
 }
 
 
+
+mergeAndSplit<-function(files){
 rasterOptions(maxmemory=58e9)
 message("building cluster")
 cl<-makeCluster(12, type = "FORK")
@@ -43,11 +45,29 @@ message("full raster merged, now split in 16 regions")
 #totalRaster<-raster("/home/ubuntu/efs/output/tempRastersCopy/r_tmp_2018-01-10_213252_2546_27069.grd")
 sections<-splitRaster(totalRaster,4,4,path =splits_dir)
 
+}
 
 
+removeArtifacts<-function(rr){
 #to check if there are artifacts where SVF<0
 #to be corrected with
-# s<-calc(rr, fun=function(x){x[x<0]<-0; return(x)})
+s<-calc(rr, fun=function(x){x[x<0]<-0; return(x)})
+s
+}
+
+convertToNetCDF<-function(file){
+  ras<-raster(file)
+  ras<-removeArtifacts(ras)
+  writeRaster(ras,gsub(".gri",".nc",file))
+}
+
+
+
+
+rasterOptions(maxmemory=20e9)
+cl<-makeCluster(12, type = "FORK")
+parLapply(cl, files,convertToNetCDF)
+stopCluster()
 
 
 
