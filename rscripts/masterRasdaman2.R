@@ -246,7 +246,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     if(retry==5){
                       logerror(paste0(workerID,"--FATAL ERROR: RETRIES ARE OVER--response status server ",headerResponse$status_code, " coverage ",
                                       coverageExample, " not available"))
-                      next
+                      evalq(next)
                     }
 
 
@@ -265,8 +265,8 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                       loginfo(paste(workerID,"--FINISHED processing raster: ", filenameTemp))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",filenameTemp, " error ", e$message, " coverage: ", coverageExample))
-		      unlink(filenameTemp)
-		      next
+		                  unlink(filenameTemp)
+		                  evalq(next)
                     })
                     timer<-toc()
                     loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
@@ -323,8 +323,8 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                       loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
                     }, error = function(e) {
                       logerror(paste0(workerID,"--error writing file ",outputFile, " error ", e$message))
-		      unlink(filenameTemp)
-		      next
+		                  unlink(filenameTemp)
+		                  evalq(next)
                     })
 
 
