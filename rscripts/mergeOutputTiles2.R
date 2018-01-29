@@ -100,7 +100,7 @@ changesToNetCDFFileForKDC<-function(netCDFFile){
   ncatt_put(newNC, varid = prodVar, attname = "originator", attval = "Royal Netherlands Meteorological Institute (KNMI)")
   ncatt_put(newNC, varid = coordVar, attname = 'proj4_params', attval = coordsProjString$value, prec = "char")
   ncatt_put(newNC, varid = 0, attname = "Conventions", attval = "CF-1.4")
-  ncatt_put(newNC, varid = 0, attname = "comment", attval = "Sky view factor based on the AHN2 height dataset, grid at 1 meter resolution. Sky view factor computation parameters: 16 directions, 100m radius.")
+  ncatt_put(newNC, varid = 0, attname = "comment", attval = "Sky view factor based on the AHN2 height dataset, grid at 1 meter resolution. Sky view factor computation using R package horizon (v 1.0) with parameters: 16 directions, 100m radius.")
   ncatt_put(newNC, varid = 0, attname = "title", attval = "Sky view factor")
   ncatt_put(newNC, varid = 0, attname = "source", attval = "Actueel Hoogbestand Nederland (http://www.ahn.nl/)")
   ncatt_put(newNC, varid = 0, attname = "history", attval = "E-science center and Wageningen University post-processing on source point cloud data")
