@@ -336,7 +336,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     tic("removingTempFile")
                     unlink(filenameTemp)
                     #remove the temporary raster files created
-                    removeTmpFiles(h=24)
+                    removeTmpFiles(h=8)
                     timer<-toc()
                     loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
 
