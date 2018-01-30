@@ -12,7 +12,7 @@ library(parallel)
 library(SpaDES)
 library(ncdf4)
 
-output_dir<<-"/home/ubuntu/efs/output/SVF_1m/"
+output_dir<<-"/home/ubuntu/efs/output/SVF_1m_regionsNew/"
 splits_dir<<-"/home/ubuntu/efs/output/SVF_1m_regionsNew/"
 
 
