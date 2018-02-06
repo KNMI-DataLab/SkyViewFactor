@@ -57,6 +57,7 @@ s
 }
 
 convertToNetCDF<-function(file){
+message("converting raster to NetCDF")
   ras<-raster(file)
   ras<-removeArtifacts(ras)
   writeRaster(ras,gsub(".gri",".nc",file))
@@ -118,10 +119,12 @@ changesToNetCDFFileForKDC<-function(netCDFFile){
 
 
 #main
-rasterOptions(maxmemory=20e9)
-cl<-makeCluster(16, type = "FORK")
+rasterOptions(maxmemory=470e9)
+cl<-makeCluster(16, type = "FORK", outfile="")
 parLapply(cl, files,convertToNetCDF)
+message("conversion to NetCDF finished")
 filesNC<-list.files(output_dir,full.names = T, pattern = "*.nc")
+message("starting insertion of metadata")
 parLapply(cl,filesNC,changesToNetCDFFileForKDC)
 stopCluster(cl)
 
