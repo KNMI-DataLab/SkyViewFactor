@@ -26,7 +26,7 @@ tempDir<-"/home/ubuntu/temp/"
 #logDir<-"/home/pagani/temp/slaves/log/"
 logDir<-"/home/ubuntu/data/slaves/log/"
 #host<-"145.100.59.171"
-host<-"10.100.253.10"
+host<-"10.100.253.1"
 reqCapabilities <- xmlParse(paste0("http://",host,":8080/rasdaman/ows?service=WCS&version=2.0.1&request=GetCapabilities"))
 xmlList<-xmlToList(reqCapabilities)
 #coverageId<-xmlList[["Contents"]][["CoverageSummary"]][["CoverageId"]]
