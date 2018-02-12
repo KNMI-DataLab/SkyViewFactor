@@ -202,6 +202,10 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
 
                 if(sum(str_detect(processedFiles,outputFile))==0 | sum(str_detect(processedFiles,outputFileOldDir))==0){
                   
+                  
+                  message(sum(str_detect(processedFiles,outputFile)))
+                  message(sum(str_detect(processedFiles,outputFileOldDir)))
+                  
                   message("INSIDE CHECK FOR FILES")
                   Sys.sleep(1)
 
