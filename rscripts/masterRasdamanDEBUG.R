@@ -156,7 +156,7 @@ processedFiles<-c(processedFiles1,processedFiles2)
 
 
 foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid", "logging", "httr","stringr","tictoc"),
-  .export = c( "radiusSVF", "processedFiles", "fullCoords")) %dopar%{
+  .export = c( "radiusSVF", "processedFiles", "fullCoords")) %do%{
    # i=1
 
    # for(i in 1:length(fullCoords)){
@@ -203,6 +203,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 if(sum(str_detect(processedFiles,outputFile))==0 | sum(str_detect(processedFiles,outputFileOldDir))==0){
                   
                   message("INSIDE CHECK FOR FILES")
+                  Sys.sleep(1)
 
 
                 loginfo(paste(workerID,"--examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh)) 
