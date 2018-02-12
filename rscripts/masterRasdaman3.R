@@ -200,7 +200,7 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
 
 
 
-                if(sum(str_detect(processedFiles,outputFile))==0 | sum(str_detect(processedFiles,outputFileOldDir))==0){
+                if(sum(str_detect(processedFiles,outputFile))==0 & sum(str_detect(processedFiles,outputFileOldDir))==0){
 
 
                 loginfo(paste(workerID,"--examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
@@ -347,8 +347,15 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                     loginfo(paste(workerID,"--", timer$msg, round(timer$toc-timer$tic,digits = 3)))
 
                 }else{
-                  loginfo(paste(workerID,"--file ", outputFile, " already processed, skipping it"))
-                  message(paste0("file ", outputFile, " already processed, skipping it"))
+                  
+                  if(sum(str_detect(processedFiles,outputFile))==0){
+                    fileWrittenLocation<-outputFile
+                  }else{
+                    fileWrittenLocation<-outputFileOldDir
+                  } 
+                  
+                  loginfo(paste(workerID,"--file ", fileWrittenLocation, " already processed, skipping it"))
+                  message(paste0("file ", fileWrittenLocation, " already processed, skipping it"))
                 }
   }
                   #xP = xInitial
