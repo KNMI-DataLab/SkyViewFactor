@@ -195,11 +195,12 @@ foreach(i =  1:length(fullCoords), .packages = c("raster", "horizon", "rgdal", "
                 ySelHighNoFrCh<-as.character(round(ySelHighNoFrame))
 
                 outputFile<-paste0(outputDir2,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tif")
+                outputFileOldDir<-paste0(outputDir,xSelLowNoFrCh,"_",xSelHighNoFrCh,"--",ySelLowNoFrCh,"_",ySelHighNoFrCh,".tif")
+                
 
 
 
-
-                if(sum(str_detect(processedFiles,outputFile))==0){
+                if(sum(str_detect(processedFiles,outputFile))==0 | sum(str_detect(processedFiles,outputFileOldDir))==0){
 
 
                 loginfo(paste(workerID,"--examining region ", xSelLow, " ", xSelHigh, " ", ySelLow, " ", ySelHigh))
