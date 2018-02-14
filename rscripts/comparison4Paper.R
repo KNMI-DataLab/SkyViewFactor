@@ -165,7 +165,7 @@ Ymax=457000
             rastertest <- reclassify(rastertest, c(-Inf, -1000,NA))
             
             #factor 2 to have a 1meter resolution
-            rastertest<-aggregate(rastertest, fact = 2)
+            rastertest<-aggregate(rastertest, fact = 10)
 
             
             message("computing SVF: ")
@@ -195,7 +195,7 @@ Ymax=457000
                               " error ", e$message, " BBox called was ", coverageExample))
             })
             
-
+            outputFile<-paste0(outputDir,"cubeFileOutput.tif")
             result = tryCatch({
               #tic("writeResultSVFtiff")
               writeRaster(rasterNoFrame, outputFile, format="GTiff")
