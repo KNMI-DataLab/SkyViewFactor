@@ -12,6 +12,7 @@ library(logging)
 library(stringr)
 library(tictoc)
 library(rLiDAR)
+library(microbenchmark)
 
 
 
@@ -364,7 +365,21 @@ message(paste(Xmin, Xmax, Ymin, Ymax))
 #svfOldWay(maxView)
 #toc()
 # 
-tic("data cube method")
-computationDataCube(outputDir,tempDir,logDir)
-toc()
+#tic("data cube method")
+#computationDataCube(outputDir,tempDir,logDir)
+#toc()
+
+
+mbm <- microbenchmark("traditional" = {svfOldWay(maxView)},
+                      "data_cube" = {
+                        computationDataCube(outputDir,tempDir,logDir)
+                      },times = 10
+                        )
+
+mbm
+
+
+
+
+
 
