@@ -83,17 +83,40 @@ changesToNetCDFFileForKDC<-function(netCDFFile){
   coordVar<-ncvar_def("projection","",dim = list(), prec = 'char')
   prodVar<-ncvar_def("product", "", dim = list(), prec="char")
   
-  newNC<-nc_create(gsub(".nc","_kdcVers.nc",netCDFFile),list(svfVar,coordVar,prodVar))
+  newNC<-nc_create(gsub(".nc","_kdcVers.nc",netCDFFile),list(svfVar,coordVar,prodVar), force_v4=TRUE, verbose=TRUE)
   
   ncvar_put(newNC,xVar,x)
   ncvar_put(newNC,yVar,y)
-  ncvar_put(newNC,svfVar,svf)
+  legX<-floor(dim(svf)[1]/5)
+  firstLegXStop<-legX
+  secondLegXStart<-firstLegXStop+1
+  secondLegXStop<-secondLegXStart+legX
+  thirdLegXStart<-secondLegXStop+1
+  thirdLegXStop<-thirdLegXStart+legX
   
-  today <- Sys.time()
+  fourthLegXStart<-thirdLegXStop+1
+  fourthLegXStop<-fourthLegXStart+legX
+  fifthLegXStart<-fourthLegXStop+1
+  fifthLegXStop<-dim(svf)[1]
+  
+
+  message(dim(svf)[2])
+#  firstLegy<-floor(dim(svf)[2]/2)
+ # secondLegyStart<-firstLegy+1 
+  secondLegyStop<-dim(svf)[2]
+  message(length(svf))
+  ncvar_put(newNC,svfVar,svf[1:firstLegXStop,1:secondLegyStop],start=c(1,1), count=c(firstLegXStop,secondLegyStop))
+  ncvar_put(newNC,svfVar,svf[secondLegXStart:secondLegXStop,1:secondLegyStop],start=c(secondLegXStart,1), count=c(secondLegXStop-secondLegXStart+1,secondLegyStop))
+  
+  ncvar_put(newNC,svfVar,svf[thirdLegXStart:thirdLegXStop,1:secondLegyStop],start=c(thirdLegXStart,1), count=c(thirdLegXStop-thirdLegXStart+1,secondLegyStop))
+  ncvar_put(newNC,svfVar,svf[fourthLegXStart:fourthLegXStop,1:secondLegyStop],start=c(fourthLegXStart,1), count=c(fourthLegXStop-fourthLegXStart+1,secondLegyStop))
+  
+  ncvar_put(newNC,svfVar,svf[fifthLegXStart:fifthLegXStop,1:secondLegyStop],start=c(fifthLegXStart,1), count=c(fifthLegXStop-fifthLegXStart+1,secondLegyStop))
+today <- Sys.time()
   now<-format(today, format="%Y-%m-%dT%H:%M:%S")
   
-  ncatt_put(newNC, varid = "x", attname = "long_name", attval = "x coordinate of projection")
-  ncatt_put(newNC, varid = "y", attname = "long_name", attval = "y coordinate of projection")
+  ncatt_put(newNC, varid = "x", attname = "long_name", attval = "x_coordinate_of_projection")
+  ncatt_put(newNC, varid = "y", attname = "long_name", attval = "y_coordinate_of_projection")
   ncatt_put(newNC, varid = svfVar, attname = "grid_mapping", attval = "projection")
   ncatt_put(newNC, varid = "x", attname = "standard_name", attval = "projection_x_coordinate")
   ncatt_put(newNC, varid = "y", attname = "standard_name", attval = "projection_y_coordinate")
@@ -122,13 +145,15 @@ changesToNetCDFFileForKDC<-function(netCDFFile){
 
 #main
 #rasterOptions(maxmemory=250e9)
-cl<-makeCluster(4, type = "FORK", outfile="")
+#cl<-makeCluster(2, type = "FORK", outfile="")
 #parLapply(cl, files,convertToNetCDF)
 #message("conversion to NetCDF finished")
 filesNC<-list.files(output_dir,full.names = T, pattern = "*.nc")
 message("starting insertion of metadata")
-parLapply(cl,filesNC,changesToNetCDFFileForKDC)
-stopCluster(cl)
+#changesToNetCDFFileForKDC(filesNC[1])
+lapply(filesNC,changesToNetCDFFileForKDC)
+message("files NetCDF created")
+#stopCluster(cl)
 
 
 
