@@ -14,7 +14,7 @@ library(R.utils)
 sourceDirectory("functions")
 
 
-output_dir <- "/data1/lidarTilesGTiff_1m/"
+output_dir <- "/data1/lidarTilesGTiff_3m/"
 lazFolder <- c("/data1", "/data2", "/data3")
 lasZipLocation <- "/home/pagani/tools/LAStools/bin/laszip"
 #dir.create("/home/pagani/development/SkyViewFactor/data/tiles")
@@ -26,10 +26,14 @@ pro<-CRS("+init=epsg:28992")
 registerDoParallel(6) #number of parallel cores
 
 
-Xres<-1 # x-resolution in meters
-Yres<-1 # y-resolution in meters
+Xres<<-3 # x-resolution in meters
+Yres<<-3 # y-resolution in meters
 
-listTiles <- list.files(path = lazFolder, ".laz", full.names = T, recursive = T)
+filesTilesInvolved<-list.files("/data1/lidarTilesDeBilt1m/",".grd")
+
+lazInvolved<-gsub(".grd",".laz",filesTilesInvolved)
+
+listTiles <- sapply(lazInvolved, function(x){list.files(path = lazFolder, x, full.names = T, recursive = T)},USE.NAMES = F)
 
 
 foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "rLiDAR", "uuid"),
@@ -54,8 +58,8 @@ if(!file.exists(paste0(output_dir, filename, ".tif")))
   DF<-data.frame(lasData)
   pro<-CRS("+init=epsg:28992")
   DFSpatial<-makeSpatialDF(DF,projection = pro)
-  Xres<-1
-  Yres<-1
+  #Xres<-1
+  #Yres<-1
   print(extent(DFSpatial))
   #introduced since several tiles have the x component with extention 0
   if((xmin(DFSpatial)!=xmax(DFSpatial)) & (ymin(DFSpatial)!=ymax(DFSpatial))){
