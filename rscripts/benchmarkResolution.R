@@ -11,16 +11,16 @@ library(stringr)
 library(spatial.tools)
 
 
+dataDir<-"/home/ubuntu/efs/tilesBenchmarkCompTime/toShipAWS_SVF_benchmark"
 
-
-raster_dir2<-"/data1/lidarTilesGTiff_2m/"
-raster_dir3<-"/data1/lidarTilesGTiff_3m/"
-raster_dir4<-"/data1/lidarTilesGTiff_4m/"
-raster_dir10<-"/data1/lidarTilesGTiff_10m/"
-raster_dir20<-"/data1/lidarTilesGTiff_20m/"
-raster_dir50<-"/data1/lidarTilesGTiff_50m/"
-raster_dir1<-"/data1/lidarTilesGTiff_1m/"
-raster_dir5<-"/data1/lidarTilesGTiff_5m/"
+raster_dir2<-paste0(dataDir,"/lidarTilesGTiff_2m/")
+raster_dir3<-paste0(dataDir,"/lidarTilesGTiff_3m/")
+raster_dir4<-paste0(dataDir,"/lidarTilesGTiff_4m/")
+raster_dir10<-paste0(dataDir,"/lidarTilesGTiff_10m/")
+raster_dir20<-paste0(dataDir,"/lidarTilesGTiff_20m/")
+raster_dir50<-paste0(dataDir,"/lidarTilesGTiff_50m/")
+raster_dir1<-paste0(dataDir,"/lidarTilesGTiff_1m/")
+raster_dir5<-paste0(dataDir,"/lidarTilesGTiff_5m/")
 
 
 
