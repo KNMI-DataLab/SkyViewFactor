@@ -144,7 +144,7 @@ registerDoParallel(3) #number of parallel cores
 
 
 
-raster_dir<-"/home/andrea/efs/DeBilt1m/"
+raster_dir<-"/home/ubuntu/efs/DeBilt1m/"
 
 
 listGRDTiles <- list.files(path = raster_dir, ".grd", full.names = T, recursive = T)
