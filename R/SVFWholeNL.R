@@ -64,11 +64,11 @@ SVFWholeNL<-function(filepath, maxView){
               overwrite=TRUE)
   
   #Writing a table which will be appended if exists
-  write.table(r.df,file="NLSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF.txt"))
+  #write.table(r.df,file="NLSVF.txt",sep=",",row.names = FALSE, append = TRUE, col.names = !file.exists("NLSVF.txt"))
   
   }
   else {
-    print(paste0("tile ", filepath, " with odd extention: ", as.character(extensionMainTile)))
+    logging::loginfo(paste0("tile ", filepath, " with odd extention: ", as.character(extensionMainTile)))
   }
   ##############################################
   ##############################################
