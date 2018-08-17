@@ -149,7 +149,7 @@ main<-function(){
   numSlaves<-getDoParWorkers()
   
   foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
-          .packages='logging', .export=c("loginit")) %dopar% loginit(input)
+          .packages='logging', .export=c("loginit", "logDir")) %dopar% loginit(input)
   
   
   
