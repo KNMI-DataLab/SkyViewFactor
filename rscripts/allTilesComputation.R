@@ -81,7 +81,7 @@ maxView<<-100 # max view for the SVF
 #CLUSTER PREPARATION FUNCTION
 #####################################################################
 #preparing distributed cluster
-prepareCLuster<-function(){
+prepareCluster<-function(){
   
   i<-0
   machines<-list()
