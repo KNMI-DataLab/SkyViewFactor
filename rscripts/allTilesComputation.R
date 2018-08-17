@@ -171,6 +171,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
         .export = c("getTileNumber","loadTile", "checkIfMultiTile", "makeSpatialDF", "makeRaster", "pro", "workingPath", "maxView", "mergeNeighborTiles", "listTiles","dataFolder","output_dir","logDir","SVFWholeNL","loadTileWholeNL","checkCoordinates","fix_extent")) %dopar%
 {
   workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
+  loginfo(paste(workerID,"-entering foreach loop"))
   
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
@@ -209,13 +210,10 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
 
 
 getTileNumber <- function(filepath){
-  
-  
   file<-basename(filepath)
   splits<-unlist(strsplit(file, c("\\.")))
   splits<-unlist(strsplit(splits[[1]], "_"))
-  
-  
+
   coordX<-splits[[2]] #str_pad(as.integer(floor(coordX/1000)*1000), 6, pad = "0")
   coordY<-splits[[3]]
   
