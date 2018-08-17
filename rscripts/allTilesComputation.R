@@ -13,7 +13,7 @@ library(logging)
 #All the functions are stored in the folder functions
 #With the library R.utils and the command sourceDirectory all the functions are loaded
 library(R.utils)
-sourceDirectory("functions/")
+sourceDirectory("rscripts/functions/")
 
 
 
