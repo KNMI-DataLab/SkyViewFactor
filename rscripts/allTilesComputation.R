@@ -91,17 +91,17 @@ prepareCLuster<-function(){
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("172.31.15.158", "172.31.8.115", "172.31.0.4", "172.31.12.122", "172.31.6.49")
+  IPs<-c("172.31.5.221", "172.31.1.23")
  ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
-    machines[[i]]<-list(host=ip, user = user, ncore=16)
+    machines[[i]]<-list(host=ip, user = user, ncore=48)
   }
   
   machineAddresses <- list(
     list(host=primary,user=user,
-         ncore=2)
+         ncore=28)
   )
   machineAddresses<-machines #c(machineAddresses,machines)
   
