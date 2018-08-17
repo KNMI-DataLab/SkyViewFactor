@@ -156,7 +156,7 @@ main<-function(){
   
   
 
-listTiles <- list.files(path = dataFolder, ".grd", full.names = T, recursive = T)
+listTiles <- list.files(path = dataFolder, ".tif", full.names = T, recursive = T)
 
 processedFiles<-list.files(path = substr(output_dir, 1, nchar(output_dir)-1), pattern = ".grd", full.names = T)
 
