@@ -148,7 +148,7 @@ main<-function(){
 
 listTiles <- list.files(path = dataFolder, ".tif", full.names = T, recursive = T)
 
-processedFiles<-list.files(path = substr(outputDir, 1, nchar(outputDir)-1), pattern = ".tif", full.names = T)
+processedFiles<-list.files(path = substr(output_dir, 1, nchar(output_dir)-1), pattern = ".tif", full.names = T)
 
 
 #listTiles <- listTiles[40001:length(listTiles)]
