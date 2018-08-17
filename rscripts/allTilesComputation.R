@@ -103,7 +103,7 @@ prepareCluster<-function(){
     list(host=primary,user=user,
          ncore=28)
   )
-  machineAddresses<-machines #c(machineAddresses,machines)
+  machineAddresses<-c(machineAddresses,machines)
   
   #characteristics of the cluster are assigned (e.g., IPs, hosts, users, IPs)
   spec <- lapply(machineAddresses,
@@ -145,10 +145,20 @@ prepareCluster<-function(){
 
 
 main<-function(){
+  
+  numSlaves<-getDoParWorkers()
+  
+  foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
+          .packages='logging') %dopar% loginit(input)
+  
+  
+  
+  
+  
 
-listTiles <- list.files(path = dataFolder, ".tif", full.names = T, recursive = T)
+listTiles <- list.files(path = dataFolder, ".grd", full.names = T, recursive = T)
 
-processedFiles<-list.files(path = substr(output_dir, 1, nchar(output_dir)-1), pattern = ".tif", full.names = T)
+processedFiles<-list.files(path = substr(output_dir, 1, nchar(output_dir)-1), pattern = ".grd", full.names = T)
 
 
 #listTiles <- listTiles[40001:length(listTiles)]
@@ -161,9 +171,6 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "r
         .export = c("getTileNumber","loadTile", "checkIfMultiTile", "makeSpatialDF", "makeRaster", "pro", "workingPath", "maxView", "mergeNeighborTiles", "listTiles","dataFolder","output_dir","logDir","SVFWholeNL","loadTileWholeNL","checkCoordinates","fix_extent")) %dopar%
 {
   workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
-  
-  
-  
   
   outp<-1
   tilesToBeWorked<-getTileNumber(listTiles[[i]])
