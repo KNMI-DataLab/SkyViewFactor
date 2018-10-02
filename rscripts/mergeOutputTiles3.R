@@ -65,6 +65,20 @@ message("artifacts removed, writing raster")
   writeRaster(ras,gsub(".gri",".nc",file))
 }
 
+
+
+convertToGeoTiff<-function(file){
+  message("converting raster to GeoTiff")
+  ras<-raster(file)
+  message("raster read, removing artifacts")
+  ras<-removeArtifacts(ras)
+  crs(ras)<-CRS("+init=epsg:28992")
+  message("artifacts removed, writing raster")
+  writeRaster(ras,gsub(".gri",".tif",file), format="GTiff")
+}
+
+
+
 changesToNetCDFFileForKDC<-function(netCDFFile){
   
   ncFile<-nc_open(netCDFFile)
@@ -144,16 +158,16 @@ today <- Sys.time()
 
 
 #main
-#rasterOptions(maxmemory=250e9)
-#cl<-makeCluster(2, type = "FORK", outfile="")
-#parLapply(cl, files,convertToNetCDF)
-#message("conversion to NetCDF finished")
-filesNC<-list.files(output_dir,full.names = T, pattern = "*.nc")
-message("starting insertion of metadata")
+rasterOptions(maxmemory=250e9)
+cl<-makeCluster(2, type = "FORK", outfile="")
+parLapply(cl, files,convertToGeoTiff)
+message("conversion to GeoTiff finished")
+#filesNC<-list.files(output_dir,full.names = T, pattern = "*.nc")
+#message("starting insertion of metadata")
 #changesToNetCDFFileForKDC(filesNC[1])
-lapply(filesNC,changesToNetCDFFileForKDC)
-message("files NetCDF created")
-#stopCluster(cl)
+#lapply(filesNC,changesToNetCDFFileForKDC)
+#message("files NetCDF created")
+stopCluster(cl)
 
 
 
