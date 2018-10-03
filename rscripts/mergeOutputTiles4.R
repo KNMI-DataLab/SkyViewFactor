@@ -65,7 +65,7 @@ rasterOutput<-function(x){
 mergeAndSplit<-function(files){
 #rasterOptions(maxmemory=58e9)
 message("building cluster")
-cl<-makeCluster(, type = "FORK")
+cl<-makeCluster(62, type = "FORK")
 
 
 numSlaves<-getDoParWorkers()
