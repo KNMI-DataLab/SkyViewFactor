@@ -65,28 +65,33 @@ rasterOutput<-function(x){
 
 mergeAndSplit<-function(files){
 #rasterOptions(maxmemory=58e9)
-message("building cluster")
-cl<-makeCluster(62, type = "FORK")
-
-
-numSlaves<-getDoParWorkers()
-
-foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
-        .packages='logging', .export=c("loginit", "logDir")) %dopar% loginit(input)
-
-
-
-loginfo("select the layer and getting the raster from every tile")
-
-message("select the layer and getting the raster from every tile")
-wholeRasterList<-parLapply(cl,files,rasterOutput)
-stopCluster(cl)
+# message("building cluster")
+# cl<-makeCluster(62, type = "FORK")
+# 
+# 
+# numSlaves<-getDoParWorkers()
+# 
+# foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
+#         .packages='logging', .export=c("loginit", "logDir")) %dopar% loginit(input)
+# 
+# 
+# 
+# loginfo("select the layer and getting the raster from every tile")
+# 
+# message("select the layer and getting the raster from every tile")
+# wholeRasterList<-parLapply(cl,files,rasterOutput)
+# stopCluster(cl)
 
 #rasterOptions(tolerance = 100)
 #options(overlap=F)
 
 message("starting merging the tiles")
-totalRaster<-mosaic_rasters(wholeRasterList,"fullRaster.tif",of="GTiff")
+
+e <- extent(-131, -124, 49, 53)
+template <- raster(e)
+#projection(template) <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+writeRaster(template, file="fullRaster.tif", format="GTiff")
+totalRaster<-mosaic_rasters(gdalfile = files,dst_datase="fullRaster.tif",of="GTiff")
 #do.call(merge, c(wholeRasterList, list(tolerance=100)))
 loginfo("full raster merged")
 message("full raster merged")
