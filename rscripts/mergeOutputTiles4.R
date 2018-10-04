@@ -93,7 +93,7 @@ message("starting merging the tiles")
 #writeRaster(template, file="fullRaster.tif", format="GTiff")
 #mosaic_rasters(gdalfile = files,dst_datase="/home/ubuntu/efs/output/SVF_1m_NEW_HORIZON_regions/fullRaster.tif",of="GTiff")
 #do.call(merge, c(wholeRasterList, list(tolerance=100)))
-fullRaster<-do.call(mosaic,c(wholeRasterList, list(fun=mean,tolerance, 100)))
+fullRaster<-do.call(mosaic,c(wholeRasterList, list(fun=mean,tolerance=100)))
 loginfo("full raster merged")
 message("full raster merged")
 
