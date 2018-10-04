@@ -93,13 +93,15 @@ message("starting merging the tiles")
 #writeRaster(template, file="fullRaster.tif", format="GTiff")
 #mosaic_rasters(gdalfile = files,dst_datase="/home/ubuntu/efs/output/SVF_1m_NEW_HORIZON_regions/fullRaster.tif",of="GTiff")
 #do.call(merge, c(wholeRasterList, list(tolerance=100)))
-mosaic(wholeRasterList, fun=mean,filename="/home/ubuntu/efs/output/SVF_1m_NEW_HORIZON_regions/fullRaster.tif")
+fullRaster<-do.call(mosaic,c(wholeRasterList, list(fun=mean,tolerance, 100)))
 loginfo("full raster merged")
 message("full raster merged")
+
 #message("full raster merged, now split in 16 regions")
 #totalRaster<-raster("/home/ubuntu/efs/output/tempRastersCopy/r_tmp_2018-01-10_213252_2546_27069.grd")
-#sections<-splitRaster(totalRaster,4,4,path =splits_dir)
-
+sections<-splitRaster(totalRaster,4,4,path =splits_dir)
+loginfo("sections done")
+message("sections done")
 }
 
 
