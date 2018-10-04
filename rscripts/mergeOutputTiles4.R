@@ -11,6 +11,7 @@ library(spatial.tools)
 library(parallel)
 library(SpaDES)
 library(ncdf4)
+library(gdalUtils)
 
 library(logging)
 
@@ -85,10 +86,13 @@ stopCluster(cl)
 #options(overlap=F)
 
 message("starting merging the tiles")
-totalRaster<-do.call(merge, c(wholeRasterList, list(tolerance=100)))
-message("full raster merged, now split in 16 regions")
+totalRaster<-mosaic_rasters(wholeRasterList,"fullRaster.tif",of="GTiff")
+#do.call(merge, c(wholeRasterList, list(tolerance=100)))
+loginfo("full raster merged")
+message("full raster merged")
+#message("full raster merged, now split in 16 regions")
 #totalRaster<-raster("/home/ubuntu/efs/output/tempRastersCopy/r_tmp_2018-01-10_213252_2546_27069.grd")
-sections<-splitRaster(totalRaster,4,4,path =splits_dir)
+#sections<-splitRaster(totalRaster,4,4,path =splits_dir)
 
 }
 
