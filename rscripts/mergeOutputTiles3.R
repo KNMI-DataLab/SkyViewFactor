@@ -12,11 +12,43 @@ library(parallel)
 library(SpaDES)
 library(ncdf4)
 
+library(logging)
+
+
 output_dir<<-"/home/ubuntu/efs/output/SVF_1m_regionsNew/"
 splits_dir<<-"/home/ubuntu/efs/output/SVF_1m_regionsNew/"
 
+#logDir<<-"/home/ubuntu/efs/log/"
+logDir<-"/home/pagani/temp/efs/log/"
+output_dir<<-"/home/pagani/temp/efs/output/"
 
 files<-list.files(output_dir,full.names = T, pattern = "*.gri")
+
+
+
+
+#logger setup
+logReset()
+basicConfig(level='FINEST')
+addHandler(writeToFile, file=paste0(logDir,"logFileMerge.log"), level='DEBUG')
+with(getLogger(), names(handlers))
+
+
+#logger for slaves
+
+loginit <- function(logfile) {
+  library(logging)
+  basicConfig(level='FINEST')
+  addHandler(writeToFile, file=paste0(logDir,"logFileMerge.log"), level='DEBUG')
+  with(getLogger(), names(handlers))
+  NULL
+}
+
+
+
+
+
+
 
 
 rasterOutput<-function(x){
@@ -55,6 +87,24 @@ removeArtifacts<-function(rr){
 s<-calc(rr, fun=function(x){x[x<0]<-0; return(x)})
 s
 }
+
+
+checkInconsistent<-function(fileName){
+  ras<-brick(fileName)
+  rr<-ras[[2]]
+  rr
+  #to check if there are artifacts where SVF<0
+  #to be corrected with
+  #s<-calc(rr, fun=function(x){if(x<0){loginfo(paste("tile with issues",extent(rr)))}})
+  if(min(values(rr),na.rm = T)<0)
+  {loginfo(paste0("tile with issues",as.character(extent(rr))))
+    loginfo("--------------------------")}
+  #s
+}
+
+
+
+
 
 convertToNetCDF<-function(file){
 message("converting raster to NetCDF")
