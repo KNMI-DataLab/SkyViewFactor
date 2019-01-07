@@ -403,7 +403,7 @@ tasks<-list(
   },
   svf_1m_64d_800r = function() {svf_1m_64d_800r<-svf(raster1m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_1m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_1m_64d_800r"))
-  }
+  },
   
   
   
@@ -636,7 +636,7 @@ tasks<-list(
   },
   svf_2m_64d_800r = function() {svf_2m_64d_800r<-svf(raster2m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_2m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_2m_64d_800r"))
-  }
+  },
   
   
 
@@ -869,7 +869,7 @@ tasks<-list(
   },
   svf_3m_64d_800r = function() {svf_3m_64d_800r<-svf(raster3m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_3m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_3m_64d_800r"))
-  }
+  },
   
   
   
@@ -1102,7 +1102,7 @@ tasks<-list(
   },
   svf_4m_64d_800r = function() {svf_4m_64d_800r<-svf(raster4m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_4m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_4m_64d_800r"))
-  }
+  },
   
   
   
@@ -1336,7 +1336,7 @@ tasks<-list(
   },
   svf_5m_64d_800r = function() {svf_5m_64d_800r<-svf(raster5m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_5m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_5m_64d_800r"))
-  }
+  },
   
   
   
@@ -1569,7 +1569,7 @@ tasks<-list(
   },
   svf_10m_64d_800r = function() {svf_10m_64d_800r<-svf(raster10m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_10m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_10m_64d_800r"))
-  }
+  },
   
   
   
@@ -1803,7 +1803,7 @@ tasks<-list(
   },
   svf_20m_64d_800r = function() {svf_20m_64d_800r<-svf(raster20m, nAngles = 64, maxDist = 800, ll=F)
   writeRaster(svf_20m_64d_800r, paste0(sensAnalysisOutput_dir,"svf_20m_64d_800r"))
-  }
+  },
   
   
   
