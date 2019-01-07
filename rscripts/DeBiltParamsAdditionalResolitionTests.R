@@ -158,7 +158,7 @@ sensAnalysisOutput_dir<-"/home/ubuntu/efs/sensAnalysisHorizonV12/"
 
 
 
-listGRDTiles <- list.files(path = raster_dir_bird, pattern = ".grd", full.names = T, recursive = T)
+listGRDTiles <- list.files(path = raster_dir, pattern = ".grd", full.names = T, recursive = T)
 
 #listGRDTiles<-list(listGRDTiles)
 #commented out for the single test of the timing
