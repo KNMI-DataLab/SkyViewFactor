@@ -104,7 +104,7 @@ prepareCluster<-function(){
 #####################################################################
 workingPath <<- getwd()
 
-amazon<-FALSE
+amazon<-TRUE
 
 if(amazon){
 #Amazon Dirs
