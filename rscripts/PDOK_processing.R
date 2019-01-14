@@ -222,7 +222,7 @@ foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
 
 
 
-foreach(i =  1:5, .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
+foreach(i =  1:length(tilesToStillWork), .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
         .export = c("pro", "workingPath", "radius", "tilesToStillWork","dataFolder","output_dir","logDir")) %dopar%
         {
           workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
@@ -266,10 +266,10 @@ foreach(i =  1:5, .packages = c("raster", "horizon", "rgdal", "stringr", "loggin
           rasterForHorizon<-crop(mergedRaster,croppingExtension)
           
           ##JUST FOR TEST TO BE REMOVED####
-          raster50m<-aggregate(rasterForHorizon,fact=100)
+          #raster50m<-aggregate(rasterForHorizon,fact=100)
           
           
-          svfTile<-svf(raster50m,nAngles = angles, maxDist = radius, ll=F)
+          svfTile<-svf(rasterForHorizon,nAngles = angles, maxDist = radius, ll=F)
           
           out<-crop(svfTile,extMainTile)
           
