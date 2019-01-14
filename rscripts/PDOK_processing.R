@@ -126,7 +126,7 @@ metadataFile<<-"/home/ubuntu/efs/tilesPDOKmapping/tilesMappingPDOKAHN2_05m.json"
 
 
 
-prepareCluster()
+cl<-prepareCluster()
 
 
 
@@ -181,6 +181,8 @@ if(length(processedFiles)!=0){
   alreadyWorked<-match(filenamesWorked,filenamesAll)
   tilesToStillWork<-filenamesAll[-alreadyWorked]
   tilesToStillWork<-lapply(tilesToStillWork, function(x){paste0(dataFolder,x)})
+}else{
+  tilesToStillWork<-listTiles
 }
 
 
@@ -221,12 +223,12 @@ foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
 
 
 foreach(i =  1:5, .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
-        .export = c("pro", "workingPath", "radius", "listTiles","dataFolder","output_dir","logDir")) %dopar%
+        .export = c("pro", "workingPath", "radius", "tilesToStillWork","dataFolder","output_dir","logDir")) %dopar%
         {
           workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
           loginfo(paste(workerID,"-entering foreach loop"))
 
-          tileInWork<-listTiles[[i]]
+          tileInWork<-tilesToStillWork[[i]]
 
           rastTile<-raster(tileInWork)
           print(tileInWork)
