@@ -220,7 +220,7 @@ foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
 
 
 
-foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
+foreach(i =  1:5, .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
         .export = c("pro", "workingPath", "maxView", "listTiles","dataFolder","output_dir","logDir")) %dopar%
         {
           workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
@@ -285,5 +285,6 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "s
           writeRaster(out,filename=paste0(output_dir, "SVF_",filenameMainTile),
                       format="GTiff",
                       overwrite=TRUE)
+          loginfo(paste(workerID,"witten file",paste0(output_dir, "SVF_",filenameMainTile)))
           
 }
