@@ -44,7 +44,7 @@ prepareCluster<-function(){
   
   machineAddresses <- list(
     list(host=primary,user=user,
-         ncore=30)
+         ncore=28)
   )
   machineAddresses<-c(machineAddresses,machines)
   
