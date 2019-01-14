@@ -30,7 +30,7 @@ prepareCluster<-function(){
   machines<-list()
   ## the users and addresses are based on the AWS configuration
   user    <- 'ubuntu'
-  primary <- '172.31.39.160'
+  primary <- '172.31.15.126'
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
@@ -248,7 +248,7 @@ foreach(i =  1:length(listTiles), .packages = c("raster", "horizon", "rgdal", "s
             k<-(points@coords[3,] %in% tilenames_to_coords[[i]][[3]]@coords[j,])
             w<-(points@coords[4,] %in% tilenames_to_coords[[i]][[3]]@coords[j,])
             if ((m[1]==TRUE & m[2]==TRUE) | (n[1]==TRUE & n[2]==TRUE) | (k[1]==TRUE & k[2]==TRUE) | (w[1]==TRUE & w[2]==TRUE)){
-              tilesToMerge<-list.append(tilesToMerge,paste0("/ssd1/pdokDEMAHN2/r",tilenames_to_coords[[i]][2],".tif"))
+              tilesToMerge<-list.append(tilesToMerge,paste0(dataFolder,"r",tilenames_to_coords[[i]][2],".tif"))
             }
             }
           }
