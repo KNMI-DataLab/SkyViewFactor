@@ -34,12 +34,12 @@ prepareCluster<-function(){
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("172.31.5.221", "172.31.1.23")
+  IPs<-c("172.31.23.208", "172.31.22.237","172.31.39.218","172.31.37.57")
   ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
     i<-i+1
-    machines[[i]]<-list(host=ip, user = user, ncore=48)
+    machines[[i]]<-list(host=ip, user = user, ncore=24)
   }
   
   machineAddresses <- list(
