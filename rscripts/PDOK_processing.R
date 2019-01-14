@@ -221,7 +221,7 @@ foreach(input=rep(paste0(logDir,"logFile.log"), numSlaves),
 
 
 foreach(i =  1:5, .packages = c("raster", "horizon", "rgdal", "stringr", "logging","rlist","spatial.tools"),
-        .export = c("pro", "workingPath", "maxView", "listTiles","dataFolder","output_dir","logDir")) %dopar%
+        .export = c("pro", "workingPath", "radius", "listTiles","dataFolder","output_dir","logDir")) %dopar%
         {
           workerID<-paste(Sys.info()[['nodename']], Sys.getpid(), sep='-')
           loginfo(paste(workerID,"-entering foreach loop"))
