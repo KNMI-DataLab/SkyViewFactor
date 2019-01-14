@@ -126,7 +126,7 @@ metadataFile<<-"/home/ubuntu/efs/tilesPDOKmapping/tilesMappingPDOKAHN2_05m.json"
 
 
 
-
+prepareCluster()
 
 
 
