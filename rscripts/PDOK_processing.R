@@ -71,7 +71,7 @@ prepareCluster<-function(){
     list(host=primary,user=user,
          ncore=18)
   )
-  machineAddresses<-c(machineAddresses,machines)
+  machineAddresses<-c(machineAddresses,machines,machines6,machines18)
   
   #characteristics of the cluster are assigned (e.g., IPs, hosts, users, IPs)
   spec <- lapply(machineAddresses,
