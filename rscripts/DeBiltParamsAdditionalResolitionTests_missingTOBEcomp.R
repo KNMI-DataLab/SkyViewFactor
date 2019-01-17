@@ -2052,7 +2052,7 @@ tasks<-list(
 out <- mclapply( 
   tasks, 
   function(f) f(), 
-  mc.cores = 48 
+  mc.cores = 22 
 )
 
 #for(i in 1:length(tasks)){
