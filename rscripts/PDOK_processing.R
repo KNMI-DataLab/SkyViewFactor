@@ -27,14 +27,19 @@ library(rlist)
 prepareCluster<-function(){
   
   i<-0
+  j<-0
+  k<-0
   machines<-list()
+  machines6<-list()
+  machines18<-list()
+  
   ## the users and addresses are based on the AWS configuration
   user    <- 'ubuntu'
   primary <- '172.31.15.126'
   
   #IPs contains a list of slaves that will run the computations
   #IPs<-paste0("172.31.422.", seq(from = 157, to = 174))
-  IPs<-c("172.31.23.208", "172.31.22.237","172.31.39.218","172.31.37.57")
+  IPs<-c("172.31.23.208", "172.31.22.237")
   ##slave gold master machine
   #IPs<-c("172.31.38.73")
   for (ip in IPs){
@@ -42,9 +47,29 @@ prepareCluster<-function(){
     machines[[i]]<-list(host=ip, user = user, ncore=24)
   }
   
+  #machine with 6 cores involved
+  IP6s<-c("172.31.5.221", "172.31.1.23", "172.31.24.219")
+  ##slave gold master machine
+  #IPs<-c("172.31.38.73")
+  for (ip in IP6s){
+    j<-j+1
+    machines6[[j]]<-list(host=ip, user = user, ncore=6)
+  }
+  
+  #machine with 18 cores involved
+  IP18s<-c("172.31.39.218", "172.31.37.57")
+  ##slave gold master machine
+  #IPs<-c("172.31.38.73")
+  for (ip in IP18s){
+    k<-k+1
+    machines18[[j]]<-list(host=ip, user = user, ncore=18)
+  }
+  
+  
+  
   machineAddresses <- list(
     list(host=primary,user=user,
-         ncore=28)
+         ncore=18)
   )
   machineAddresses<-c(machineAddresses,machines)
   
